@@ -87,7 +87,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y $(SolutionDir)\PAWN\*.amx $(SolutionDir)\sampsvr\gamemodes\&#x0D;&#x0A;copy /y $(SolutionDir)\Binary\$(IntDir)\*.dll $(SolutionDir)\sampsvr\plugins\&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -164,7 +163,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y $(SolutionDir)\PAWN\*.amx $(SolutionDir)\sampsvr\gamemodes\&#x0D;&#x0A;copy /y $(SolutionDir)\Binary\*.dll $(SolutionDir)\sampsvr\plugins\&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
