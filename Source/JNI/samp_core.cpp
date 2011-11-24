@@ -46,7 +46,7 @@ int LoadConfig();
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > Shoebill JNI Milestone 1 for SA-MP 0.3C R5 (20110831) by MK124." );
+	logprintf( "  > ShoebillPlugin Milestone 2 (20111124) for SA-MP 0.3C R5 by MK124 & JoJLlmAn." );
 
 	int ret = LoadConfig();
 	if( ret < 0 )
@@ -90,7 +90,7 @@ int LoadConfig()
 
 void OnUnloadPlugin()
 {
-	if( jni_jvm_destroy() >= 0 ) logprintf( "Java VM destory." );
+	if( jni_jvm_destroy() >= 0 ) logprintf( "Java VM destroyed." );
 }
 
 void OnProcessTick()
