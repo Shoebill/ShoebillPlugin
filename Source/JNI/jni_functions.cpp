@@ -1421,17 +1421,6 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPla
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerDistanceFromPoint
- * Signature: (IFFF)F
- */
-JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerDistanceFromPoint
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
-{
-	return GetPlayerDistanceFromPoint(playerid, x, y, z);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    isPlayerStreamedIn
  * Signature: (II)Z
  */
@@ -2660,17 +2649,6 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicl
 	env->SetFloatField( quat, fidX, x );
 	env->SetFloatField( quat, fidY, y );
 	env->SetFloatField( quat, fidZ, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getVehicleDistanceFromPoint
- * Signature: (IFFF)F
- */
-JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleDistanceFromPoint
-  (JNIEnv *env, jclass jcls, jint vehicleid, jfloat x, jfloat y, jfloat z)
-{
-	return GetVehicleDistanceFromPoint(vehicleid, x, y, z);
 }
 
 /*

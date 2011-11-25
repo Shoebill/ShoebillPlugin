@@ -143,7 +143,7 @@ int GetPlayerPos(int playerid, float& x, float& y, float& z);
 int SetPlayerFacingAngle(int playerid, float ang);
 int GetPlayerFacingAngle(int playerid, float& ang);
 int IsPlayerInRangeOfPoint(int playerid, float range, float x, float y, float z);
-int GetPlayerDistanceFromPoint(int playerid, float x, float y, float z); //0.3c r3
+float GetPlayerDistanceFromPoint(int playerid, float x, float y, float z); //0.3c r3
 int IsPlayerStreamedIn(int playerid, int forplayerid);
 int SetPlayerInterior(int playerid, int interiorid);
 int GetPlayerInterior(int playerid);
@@ -270,7 +270,7 @@ int GetVehiclePos(int vehicleid, float &x, float &y, float &z);
 int SetVehiclePos(int vehicleid, float x, float y, float z);
 int GetVehicleZAngle(int vehicleid, float &z_angle);
 int GetVehicleRotationQuat(int vehicleid, float &w, float &x, float &y, float &z);
-int GetVehicleDistanceFromPoint(int vehicleid, float x, float y, float z); //0.3c r3
+float GetVehicleDistanceFromPoint(int vehicleid, float x, float y, float z); //0.3c r3
 int SetVehicleZAngle(int vehicleid, float z_angle);
 int SetVehicleParamsForPlayer(int vehicleid, int playerid, int objective, int doorslocked);
 int ManualVehicleEngineAndLights();

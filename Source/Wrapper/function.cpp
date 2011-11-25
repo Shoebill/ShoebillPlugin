@@ -1526,7 +1526,7 @@ int IsPlayerInRangeOfPoint( int playerid, float range, float x, float y, float z
 	return func(pAMX, args);
 }
 
-int GetPlayerDistanceFromPoint( int playerid, float x, float y, float z )
+float GetPlayerDistanceFromPoint( int playerid, float x, float y, float z )
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
 
@@ -1536,7 +1536,8 @@ int GetPlayerDistanceFromPoint( int playerid, float x, float y, float z )
 		playerid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z)
 	};
 
-	return func(pAMX, args);
+	cell ret = func(pAMX, args);
+	return amx_ctof( ret );
 }
 
 int IsPlayerStreamedIn( int playerid, int forplayerid )
@@ -3022,10 +3023,9 @@ int GetVehicleRotationQuat( int vehicleid, float &w, float &x, float &y, float &
 	amx_Release( pAMX, args[3] );
 	amx_Release( pAMX, args[2] );
 	return ret;
-
 }
 
-int GetVehicleDistanceFromPoint( int vehicleid, float x, float y, float z )
+float GetVehicleDistanceFromPoint( int vehicleid, float x, float y, float z )
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
 
@@ -3034,8 +3034,9 @@ int GetVehicleDistanceFromPoint( int vehicleid, float x, float y, float z )
 		sizeof(args)- sizeof(cell),
 		vehicleid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z)
 	};
-
-	return func(pAMX, args);
+	
+	cell ret = func(pAMX, args);
+	return amx_ctof( ret );
 }
 
 int SetVehicleZAngle( int vehicleid, float z_angle )

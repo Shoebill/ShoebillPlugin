@@ -17,11 +17,9 @@
 #pragma comment (lib, "jvm.lib")
 #pragma comment (lib, "jawt.lib")
 
-#include <jni.h>
-#include <stdio.h>
-#include <string.h>
 
 #if defined(WIN32)
+#define _CRT_SECURE_NO_WARNINGS
 #include <io.h>
 #endif
 
@@ -29,6 +27,11 @@
 #include <dirent.h>
 #include "linux.h"
 #endif
+
+
+#include <jni.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "jni_core.h"
 
