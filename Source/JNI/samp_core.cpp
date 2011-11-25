@@ -25,7 +25,7 @@
 #include "linux.h"
 #endif
 
-const char classpath[] = "./libraries/*.jar";
+const char classpath[] = "./shoebill/libraries/*.jar";
 const char mainclass[] = "net/gtaun/shoebill/Shoebill";
 
 jclass jmaincls = NULL;
@@ -40,7 +40,7 @@ int Initialize();
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > ShoebillPlugin Milestone 2 (20111125) for SA-MP 0.3C R5 by MK124 & JoJLlmAn." );
+	logprintf( "  > ShoebillPlugin Milestone 2 (20111125) for SA-MP 0.3C R5 by MK124 & JoJLlmAn" );
 
 	if( jni_jvm_create(classpath) < 0 )
 	{

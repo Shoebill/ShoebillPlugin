@@ -44,7 +44,6 @@ int jni_jvm_create( const char* classpath )
 
 	if( jvm != NULL ) return -1;
 
-
 	char clspath[2048] = "-Djava.class.path=";
 	char jarpath[512];
 
@@ -53,7 +52,6 @@ int jni_jvm_create( const char* classpath )
 		if( jarpath[i] == '/' ) { jarpath[i+1] = 0; break; }
 
 #if defined(WIN32)
-
 	_finddata_t finddata;
 	int hfind = _findfirst(classpath, &finddata);
 	if( hfind < 0 ) return -2;
@@ -112,8 +110,8 @@ int jni_jvm_create( const char* classpath )
 	clspath[ strlen(clspath)-1 ] = 0;
 
 	options[0].optionString = clspath;
-	options[1].optionString = "-verbose:gc";
-	options[2].optionString = "-Djava.library.path=./plugins";
+	options[1].optionString = "-Djava.library.path=./plugins";
+	options[2].optionString = "-verbose:gc";
 	//options[3].optionString = "-Djava.compiler=NONE";
 
 	vm_args.version = JNI_VERSION_1_6;
