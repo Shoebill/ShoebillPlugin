@@ -59,17 +59,17 @@ int Initialize()
 	jmaincls = env->FindClass(mainclass);
 	if( !jmaincls )
 	{
-		logprintf( "Error: Can't find main class [%s].", mainclass );
+		logprintf( "  > Error: Can't find main class [%s].", mainclass );
 		return -1;
 	}
 
 	if( jni_jvm_newobject(jmaincls, &jmainobj) < 0 )
 	{
-		logprintf( "Error: Can't create main object [%s].", mainclass );
+		logprintf( "  > Error: Can't create main object [%s].", mainclass );
 		return -2;
 	}
 
-	logprintf( "Shoebill has been initialized." );
+	logprintf( "  > Shoebill has been initialized." );
 	return 0;
 }
 
