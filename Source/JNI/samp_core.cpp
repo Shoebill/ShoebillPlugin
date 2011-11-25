@@ -25,13 +25,8 @@
 #include "linux.h"
 #endif
 
-#define CLASSPATH "./gamemodes/*.jar"
-
-#define CONFIG_FILE "server.cfg"
-#define CONFIG_KEY_MODECLASS "modeclass"
-
-
-char mainclass[256] = "net/gtaun/shoebill/Shoebill";
+const char classpath[] = "./libraries/*.jar";
+const char mainclass[] = "net/gtaun/shoebill/Shoebill";
 
 jclass jmaincls = NULL;
 jobject jmainobj = NULL;
@@ -41,14 +36,13 @@ int player_codepage[MAX_PLAYERS] = {0};
 
 
 int Initialize();
-int LoadConfig();
 
 
 bool OnLoadPlugin()
 {
 	logprintf( "  > ShoebillPlugin Milestone 2 (20111125) for SA-MP 0.3C R5 by MK124 & JoJLlmAn." );
 
-	if( jni_jvm_create(CLASSPATH) < 0 )
+	if( jni_jvm_create(classpath) < 0 )
 	{
 		logprintf( "  > Error: Can't create Java VM." );
 		return false;
@@ -76,29 +70,6 @@ int Initialize()
 	}
 
 	logprintf( "Shoebill has been initialized." );
-	return 0;
-}
-
-int LoadConfig()
-{
-	FILE *fp = fopen( CONFIG_FILE, "r" );
-	if( !fp ) return -1;
-
-	while ( !feof(fp) )
-	{
-		char key[64] = {0}, val[256] = {0};
-		fscanf( fp, "%[^ #]%*[ ]%[^#\n]%*[ #\n]", key, val );
-		if( strlen(key) == 0 ) continue;
-		
-		if( strcmp(strlwr(key), CONFIG_KEY_MODECLASS) == 0 ) strcpy( mainclass, val );
-	}
-
-	fclose( fp );
-
-	int len = strlen(mainclass);
-	if( len == 0 ) return -2;
-
-	for( int i=0; i<len; i++ ) if( mainclass[i] == '.' ) mainclass[i] = '/';
 	return 0;
 }
 
