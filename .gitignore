@@ -1,0 +1,13 @@
+
+/Binary
+/Debug
+/Release
+*.ncb
+*.suo
+*.user
+/Dependencies/sampplugin/Release
+/Dependencies/sampplugin/Debug
+/Source/JNI/Debug
+/Source/JNI/Release
+/Source/Wrapper/Release
+/Source/Wrapper/Debug
