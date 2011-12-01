@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(SolutionDir)\Binary\$(IntDir)\$(SolutionName).dll"
+				OutputFile="$(SolutionDir)\Binary\$(IntDir)\Shoebill.dll"
 				ModuleDefinitionFile="../Wrapper/exports.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(SolutionDir)\Binary\$(SolutionName).dll"
+				OutputFile="$(SolutionDir)\Binary\Shoebill.dll"
 				ModuleDefinitionFile="../Wrapper/exports.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
