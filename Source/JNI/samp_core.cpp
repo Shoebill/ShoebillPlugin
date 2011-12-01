@@ -40,7 +40,7 @@ int Initialize();
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > ShoebillPlugin Milestone 2 (20111201) for SA-MP 0.3D by MK124 & JoJLlmAn" );
+	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3D by MK124 & JoJLlmAn" );
 
 	if( jni_jvm_create(classpath) < 0 )
 	{
@@ -392,6 +392,16 @@ int OnVehicleDamageStatusUpdate( int vehicleid, int playerid )
 	return env->CallIntMethod(jmainobj, jmid, vehicleid, playerid);
 }
 
+int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat)
+{
+	if( !jmainobj ) return 0;
+
+	static jmethodID jmid = env->GetMethodID(jmaincls, "onUnoccupiedVehicleUpdate", "(III)I");
+	if( !jmid ) return 0;
+
+	return env->CallIntMethod(jmainobj, jmid, vehicleid, playerid, passenger_seat);
+}
+
 int OnPlayerSelectedMenuRow( int playerid, int row )
 {
 	if( !jmainobj ) return 0;
@@ -512,6 +522,36 @@ int OnDialogResponse( int playerid, int dialogid, int response, int listitem, ch
 	return env->CallIntMethod(jmainobj, jmid, playerid, dialogid, response, listitem, str);
 }
 
+int OnPlayerTakeDamage(int playerid, int issuerid, float amount, int weaponid)
+{
+	if( !jmainobj ) return 0;
+
+	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerTakeDamage", "(IIFI)I");
+	if( !jmid ) return 0;
+
+	return env->CallIntMethod(jmainobj, jmid, playerid, issuerid, amount, weaponid);
+}
+
+int OnPlayerGiveDamage(int playerid, int damagedid, float amount, int weaponid)
+{
+	if( !jmainobj ) return 0;
+
+	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerGiveDamage", "(IIFI)I");
+	if( !jmid ) return 0;
+
+	return env->CallIntMethod(jmainobj, jmid, playerid, damagedid, amount, weaponid);
+}
+
+int OnPlayerClickMap(int playerid, float x, float y, float z)
+{
+	if( !jmainobj ) return 0;
+
+	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerClickMap", "(IFFF)I");
+	if( !jmid ) return 0;
+
+	return env->CallIntMethod(jmainobj, jmid, playerid, x, y, z);
+}
+
 int OnPlayerClickPlayer( int playerid, int clickedplayerid, int source )
 {
 	if( !jmainobj ) return 0;
@@ -520,24 +560,4 @@ int OnPlayerClickPlayer( int playerid, int clickedplayerid, int source )
 	if( !jmid ) return 0;
 
 	return env->CallIntMethod(jmainobj, jmid, playerid, clickedplayerid, source);
-}
-
-int OnTimer( int TimerIndex )
-{
-	if( !jmainobj ) return 0;
-
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onTimer", "(I)I");
-	if( !jmid ) return 0;
-
-	return env->CallIntMethod(jmainobj, jmid, TimerIndex);
-}
-
-int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat)
-{
-	if( !jmainobj ) return 0;
-
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onUnoccupiedVehicleUpdate", "(III)I");
-	if( !jmid ) return 0;
-
-	return env->CallIntMethod(jmainobj, jmid, vehicleid, playerid, passenger_seat);
 }

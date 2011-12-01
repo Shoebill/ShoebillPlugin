@@ -68,6 +68,1595 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    createObject
+ * Signature: (IFFFFFFF)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createObject
+  (JNIEnv *env, jclass jcls, jint modelid, jfloat x, jfloat y, jfloat z, jfloat rX, jfloat rY, jfloat rZ, jfloat drawDistance)
+{
+	return CreateObject( modelid, x, y, z, rX, rY, rZ, drawDistance );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    attachObjectToVehicle
+ * Signature: (IIFFFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachObjectToVehicle
+  (JNIEnv *env, jclass jcls, jint objectid, jint vehicleid, jfloat x, jfloat y, jfloat z, jfloat rX, jfloat rY, jfloat rZ)
+{
+	AttachObjectToVehicle( objectid, vehicleid, x, y, z, rX, rY, rZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    attachObjectToObject
+ * Signature: (IIFFFFFFI)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachObjectToObject
+  (JNIEnv *env, jclass jcls, jint objectid, jint attachtoid, jfloat offsetX, jfloat offsetY, jfloat offsetZ, jfloat rotX, jfloat rotY, jfloat rotZ, jint syncRotation)
+{
+	AttachObjectToObject( objectid, attachtoid, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, syncRotation );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    attachObjectToPlayer
+ * Signature: (IIFFFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachObjectToPlayer
+  (JNIEnv *env, jclass jcls, jint objectid, jint playerid,
+  jfloat offsetX, jfloat offsetY, jfloat offsetZ, jfloat rX, jfloat rY, jfloat rZ)
+{
+	AttachObjectToPlayer( objectid, playerid, offsetX, offsetY, offsetZ, rX, rY, rZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setObjectPos
+ * Signature: (IFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObjectPos
+  (JNIEnv *env, jclass jcls, jint objectid, jfloat x, jfloat y, jfloat z)
+{
+	SetObjectPos( objectid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getObjectPos
+ * Signature: (ILnet/gtaun/samp/data/Point;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectPos
+  (JNIEnv *env, jclass jcls, jint objectid, jobject point)
+{
+	static jclass cls = env->GetObjectClass(point);
+	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
+	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
+	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
+
+	float x, y, z;
+	GetObjectPos( objectid, x, y, z );
+
+	env->SetFloatField( point, fidX, x );
+	env->SetFloatField( point, fidY, y );
+	env->SetFloatField( point, fidZ, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setObjectRot
+ * Signature: (IFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObjectRot
+  (JNIEnv *env, jclass jcls, jint objectid, jfloat rotX, jfloat rotY, jfloat rotZ)
+{
+	SetObjectRot( objectid, rotX, rotY, rotZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getObjectRot
+ * Signature: (ILnet/gtaun/samp/data/PointRot;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectRot
+  (JNIEnv *env, jclass jcls, jint objectid, jobject pointrot)
+{
+	static jclass cls = env->GetObjectClass(pointrot);
+	static jfieldID fidRotX = env->GetFieldID(cls, "rotX", "F");
+	static jfieldID fidRotY = env->GetFieldID(cls, "rotY", "F");
+	static jfieldID fidRotZ = env->GetFieldID(cls, "rotZ", "F");
+
+	float rotX, rotY, rotZ;
+	GetObjectPos( objectid, rotX, rotY, rotZ );
+
+	env->SetFloatField( pointrot, fidRotX, rotX );
+	env->SetFloatField( pointrot, fidRotY, rotY );
+	env->SetFloatField( pointrot, fidRotZ, rotZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isValidObject
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isValidObject
+  (JNIEnv *env, jclass jcls, jint objectid)
+{
+	return IsValidObject(objectid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    destroyObject
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyObject
+  (JNIEnv *env, jclass jcls, jint objectid)
+{
+	DestroyObject( objectid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    moveObject
+ * Signature: (IFFFF)V
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_moveObject
+  (JNIEnv *env, jclass jcls, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed)
+{
+	return MoveObject( objectid, x, y, z, speed );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    stopObject
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopObject
+  (JNIEnv *env, jclass jcls, jint objectid)
+{
+	StopObject( objectid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isObjectMoving
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isObjectMoving
+  (JNIEnv *env, jclass jcls, jint objectid)
+{
+	return IsObjectMoving(objectid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    createPlayerObject
+ * Signature: (IIFFFFFFF)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createPlayerObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint modelid, jfloat x, jfloat y, jfloat z, jfloat rX, jfloat rY, jfloat rZ, jfloat drawDistance)
+{
+	return CreatePlayerObject(playerid, modelid, x, y, z, rX, rY, rZ, drawDistance);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerObjectPos
+ * Signature: (IIFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerObjectPos
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat x, jfloat y, jfloat z)
+{
+	SetPlayerObjectPos( playerid, objectid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerObjectPos
+ * Signature: (IILnet/gtaun/samp/data/Point;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectPos
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject point)
+{
+	static jclass cls = env->GetObjectClass(point);
+	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
+	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
+	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
+
+	float x, y, z;
+	GetPlayerObjectPos( playerid, objectid, x, y, z );
+
+	env->SetFloatField( point, fidX, x );
+	env->SetFloatField( point, fidY, y );
+	env->SetFloatField( point, fidZ, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerObjectRot
+ * Signature: (IIFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerObjectRot
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat rotX, jfloat rotY, jfloat rotZ)
+{
+	SetPlayerObjectRot( playerid, objectid, rotX, rotY, rotZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerObjectRot
+ * Signature: (IILnet/gtaun/samp/data/PointRot;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectRot
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject pointrot)
+{
+	static jclass cls = env->GetObjectClass(pointrot);
+	static jfieldID fidRotX = env->GetFieldID(cls, "rotX", "F");
+	static jfieldID fidRotY = env->GetFieldID(cls, "rotY", "F");
+	static jfieldID fidRotZ = env->GetFieldID(cls, "rotZ", "F");
+
+	float rotX, rotY, rotZ;
+	GetPlayerObjectRot( playerid, objectid, rotX, rotY, rotZ );
+
+	env->SetFloatField( pointrot, fidRotX, rotX );
+	env->SetFloatField( pointrot, fidRotY, rotY );
+	env->SetFloatField( pointrot, fidRotZ, rotZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isValidPlayerObject
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isValidPlayerObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid)
+{
+	return IsValidPlayerObject( playerid, objectid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    destroyPlayerObject
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyPlayerObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid)
+{
+	DestroyPlayerObject( playerid, objectid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    movePlayerObject
+ * Signature: (IIFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_movePlayerObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed)
+{
+	MovePlayerObject( playerid, objectid, x, y, z, speed );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    stopPlayerObject
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopPlayerObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid)
+{
+	StopPlayerObject( playerid, objectid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerObjectMoving
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerObjectMoving
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid)
+{
+	return IsPlayerObjectMoving(playerid, objectid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    attachPlayerObjectToPlayer
+ * Signature: (IIIFFFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachPlayerObjectToPlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jint attachplayerid,
+  jfloat offsetX, jfloat offsetY, jfloat offsetZ, jfloat rX, jfloat rY, jfloat rZ)
+{
+	AttachPlayerObjectToPlayer( playerid, objectid, attachplayerid, offsetX, offsetY, offsetZ, rX, rY, rZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setSpawnInfo
+ * Signature: (IIIFFFFIIIIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setSpawnInfo
+  (JNIEnv *env, jclass jcls, jint playerid, jint teamid, jint skinid, jfloat x, jfloat y, jfloat z,
+  jfloat rotation, jint weapon1, jint ammo1, jint weapon2, jint ammo2, jint weapon3, jint ammo3)
+{
+	SetSpawnInfo( playerid, teamid, skinid, x, y, z, rotation, weapon1, ammo1, weapon2, ammo2, weapon3, ammo3 );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    spawnPlayer
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_spawnPlayer
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	SpawnPlayer( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerPos
+ * Signature: (IFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerPos
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
+{
+	SetPlayerPos( playerid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerPosFindZ
+ * Signature: (IFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerPosFindZ
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
+{
+	SetPlayerPosFindZ( playerid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerPos
+ * Signature: (ILnet/gtaun/samp/data/Position;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerPos
+  (JNIEnv *env, jclass jcls, jint playerid, jobject point)
+{
+	static jclass cls = env->GetObjectClass(point);
+	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
+	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
+	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
+
+	float x, y, z;
+	GetPlayerPos( playerid, x, y, z );
+
+	env->SetFloatField( point, fidX, x );
+	env->SetFloatField( point, fidY, y );
+	env->SetFloatField( point, fidZ, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerFacingAngle
+ * Signature: (IF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerFacingAngle
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat angle)
+{
+	SetPlayerFacingAngle( playerid, angle );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerFacingAngle
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerFacingAngle
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	float angle;
+	GetPlayerFacingAngle( playerid, angle );
+
+	return angle;
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerInRangeOfPoint
+ * Signature: (IFFFF)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInRangeOfPoint
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat range, jfloat x, jfloat y, jfloat z)
+{
+	return IsPlayerInRangeOfPoint(playerid, range, x, y, z);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerStreamedIn
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerStreamedIn
+  (JNIEnv *env, jclass jcls, jint playerid, jint forplayerid)
+{
+	return IsPlayerStreamedIn(playerid, forplayerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerInterior
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerInterior
+  (JNIEnv *env, jclass jcls, jint playerid, jint interiorid)
+{
+	SetPlayerInterior( playerid, interiorid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerInterior
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerInterior
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerInterior(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerHealth
+ * Signature: (IF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerHealth
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat health)
+{
+	SetPlayerHealth( playerid, health );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerHealth
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerHealth
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	float health;
+	GetPlayerHealth( playerid, health );
+
+	return health;
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerArmour
+ * Signature: (IF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerArmour
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat armour)
+{
+	SetPlayerArmour( playerid, armour );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerArmour
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerArmour
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	float armour;
+	GetPlayerArmour( playerid, armour );
+
+	return armour;
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerAmmo
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerAmmo
+  (JNIEnv *env, jclass jcls, jint playerid, jint weaponslot, jint ammo)
+{
+	SetPlayerAmmo( playerid, weaponslot, ammo );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerAmmo
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerAmmo
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerAmmo(playerid);;
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerWeaponState
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWeaponState
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerWeaponState(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerTargetPlayer
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerTargetPlayer
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerTargetPlayer(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerTeam
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerTeam
+  (JNIEnv *env, jclass jcls, jint playerid, jint teamid)
+{
+	SetPlayerTeam( playerid, teamid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerTeam
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerTeam
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerTeam(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerScore
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerScore
+  (JNIEnv *env, jclass jcls, jint playerid, jint score)
+{
+	SetPlayerScore( playerid, score );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerScore
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerScore
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerScore(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerDrunkLevel
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerDrunkLevel
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerDrunkLevel(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerDrunkLevel
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerDrunkLevel
+  (JNIEnv *env, jclass jcls, jint playerid, jint level)
+{
+	SetPlayerDrunkLevel( playerid, level );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerColor
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerColor
+  (JNIEnv *env, jclass jcls, jint playerid, jint color)
+{
+	SetPlayerColor( playerid, color );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerColor
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerColor
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerColor(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerSkin
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerSkin
+  (JNIEnv *env, jclass jcls, jint playerid, jint skinid)
+{
+	SetPlayerSkin( playerid, skinid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerSkin
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSkin
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerSkin(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    givePlayerWeapon
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_givePlayerWeapon
+  (JNIEnv *env, jclass jcls, jint playerid, jint weaponid, jint ammo)
+{
+	GivePlayerWeapon( playerid, weaponid, ammo );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    resetPlayerWeapons
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_resetPlayerWeapons
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	ResetPlayerWeapons( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerArmedWeapon
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerArmedWeapon
+  (JNIEnv *env, jclass jcls, jint playerid, jint weaponid)
+{
+	SetPlayerArmedWeapon( playerid, weaponid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerWeaponData
+ * Signature: (IILnet/gtaun/samp/data/WeaponData;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWeaponData
+  (JNIEnv *env, jclass jcls, jint playerid, jint slot, jobject weapondata)
+{
+	static jclass cls = env->GetObjectClass(weapondata);
+	static jfieldID fidId = env->GetFieldID(cls, "id", "I");
+	static jfieldID fidAmmo = env->GetFieldID(cls, "ammo", "I");
+
+	int weaponid, ammo;
+	GetPlayerWeaponData( playerid, slot, weaponid, ammo );
+
+	env->SetIntField( weapondata, fidId, weaponid );
+	env->SetIntField( weapondata, fidAmmo, ammo );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    givePlayerMoney
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_givePlayerMoney
+  (JNIEnv *env, jclass jcls, jint playerid, jint money)
+{
+	GivePlayerMoney( playerid, money );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    resetPlayerMoney
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_resetPlayerMoney
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	ResetPlayerMoney( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerName
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerName
+  (JNIEnv *env, jclass jcls, jint playerid, jstring name)
+{
+	const jchar* wmsg = env->GetStringChars(name, NULL);
+	int len = env->GetStringLength(name);
+
+	char str[1024];
+	wcs2mbs( server_codepage, wmsg, len, str, sizeof(str) );
+	env->ReleaseStringChars(name, wmsg);
+
+	return SetPlayerName(playerid, str);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerMoney
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerMoney
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerMoney(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerState
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerState
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerState(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerIp
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerIp
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	char ip[16];
+	GetPlayerIp( playerid, ip, sizeof(ip) );
+
+	return env->NewStringUTF(ip);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerPing
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerPing
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerPing(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerWeapon
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWeapon
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerWeapon(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerKeys
+ * Signature: (ILnet/gtaun/samp/data/KeyState;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerKeys
+  (JNIEnv *env, jclass jcls, jint playerid, jobject keystate)
+{
+	static jclass cls = env->GetObjectClass(keystate);
+	static jfieldID fidKeys = env->GetFieldID(cls, "keys", "I");
+	static jfieldID fidUpdown = env->GetFieldID(cls, "updown", "I");
+	static jfieldID fidLeftright = env->GetFieldID(cls, "leftright", "I");
+
+	int keys, updown, leftright;
+	GetPlayerKeys( playerid, keys, updown, leftright );
+
+	env->SetIntField( keystate, fidKeys, keys );
+	env->SetIntField( keystate, fidUpdown, updown );
+	env->SetIntField( keystate, fidLeftright, leftright );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerName
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerName
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	char name[MAX_PLAYER_NAME];
+	GetPlayerName( playerid, name, sizeof(name) );
+
+	jchar wstr[MAX_PLAYER_NAME];
+	int len = mbs2wcs( server_codepage, name, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
+
+	return env->NewString(wstr, len-1);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerTime
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerTime
+  (JNIEnv *env, jclass jcls, jint playerid, jint hour, jint minute)
+{
+	SetPlayerTime( playerid, hour, minute );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerTime
+ * Signature: (ILjava/sql/Time;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerTime
+  (JNIEnv *env, jclass jcls, jint playerid, jobject time)
+{
+	static jclass cls = env->GetObjectClass(time);
+	static jfieldID fidHour = env->GetFieldID(cls, "hour", "I");
+	static jfieldID fidMinute = env->GetFieldID(cls, "minute", "I");
+
+	int hour, minute;
+	GetPlayerTime( playerid, hour, minute );
+
+	env->SetIntField( time, fidHour, hour );
+	env->SetIntField( time, fidMinute, minute );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    togglePlayerClock
+ * Signature: (IZ)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_togglePlayerClock
+  (JNIEnv *env, jclass jcls, jint playerid, jboolean toggle)
+{
+	TogglePlayerClock( playerid, toggle );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerWeather
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerWeather
+  (JNIEnv *env, jclass jcls, jint playerid, jint weather)
+{
+	SetPlayerWeather( playerid, weather );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    forceClassSelection
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_forceClassSelection
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	ForceClassSelection( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerWantedLevel
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerWantedLevel
+  (JNIEnv *env, jclass jcls, jint playerid, jint level)
+{
+	SetPlayerWantedLevel( playerid, level );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerWantedLevel
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWantedLevel
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerWantedLevel(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerFightingStyle
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerFightingStyle
+  (JNIEnv *env, jclass jcls, jint playerid, jint style)
+{
+	SetPlayerFightingStyle( playerid, style );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerFightingStyle
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerFightingStyle
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerFightingStyle(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerVelocity
+ * Signature: (IFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerVelocity
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
+{
+	SetPlayerVelocity( playerid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerVelocity
+ * Signature: (ILnet/gtaun/samp/data/Velocity;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVelocity
+  (JNIEnv *env, jclass jcls, jint playerid, jobject velocity)
+{
+	static jclass cls = env->GetObjectClass(velocity);
+	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
+	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
+	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
+
+	float x, y, z;
+	GetPlayerVelocity( playerid, x, y, z );
+
+	env->SetFloatField( velocity, fidX, x );
+	env->SetFloatField( velocity, fidY, y );
+	env->SetFloatField( velocity, fidZ, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playCrimeReportForPlayer
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playCrimeReportForPlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jint suspectid, jint crime)
+{
+	PlayCrimeReportForPlayer( playerid, suspectid, crime );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playAudioStreamForPlayer
+ * Signature: (ILjava/lang/String;FFFFI)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playAudioStreamForPlayer
+  (JNIEnv *env, jclass jcls, jint player, jstring url, jfloat posX, jfloat posY, jfloat posZ, jfloat distance, jint usepos)
+{
+	const jchar* wurl = env->GetStringChars(url, NULL);
+	int len = env->GetStringLength(url);
+
+	char str[1024];
+	wcs2mbs( server_codepage, wurl, len, str, sizeof(str) );
+	env->ReleaseStringChars(url, wurl);
+
+	PlayAudioStreamForPlayer( player, str, posX, posY, posZ, distance, usepos );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    stopAudioStreamForPlayer
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopAudioStreamForPlayer
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	StopAudioStreamForPlayer( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerShopName
+ * Signature: (ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerShopName
+  (JNIEnv *env, jclass jcls, jint playerid, jstring name)
+{
+	const jchar* wmsg = env->GetStringChars(name, NULL);
+	int len = env->GetStringLength(name);
+
+	char str[1024];
+	wcs2mbs( player_codepage[playerid], wmsg, len, str, sizeof(str) );
+	env->ReleaseStringChars(name, wmsg);
+
+	SetPlayerShopName( playerid, str );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerSkillLevel
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerSkillLevel
+  (JNIEnv *env, jclass jcls, jint playerid, jint skill, jint level)
+{
+	SetPlayerSkillLevel( playerid, skill, level );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerSurfingVehicleID
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSurfingVehicleID
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerSurfingVehicleID(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerSurfingObjectID
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSurfingObjectID
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerSurfingObjectID(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    removeBuildingForPlayer
+ * Signature: (IIFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removeBuildingForPlayer
+  (JNIEnv *env, jclass jcls, jint player, jint modelid, jfloat x, jfloat y, jfloat z, jfloat radius)
+{
+	RemoveBuildingForPlayer( player, modelid, x, y, z, radius );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerAttachedObject
+ * Signature: (IIIIFFFFFFFFF)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerAttachedObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint index, jint modelid, jint bone, jfloat offsetX, jfloat offsetY,
+  jfloat offsetZ, jfloat rotX, jfloat rotY, jfloat rotZ, jfloat scaleX, jfloat scaleY, jfloat scaleZ)
+{
+	return SetPlayerAttachedObject( playerid, index, modelid, bone,
+		offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    removePlayerAttachedObject
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removePlayerAttachedObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint index)
+{
+	return RemovePlayerAttachedObject(playerid, index);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerAttachedObjectSlotUsed
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerAttachedObjectSlotUsed
+  (JNIEnv *env, jclass jcls, jint playerid, jint index)
+{
+	return IsPlayerAttachedObjectSlotUsed(playerid, index);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerChatBubble
+ * Signature: (ILjava/lang/String;IFI)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerChatBubble
+  (JNIEnv *env, jclass jcls, jint playerid, jstring text, jint color, jfloat drawdistance, jint expiretime)
+{
+	const jchar* wmsg = env->GetStringChars(text, NULL);
+	int len = env->GetStringLength(text);
+
+	char str[1024];
+	wcs2mbs( player_codepage[playerid], wmsg, len, str, sizeof(str) );
+	env->ReleaseStringChars(text, wmsg);
+
+	SetPlayerChatBubble( playerid, str, color, drawdistance, expiretime );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    putPlayerInVehicle
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_putPlayerInVehicle
+  (JNIEnv *env, jclass jcls, jint playerid, jint vehicleid, jint seatid)
+{
+	PutPlayerInVehicle( playerid, vehicleid, seatid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerVehicleID
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVehicleID
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerVehicleID(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerVehicleSeat
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVehicleSeat
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerVehicleSeat(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    removePlayerFromVehicle
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removePlayerFromVehicle
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	RemovePlayerFromVehicle(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    togglePlayerControllable
+ * Signature: (IZ)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_togglePlayerControllable
+  (JNIEnv *env, jclass jcls, jint playerid, jboolean toggle)
+{
+	TogglePlayerControllable( playerid, toggle );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerPlaySound
+ * Signature: (IIFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerPlaySound
+  (JNIEnv *env, jclass jcls, jint playerid, jint soundid, jfloat x, jfloat y, jfloat z)
+{
+	PlayerPlaySound( playerid, soundid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    applyAnimation
+ * Signature: (ILjava/lang/String;Ljava/lang/String;FIIIIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_applyAnimation
+  (JNIEnv *env, jclass jcls, jint playerid, jstring animlib, jstring animname,
+  jfloat delta, jint loop, jint lockX, jint lockY, jint freeze, jint time, jint forcesync)
+{
+	const char* str_animlib = env->GetStringUTFChars(animlib, NULL);
+	const char* str_animname = env->GetStringUTFChars(animname, NULL);
+
+	ApplyAnimation( playerid, str_animlib, str_animname, delta, loop, lockX, lockY, freeze, time, forcesync );
+
+	env->ReleaseStringUTFChars(animlib, str_animlib);
+	env->ReleaseStringUTFChars(animname, str_animname);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    clearAnimations
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_clearAnimations
+  (JNIEnv *env, jclass jcls, jint playerid, jint forcesync)
+{
+	ClearAnimations( playerid, forcesync );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerAnimationIndex
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerAnimationIndex
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerAnimationIndex(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerSpecialAction
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSpecialAction
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerSpecialAction(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerSpecialAction
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerSpecialAction
+  (JNIEnv *env, jclass jcls, jint playerid, jint actionid)
+{
+	SetPlayerSpecialAction( playerid, actionid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerCheckpoint
+ * Signature: (IFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCheckpoint
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z, jfloat size)
+{
+	SetPlayerCheckpoint( playerid, x, y, z, size );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    disablePlayerCheckpoint
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_disablePlayerCheckpoint
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	DisablePlayerCheckpoint( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerRaceCheckpoint
+ * Signature: (IIFFFFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerRaceCheckpoint
+  (JNIEnv *env, jclass jcls, jint playerid, jint type, jfloat x, jfloat y, jfloat z,
+  jfloat nextX, jfloat nextY, jfloat nextZ, jfloat size)
+{
+	SetPlayerRaceCheckpoint( playerid, type, x,  y,  z, nextX, nextY, nextZ, size );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    disablePlayerRaceCheckpoint
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_disablePlayerRaceCheckpoint
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	DisablePlayerRaceCheckpoint( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerWorldBounds
+ * Signature: (IFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerWorldBounds
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x_max, jfloat x_min, jfloat y_max, jfloat y_min)
+{
+	SetPlayerWorldBounds( playerid, x_max, x_min, y_max, y_min );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerMarkerForPlayer
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerMarkerForPlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jint showplayerid, jint color)
+{
+	SetPlayerMarkerForPlayer( playerid, showplayerid, color );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    showPlayerNameTagForPlayer
+ * Signature: (IIZ)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_showPlayerNameTagForPlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jint showplayerid, jboolean show)
+{
+	ShowPlayerNameTagForPlayer( playerid, showplayerid, show );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerMapIcon
+ * Signature: (IIFFFIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerMapIcon
+  (JNIEnv *env, jclass jcls, jint playerid, jint iconid, jfloat x, jfloat y, jfloat z, jint markertype, jint color, jint style)
+{
+	SetPlayerMapIcon( playerid, iconid, x, y, z, markertype, color, style );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    removePlayerMapIcon
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removePlayerMapIcon
+  (JNIEnv *env, jclass jcls, jint playerid, jint iconid)
+{
+	RemovePlayerMapIcon( playerid, iconid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    allowPlayerTeleport
+ * Signature: (IZ)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_allowPlayerTeleport
+  (JNIEnv *env, jclass jcls, jint playerid, jboolean allow)
+{
+	AllowPlayerTeleport( playerid, allow );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerCameraPos
+ * Signature: (IFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCameraPos
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
+{
+	SetPlayerCameraPos( playerid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerCameraLookAt
+ * Signature: (IFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCameraLookAt
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
+{
+	SetPlayerCameraLookAt( playerid, x, y, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setCameraBehindPlayer
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setCameraBehindPlayer
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	SetCameraBehindPlayer( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerCameraPos
+ * Signature: (ILnet/gtaun/samp/data/Point;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraPos
+  (JNIEnv *env, jclass jcls, jint playerid, jobject point)
+{
+	static jclass cls = env->GetObjectClass(point);
+	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
+	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
+	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
+
+	float x, y, z;
+	GetPlayerCameraPos( playerid, x, y, z );
+
+	env->SetFloatField( point, fidX, x );
+	env->SetFloatField( point, fidY, y );
+	env->SetFloatField( point, fidZ, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerCameraMode
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraMode
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerCameraMode(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerConnected
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerConnected
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return IsPlayerConnected(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerInVehicle
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInVehicle
+  (JNIEnv *env, jclass jcls, jint playerid, jint vehicleid)
+{
+	return IsPlayerInVehicle(playerid, vehicleid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerInAnyVehicle
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInAnyVehicle
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return IsPlayerInAnyVehicle(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerInCheckpoint
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInCheckpoint
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return IsPlayerInCheckpoint(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    isPlayerInRaceCheckpoint
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInRaceCheckpoint
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return IsPlayerInRaceCheckpoint(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerVirtualWorld
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerVirtualWorld
+  (JNIEnv *env, jclass jcls, jint playerid, jint worldid)
+{
+	SetPlayerVirtualWorld( playerid, worldid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerVirtualWorld
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVirtualWorld
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerVirtualWorld(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    enableStuntBonusForPlayer
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_enableStuntBonusForPlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jint enabled)
+{
+	EnableStuntBonusForPlayer( playerid, enabled );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    enableStuntBonusForAll
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_enableStuntBonusForAll
+  (JNIEnv *env, jclass jcls, jboolean enabled)
+{
+	EnableStuntBonusForAll( enabled );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    togglePlayerSpectating
+ * Signature: (IZ)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_togglePlayerSpectating
+  (JNIEnv *env, jclass jcls, jint playerid, jboolean toggle)
+{
+	TogglePlayerSpectating( playerid, toggle );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerSpectatePlayer
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerSpectatePlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jint targetplayerid, jint mode)
+{
+	PlayerSpectatePlayer( playerid, targetplayerid, mode );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerSpectateVehicle
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerSpectateVehicle
+  (JNIEnv *env, jclass jcls, jint playerid, jint targetvehicleid, jint mode)
+{
+	PlayerSpectateVehicle( playerid, targetvehicleid, mode );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    startRecordingPlayerData
+ * Signature: (IILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_startRecordingPlayerData
+  (JNIEnv *env, jclass jcls, jint playerid, jint recordtype, jstring recordname)
+{
+	const char* str_recordname = env->GetStringUTFChars(recordname, NULL);
+
+	StartRecordingPlayerData( playerid, recordtype, str_recordname );
+
+	env->ReleaseStringUTFChars(recordname, str_recordname);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    stopRecordingPlayerData
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopRecordingPlayerData
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	StopRecordingPlayerData( playerid );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    sendClientMessage
  * Signature: (IILjava/lang/String;)V
  */
@@ -1319,1238 +2908,6 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_showPlaye
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setSpawnInfo
- * Signature: (IIIFFFFIIIIII)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setSpawnInfo
-  (JNIEnv *env, jclass jcls, jint playerid, jint teamid, jint skinid, jfloat x, jfloat y, jfloat z,
-  jfloat rotation, jint weapon1, jint ammo1, jint weapon2, jint ammo2, jint weapon3, jint ammo3)
-{
-	SetSpawnInfo( playerid, teamid, skinid, x, y, z, rotation, weapon1, ammo1, weapon2, ammo2, weapon3, ammo3 );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    spawnPlayer
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_spawnPlayer
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	SpawnPlayer( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerPos
- * Signature: (IFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerPos
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
-{
-	SetPlayerPos( playerid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerPosFindZ
- * Signature: (IFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerPosFindZ
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
-{
-	SetPlayerPosFindZ( playerid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerPos
- * Signature: (ILnet/gtaun/samp/data/Position;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerPos
-  (JNIEnv *env, jclass jcls, jint playerid, jobject point)
-{
-	static jclass cls = env->GetObjectClass(point);
-	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
-	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
-	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
-
-	float x, y, z;
-	GetPlayerPos( playerid, x, y, z );
-
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerFacingAngle
- * Signature: (IF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerFacingAngle
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat angle)
-{
-	SetPlayerFacingAngle( playerid, angle );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerFacingAngle
- * Signature: (I)F
- */
-JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerFacingAngle
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	float angle;
-	GetPlayerFacingAngle( playerid, angle );
-
-	return angle;
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerInRangeOfPoint
- * Signature: (IFFFF)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInRangeOfPoint
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat range, jfloat x, jfloat y, jfloat z)
-{
-	return IsPlayerInRangeOfPoint(playerid, range, x, y, z);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerStreamedIn
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerStreamedIn
-  (JNIEnv *env, jclass jcls, jint playerid, jint forplayerid)
-{
-	return IsPlayerStreamedIn(playerid, forplayerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerInterior
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerInterior
-  (JNIEnv *env, jclass jcls, jint playerid, jint interiorid)
-{
-	SetPlayerInterior( playerid, interiorid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerInterior
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerInterior
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerInterior(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerHealth
- * Signature: (IF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerHealth
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat health)
-{
-	SetPlayerHealth( playerid, health );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerHealth
- * Signature: (I)F
- */
-JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerHealth
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	float health;
-	GetPlayerHealth( playerid, health );
-
-	return health;
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerArmour
- * Signature: (IF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerArmour
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat armour)
-{
-	SetPlayerArmour( playerid, armour );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerArmour
- * Signature: (I)F
- */
-JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerArmour
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	float armour;
-	GetPlayerArmour( playerid, armour );
-
-	return armour;
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerAmmo
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerAmmo
-  (JNIEnv *env, jclass jcls, jint playerid, jint weaponslot, jint ammo)
-{
-	SetPlayerAmmo( playerid, weaponslot, ammo );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerAmmo
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerAmmo
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerAmmo(playerid);;
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerWeaponState
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWeaponState
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerWeaponState(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerTeam
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerTeam
-  (JNIEnv *env, jclass jcls, jint playerid, jint teamid)
-{
-	SetPlayerTeam( playerid, teamid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerTeam
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerTeam
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerTeam(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerScore
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerScore
-  (JNIEnv *env, jclass jcls, jint playerid, jint score)
-{
-	SetPlayerScore( playerid, score );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerScore
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerScore
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerScore(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerDrunkLevel
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerDrunkLevel
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerDrunkLevel(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerDrunkLevel
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerDrunkLevel
-  (JNIEnv *env, jclass jcls, jint playerid, jint level)
-{
-	SetPlayerDrunkLevel( playerid, level );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerColor
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerColor
-  (JNIEnv *env, jclass jcls, jint playerid, jint color)
-{
-	SetPlayerColor( playerid, color );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerColor
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerColor
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerColor(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerSkin
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerSkin
-  (JNIEnv *env, jclass jcls, jint playerid, jint skinid)
-{
-	SetPlayerSkin( playerid, skinid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerSkin
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSkin
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerSkin(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    givePlayerWeapon
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_givePlayerWeapon
-  (JNIEnv *env, jclass jcls, jint playerid, jint weaponid, jint ammo)
-{
-	GivePlayerWeapon( playerid, weaponid, ammo );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    resetPlayerWeapons
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_resetPlayerWeapons
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	ResetPlayerWeapons( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerArmedWeapon
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerArmedWeapon
-  (JNIEnv *env, jclass jcls, jint playerid, jint weaponid)
-{
-	SetPlayerArmedWeapon( playerid, weaponid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerWeaponData
- * Signature: (IILnet/gtaun/samp/data/WeaponData;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWeaponData
-  (JNIEnv *env, jclass jcls, jint playerid, jint slot, jobject weapondata)
-{
-	static jclass cls = env->GetObjectClass(weapondata);
-	static jfieldID fidId = env->GetFieldID(cls, "id", "I");
-	static jfieldID fidAmmo = env->GetFieldID(cls, "ammo", "I");
-
-	int weaponid, ammo;
-	GetPlayerWeaponData( playerid, slot, weaponid, ammo );
-
-	env->SetIntField( weapondata, fidId, weaponid );
-	env->SetIntField( weapondata, fidAmmo, ammo );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    givePlayerMoney
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_givePlayerMoney
-  (JNIEnv *env, jclass jcls, jint playerid, jint money)
-{
-	GivePlayerMoney( playerid, money );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    resetPlayerMoney
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_resetPlayerMoney
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	ResetPlayerMoney( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerName
- * Signature: (ILjava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerName
-  (JNIEnv *env, jclass jcls, jint playerid, jstring name)
-{
-	const jchar* wmsg = env->GetStringChars(name, NULL);
-	int len = env->GetStringLength(name);
-
-	char str[1024];
-	wcs2mbs( server_codepage, wmsg, len, str, sizeof(str) );
-	env->ReleaseStringChars(name, wmsg);
-
-	return SetPlayerName(playerid, str);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerMoney
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerMoney
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerMoney(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerState
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerState
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerState(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerIp
- * Signature: (I)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerIp
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	char ip[16];
-	GetPlayerIp( playerid, ip, sizeof(ip) );
-
-	return env->NewStringUTF(ip);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerPing
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerPing
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerPing(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerWeapon
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWeapon
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerWeapon(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerKeys
- * Signature: (ILnet/gtaun/samp/data/KeyState;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerKeys
-  (JNIEnv *env, jclass jcls, jint playerid, jobject keystate)
-{
-	static jclass cls = env->GetObjectClass(keystate);
-	static jfieldID fidKeys = env->GetFieldID(cls, "keys", "I");
-	static jfieldID fidUpdown = env->GetFieldID(cls, "updown", "I");
-	static jfieldID fidLeftright = env->GetFieldID(cls, "leftright", "I");
-
-	int keys, updown, leftright;
-	GetPlayerKeys( playerid, keys, updown, leftright );
-
-	env->SetIntField( keystate, fidKeys, keys );
-	env->SetIntField( keystate, fidUpdown, updown );
-	env->SetIntField( keystate, fidLeftright, leftright );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerName
- * Signature: (I)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerName
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	char name[MAX_PLAYER_NAME];
-	GetPlayerName( playerid, name, sizeof(name) );
-
-	jchar wstr[MAX_PLAYER_NAME];
-	int len = mbs2wcs( server_codepage, name, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
-
-	return env->NewString(wstr, len-1);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerTime
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerTime
-  (JNIEnv *env, jclass jcls, jint playerid, jint hour, jint minute)
-{
-	SetPlayerTime( playerid, hour, minute );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerTime
- * Signature: (ILjava/sql/Time;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerTime
-  (JNIEnv *env, jclass jcls, jint playerid, jobject time)
-{
-	static jclass cls = env->GetObjectClass(time);
-	static jfieldID fidHour = env->GetFieldID(cls, "hour", "I");
-	static jfieldID fidMinute = env->GetFieldID(cls, "minute", "I");
-
-	int hour, minute;
-	GetPlayerTime( playerid, hour, minute );
-
-	env->SetIntField( time, fidHour, hour );
-	env->SetIntField( time, fidMinute, minute );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    togglePlayerClock
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_togglePlayerClock
-  (JNIEnv *env, jclass jcls, jint playerid, jboolean toggle)
-{
-	TogglePlayerClock( playerid, toggle );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerWeather
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerWeather
-  (JNIEnv *env, jclass jcls, jint playerid, jint weather)
-{
-	SetPlayerWeather( playerid, weather );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    forceClassSelection
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_forceClassSelection
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	ForceClassSelection( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerWantedLevel
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerWantedLevel
-  (JNIEnv *env, jclass jcls, jint playerid, jint level)
-{
-	SetPlayerWantedLevel( playerid, level );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerWantedLevel
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWantedLevel
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerWantedLevel(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerFightingStyle
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerFightingStyle
-  (JNIEnv *env, jclass jcls, jint playerid, jint style)
-{
-	SetPlayerFightingStyle( playerid, style );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerFightingStyle
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerFightingStyle
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerFightingStyle(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerVelocity
- * Signature: (IFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerVelocity
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
-{
-	SetPlayerVelocity( playerid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerVelocity
- * Signature: (ILnet/gtaun/samp/data/Velocity;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVelocity
-  (JNIEnv *env, jclass jcls, jint playerid, jobject velocity)
-{
-	static jclass cls = env->GetObjectClass(velocity);
-	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
-	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
-	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
-
-	float x, y, z;
-	GetPlayerVelocity( playerid, x, y, z );
-
-	env->SetFloatField( velocity, fidX, x );
-	env->SetFloatField( velocity, fidY, y );
-	env->SetFloatField( velocity, fidZ, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    playCrimeReportForPlayer
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playCrimeReportForPlayer
-  (JNIEnv *env, jclass jcls, jint playerid, jint suspectid, jint crime)
-{
-	PlayCrimeReportForPlayer( playerid, suspectid, crime );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerShopName
- * Signature: (ILjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerShopName
-  (JNIEnv *env, jclass jcls, jint playerid, jstring name)
-{
-	const jchar* wmsg = env->GetStringChars(name, NULL);
-	int len = env->GetStringLength(name);
-
-	char str[1024];
-	wcs2mbs( player_codepage[playerid], wmsg, len, str, sizeof(str) );
-	env->ReleaseStringChars(name, wmsg);
-
-	SetPlayerShopName( playerid, str );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerSkillLevel
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerSkillLevel
-  (JNIEnv *env, jclass jcls, jint playerid, jint skill, jint level)
-{
-	SetPlayerSkillLevel( playerid, skill, level );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerSurfingVehicleID
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSurfingVehicleID
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerSurfingVehicleID(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerSurfingObjectID
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSurfingObjectID
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerSurfingObjectID(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerAttachedObject
- * Signature: (IIIIFFFFFFFFF)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerAttachedObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint index, jint modelid, jint bone, jfloat offsetX, jfloat offsetY,
-  jfloat offsetZ, jfloat rotX, jfloat rotY, jfloat rotZ, jfloat scaleX, jfloat scaleY, jfloat scaleZ)
-{
-	return SetPlayerAttachedObject( playerid, index, modelid, bone,
-		offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    removePlayerAttachedObject
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removePlayerAttachedObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint index)
-{
-	return RemovePlayerAttachedObject(playerid, index);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerAttachedObjectSlotUsed
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerAttachedObjectSlotUsed
-  (JNIEnv *env, jclass jcls, jint playerid, jint index)
-{
-	return IsPlayerAttachedObjectSlotUsed(playerid, index);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerChatBubble
- * Signature: (ILjava/lang/String;IFI)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerChatBubble
-  (JNIEnv *env, jclass jcls, jint playerid, jstring text, jint color, jfloat drawdistance, jint expiretime)
-{
-	const jchar* wmsg = env->GetStringChars(text, NULL);
-	int len = env->GetStringLength(text);
-
-	char str[1024];
-	wcs2mbs( player_codepage[playerid], wmsg, len, str, sizeof(str) );
-	env->ReleaseStringChars(text, wmsg);
-
-	SetPlayerChatBubble( playerid, str, color, drawdistance, expiretime );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    putPlayerInVehicle
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_putPlayerInVehicle
-  (JNIEnv *env, jclass jcls, jint playerid, jint vehicleid, jint seatid)
-{
-	PutPlayerInVehicle( playerid, vehicleid, seatid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerVehicleID
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVehicleID
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerVehicleID(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerVehicleSeat
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVehicleSeat
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerVehicleSeat(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    removePlayerFromVehicle
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removePlayerFromVehicle
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	RemovePlayerFromVehicle(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    togglePlayerControllable
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_togglePlayerControllable
-  (JNIEnv *env, jclass jcls, jint playerid, jboolean toggle)
-{
-	TogglePlayerControllable( playerid, toggle );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    playerPlaySound
- * Signature: (IIFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerPlaySound
-  (JNIEnv *env, jclass jcls, jint playerid, jint soundid, jfloat x, jfloat y, jfloat z)
-{
-	PlayerPlaySound( playerid, soundid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    applyAnimation
- * Signature: (ILjava/lang/String;Ljava/lang/String;FIIIIII)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_applyAnimation
-  (JNIEnv *env, jclass jcls, jint playerid, jstring animlib, jstring animname,
-  jfloat delta, jint loop, jint lockX, jint lockY, jint freeze, jint time, jint forcesync)
-{
-	const char* str_animlib = env->GetStringUTFChars(animlib, NULL);
-	const char* str_animname = env->GetStringUTFChars(animname, NULL);
-
-	ApplyAnimation( playerid, str_animlib, str_animname, delta, loop, lockX, lockY, freeze, time, forcesync );
-
-	env->ReleaseStringUTFChars(animlib, str_animlib);
-	env->ReleaseStringUTFChars(animname, str_animname);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    clearAnimations
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_clearAnimations
-  (JNIEnv *env, jclass jcls, jint playerid, jint forcesync)
-{
-	ClearAnimations( playerid, forcesync );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerAnimationIndex
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerAnimationIndex
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerAnimationIndex(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerSpecialAction
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerSpecialAction
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerSpecialAction(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerSpecialAction
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerSpecialAction
-  (JNIEnv *env, jclass jcls, jint playerid, jint actionid)
-{
-	SetPlayerSpecialAction( playerid, actionid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerCheckpoint
- * Signature: (IFFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCheckpoint
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z, jfloat size)
-{
-	SetPlayerCheckpoint( playerid, x, y, z, size );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    disablePlayerCheckpoint
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_disablePlayerCheckpoint
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	DisablePlayerCheckpoint( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerRaceCheckpoint
- * Signature: (IIFFFFFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerRaceCheckpoint
-  (JNIEnv *env, jclass jcls, jint playerid, jint type, jfloat x, jfloat y, jfloat z,
-  jfloat nextX, jfloat nextY, jfloat nextZ, jfloat size)
-{
-	SetPlayerRaceCheckpoint( playerid, type, x,  y,  z, nextX, nextY, nextZ, size );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    disablePlayerRaceCheckpoint
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_disablePlayerRaceCheckpoint
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	DisablePlayerRaceCheckpoint( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerWorldBounds
- * Signature: (IFFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerWorldBounds
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x_max, jfloat x_min, jfloat y_max, jfloat y_min)
-{
-	SetPlayerWorldBounds( playerid, x_max, x_min, y_max, y_min );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerMarkerForPlayer
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerMarkerForPlayer
-  (JNIEnv *env, jclass jcls, jint playerid, jint showplayerid, jint color)
-{
-	SetPlayerMarkerForPlayer( playerid, showplayerid, color );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    showPlayerNameTagForPlayer
- * Signature: (IIZ)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_showPlayerNameTagForPlayer
-  (JNIEnv *env, jclass jcls, jint playerid, jint showplayerid, jboolean show)
-{
-	ShowPlayerNameTagForPlayer( playerid, showplayerid, show );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerMapIcon
- * Signature: (IIFFFIII)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerMapIcon
-  (JNIEnv *env, jclass jcls, jint playerid, jint iconid, jfloat x, jfloat y, jfloat z, jint markertype, jint color, jint style)
-{
-	SetPlayerMapIcon( playerid, iconid, x, y, z, markertype, color, style );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    removePlayerMapIcon
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removePlayerMapIcon
-  (JNIEnv *env, jclass jcls, jint playerid, jint iconid)
-{
-	RemovePlayerMapIcon( playerid, iconid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    allowPlayerTeleport
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_allowPlayerTeleport
-  (JNIEnv *env, jclass jcls, jint playerid, jboolean allow)
-{
-	AllowPlayerTeleport( playerid, allow );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerCameraPos
- * Signature: (IFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCameraPos
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
-{
-	SetPlayerCameraPos( playerid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerCameraLookAt
- * Signature: (IFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCameraLookAt
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
-{
-	SetPlayerCameraLookAt( playerid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setCameraBehindPlayer
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setCameraBehindPlayer
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	SetCameraBehindPlayer( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerCameraPos
- * Signature: (ILnet/gtaun/samp/data/Point;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraPos
-  (JNIEnv *env, jclass jcls, jint playerid, jobject point)
-{
-	static jclass cls = env->GetObjectClass(point);
-	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
-	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
-	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
-
-	float x, y, z;
-	GetPlayerCameraPos( playerid, x, y, z );
-
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerCameraMode
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraMode
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerCameraMode(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerConnected
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerConnected
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return IsPlayerConnected(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerInVehicle
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInVehicle
-  (JNIEnv *env, jclass jcls, jint playerid, jint vehicleid)
-{
-	return IsPlayerInVehicle(playerid, vehicleid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerInAnyVehicle
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInAnyVehicle
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return IsPlayerInAnyVehicle(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerInCheckpoint
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInCheckpoint
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return IsPlayerInCheckpoint(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isPlayerInRaceCheckpoint
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerInRaceCheckpoint
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return IsPlayerInRaceCheckpoint(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerVirtualWorld
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerVirtualWorld
-  (JNIEnv *env, jclass jcls, jint playerid, jint worldid)
-{
-	SetPlayerVirtualWorld( playerid, worldid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerVirtualWorld
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVirtualWorld
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	return GetPlayerVirtualWorld(playerid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    enableStuntBonusForPlayer
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_enableStuntBonusForPlayer
-  (JNIEnv *env, jclass jcls, jint playerid, jint enabled)
-{
-	EnableStuntBonusForPlayer( playerid, enabled );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    enableStuntBonusForAll
- * Signature: (Z)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_enableStuntBonusForAll
-  (JNIEnv *env, jclass jcls, jboolean enabled)
-{
-	EnableStuntBonusForAll( enabled );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    togglePlayerSpectating
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_togglePlayerSpectating
-  (JNIEnv *env, jclass jcls, jint playerid, jboolean toggle)
-{
-	TogglePlayerSpectating( playerid, toggle );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    playerSpectatePlayer
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerSpectatePlayer
-  (JNIEnv *env, jclass jcls, jint playerid, jint targetplayerid, jint mode)
-{
-	PlayerSpectatePlayer( playerid, targetplayerid, mode );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    playerSpectateVehicle
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerSpectateVehicle
-  (JNIEnv *env, jclass jcls, jint playerid, jint targetvehicleid, jint mode)
-{
-	PlayerSpectateVehicle( playerid, targetvehicleid, mode );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    startRecordingPlayerData
- * Signature: (IILjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_startRecordingPlayerData
-  (JNIEnv *env, jclass jcls, jint playerid, jint recordtype, jstring recordname)
-{
-	const char* str_recordname = env->GetStringUTFChars(recordname, NULL);
-
-	StartRecordingPlayerData( playerid, recordtype, str_recordname );
-
-	env->ReleaseStringUTFChars(recordname, str_recordname);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    stopRecordingPlayerData
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopRecordingPlayerData
-  (JNIEnv *env, jclass jcls, jint playerid)
-{
-	StopRecordingPlayerData( playerid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    createVehicle
  * Signature: (IFFFFIII)I
  */
@@ -3016,277 +3373,4 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicl
   (JNIEnv *env, jclass jcls, jint vehicleid)
 {
 	return GetVehicleVirtualWorld(vehicleid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    createObject
- * Signature: (IFFFFFFF)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createObject
-  (JNIEnv *env, jclass jcls, jint modelid, jfloat x, jfloat y, jfloat z, jfloat rX, jfloat rY, jfloat rZ, jfloat drawDistance)
-{
-	return CreateObject( modelid, x, y, z, rX, rY, rZ, drawDistance );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    attachObjectToVehicle
- * Signature: (IIFFFFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachObjectToVehicle
-  (JNIEnv *env, jclass jcls, jint objectid, jint vehicleid, jfloat x, jfloat y, jfloat z, jfloat rX, jfloat rY, jfloat rZ)
-{
-	AttachObjectToVehicle( objectid, vehicleid, x, y, z, rX, rY, rZ );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setObjectPos
- * Signature: (IFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObjectPos
-  (JNIEnv *env, jclass jcls, jint objectid, jfloat x, jfloat y, jfloat z)
-{
-	SetObjectPos( objectid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getObjectPos
- * Signature: (ILnet/gtaun/samp/data/Point;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectPos
-  (JNIEnv *env, jclass jcls, jint objectid, jobject point)
-{
-	static jclass cls = env->GetObjectClass(point);
-	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
-	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
-	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
-
-	float x, y, z;
-	GetObjectPos( objectid, x, y, z );
-
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setObjectRot
- * Signature: (IFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObjectRot
-  (JNIEnv *env, jclass jcls, jint objectid, jfloat rotX, jfloat rotY, jfloat rotZ)
-{
-	SetObjectRot( objectid, rotX, rotY, rotZ );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getObjectRot
- * Signature: (ILnet/gtaun/samp/data/PointRot;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectRot
-  (JNIEnv *env, jclass jcls, jint objectid, jobject pointrot)
-{
-	static jclass cls = env->GetObjectClass(pointrot);
-	static jfieldID fidRotX = env->GetFieldID(cls, "rotX", "F");
-	static jfieldID fidRotY = env->GetFieldID(cls, "rotY", "F");
-	static jfieldID fidRotZ = env->GetFieldID(cls, "rotZ", "F");
-
-	float rotX, rotY, rotZ;
-	GetObjectPos( objectid, rotX, rotY, rotZ );
-
-	env->SetFloatField( pointrot, fidRotX, rotX );
-	env->SetFloatField( pointrot, fidRotY, rotY );
-	env->SetFloatField( pointrot, fidRotZ, rotZ );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isValidObject
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isValidObject
-  (JNIEnv *env, jclass jcls, jint objectid)
-{
-	return IsValidObject(objectid);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    destroyObject
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyObject
-  (JNIEnv *env, jclass jcls, jint objectid)
-{
-	DestroyObject( objectid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    moveObject
- * Signature: (IFFFF)V
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_moveObject
-  (JNIEnv *env, jclass jcls, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed)
-{
-	return MoveObject( objectid, x, y, z, speed );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    stopObject
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopObject
-  (JNIEnv *env, jclass jcls, jint objectid)
-{
-	StopObject( objectid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    createPlayerObject
- * Signature: (IIFFFFFFF)I
- */
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createPlayerObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint modelid, jfloat x, jfloat y, jfloat z, jfloat rX, jfloat rY, jfloat rZ, jfloat drawDistance)
-{
-	return CreatePlayerObject(playerid, modelid, x, y, z, rX, rY, rZ, drawDistance);
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerObjectPos
- * Signature: (IIFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerObjectPos
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat x, jfloat y, jfloat z)
-{
-	SetPlayerObjectPos( playerid, objectid, x, y, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerObjectPos
- * Signature: (IILnet/gtaun/samp/data/Point;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectPos
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject point)
-{
-	static jclass cls = env->GetObjectClass(point);
-	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
-	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
-	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
-
-	float x, y, z;
-	GetPlayerObjectPos( playerid, objectid, x, y, z );
-
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    setPlayerObjectRot
- * Signature: (IIFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerObjectRot
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat rotX, jfloat rotY, jfloat rotZ)
-{
-	SetPlayerObjectRot( playerid, objectid, rotX, rotY, rotZ );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    getPlayerObjectRot
- * Signature: (IILnet/gtaun/samp/data/PointRot;)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectRot
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject pointrot)
-{
-	static jclass cls = env->GetObjectClass(pointrot);
-	static jfieldID fidRotX = env->GetFieldID(cls, "rotX", "F");
-	static jfieldID fidRotY = env->GetFieldID(cls, "rotY", "F");
-	static jfieldID fidRotZ = env->GetFieldID(cls, "rotZ", "F");
-
-	float rotX, rotY, rotZ;
-	GetPlayerObjectRot( playerid, objectid, rotX, rotY, rotZ );
-
-	env->SetFloatField( pointrot, fidRotX, rotX );
-	env->SetFloatField( pointrot, fidRotY, rotY );
-	env->SetFloatField( pointrot, fidRotZ, rotZ );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    isValidPlayerObject
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isValidPlayerObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid)
-{
-	return IsValidPlayerObject( playerid, objectid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    destroyPlayerObject
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyPlayerObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid)
-{
-	DestroyPlayerObject( playerid, objectid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    movePlayerObject
- * Signature: (IIFFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_movePlayerObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed)
-{
-	MovePlayerObject( playerid, objectid, x, y, z, speed );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    stopPlayerObject
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopPlayerObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid)
-{
-	StopPlayerObject( playerid, objectid );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    attachObjectToPlayer
- * Signature: (IIFFFFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachObjectToPlayer
-  (JNIEnv *env, jclass jcls, jint objectid, jint playerid,
-  jfloat offsetX, jfloat offsetY, jfloat offsetZ, jfloat rX, jfloat rY, jfloat rZ)
-{
-	AttachObjectToPlayer( objectid, playerid, offsetX, offsetY, offsetZ, rX, rY, rZ );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    attachPlayerObjectToPlayer
- * Signature: (IIIFFFFFF)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachPlayerObjectToPlayer
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jint attachplayerid,
-  jfloat offsetX, jfloat offsetY, jfloat offsetZ, jfloat rX, jfloat rY, jfloat rZ)
-{
-	AttachPlayerObjectToPlayer( playerid, objectid, attachplayerid, offsetX, offsetY, offsetZ, rX, rY, rZ );
 }

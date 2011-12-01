@@ -48,16 +48,6 @@ static cell AMX_NATIVE_CALL n_OnPlayerDisconnect( AMX* amx, cell* params )
 	return OnPlayerDisconnect(params[1], params[2]);
 }
 
-static cell AMX_NATIVE_CALL n_OnPlayerRequestClass( AMX* amx, cell* params )
-{
-	return OnPlayerRequestClass(params[1], params[2]);
-}
-
-static cell AMX_NATIVE_CALL n_OnPlayerRequestSpawn( AMX* amx, cell* params )
-{
-	return OnPlayerRequestSpawn(params[1]);
-}
-
 static cell AMX_NATIVE_CALL n_OnPlayerSpawn( AMX* amx, cell* params )
 {
 	return OnPlayerSpawn(params[1]);
@@ -92,6 +82,11 @@ static cell AMX_NATIVE_CALL n_OnPlayerCommandText( AMX* amx, cell* params )
 	amx_GetString( amx, params[2], text, sizeof(text) );
 
 	return OnPlayerCommandText(params[1], text);
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerRequestClass( AMX* amx, cell* params )
+{
+	return OnPlayerRequestClass(params[1], params[2]);
 }
 
 static cell AMX_NATIVE_CALL n_OnPlayerEnterVehicle( AMX* amx, cell* params )
@@ -137,6 +132,11 @@ static cell AMX_NATIVE_CALL n_OnRconCommand( AMX* amx, cell* params )
 	return OnRconCommand(text);
 }
 
+static cell AMX_NATIVE_CALL n_OnPlayerRequestSpawn( AMX* amx, cell* params )
+{
+	return OnPlayerRequestSpawn(params[1]);
+}
+
 static cell AMX_NATIVE_CALL n_OnObjectMoved( AMX* amx, cell* params )
 {
 	return OnObjectMoved(params[1]);
@@ -157,6 +157,11 @@ static cell AMX_NATIVE_CALL n_OnVehicleMod( AMX* amx, cell* params )
 	return OnVehicleMod(params[1], params[2], params[3]);
 }
 
+static cell AMX_NATIVE_CALL n_OnEnterExitModShop( AMX* amx, cell* params )
+{
+	return OnEnterExitModShop(params[1], params[2], params[3]);
+}
+
 static cell AMX_NATIVE_CALL n_OnVehiclePaintjob( AMX* amx, cell* params )
 {
 	return OnVehiclePaintjob(params[1], params[2], params[3]);
@@ -165,6 +170,16 @@ static cell AMX_NATIVE_CALL n_OnVehiclePaintjob( AMX* amx, cell* params )
 static cell AMX_NATIVE_CALL n_OnVehicleRespray( AMX* amx, cell* params )
 {
 	return OnVehicleRespray(params[1], params[2], params[3], params[4]);
+}
+
+static cell AMX_NATIVE_CALL n_OnVehicleDamageStatusUpdate( AMX* amx, cell* params)
+{
+	return OnVehicleDamageStatusUpdate(params[1], params[2]);
+}
+
+static cell AMX_NATIVE_CALL n_OnUnoccupiedVehicleUpdate( AMX* amx, cell* params)
+{
+	return OnUnoccupiedVehicleUpdate(params[1], params[2], params[3]);
 }
 
 static cell AMX_NATIVE_CALL n_OnPlayerSelectedMenuRow( AMX* amx, cell* params )
@@ -229,32 +244,42 @@ static cell AMX_NATIVE_CALL n_OnDialogResponse( AMX* amx, cell* params )
 	return OnDialogResponse(params[1], params[2], params[3], params[4], text);
 }
 
+static cell AMX_NATIVE_CALL n_OnPlayerTakeDamage( AMX* amx, cell* params )
+{
+	return OnPlayerTakeDamage(params[1], params[2], amx_ctof(params[3]), params[4]);
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerGiveDamage( AMX* amx, cell* params )
+{
+	return OnPlayerGiveDamage(params[1], params[2], amx_ctof(params[3]), params[4]);
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerClickMap( AMX* amx, cell* params )
+{
+	return OnPlayerClickMap(params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]));
+}
+
 static cell AMX_NATIVE_CALL n_OnPlayerClickPlayer( AMX* amx, cell* params )
 {
 	return OnPlayerClickPlayer(params[1], params[2], params[3]);
 }
 
-static cell AMX_NATIVE_CALL n_OnUnoccupiedVehicleUpdate( AMX* amx, cell* params)
-{
-	return OnUnoccupiedVehicleUpdate(params[1], params[2], params[3]);
-}
 
 AMX_NATIVE_INFO CallbackNatives[] =
 {
-	{ "n_OnFilterScriptInit",				n_OnFilterScriptInit },
-	{ "n_OnFilterScriptExit",				n_OnFilterScriptExit },
 	{ "n_OnGameModeInit",					n_OnGameModeInit},
 	{ "n_OnGameModeExit",					n_OnGameModeExit},
+	{ "n_OnFilterScriptInit",				n_OnFilterScriptInit },
+	{ "n_OnFilterScriptExit",				n_OnFilterScriptExit },
 	{ "n_OnPlayerConnect",					n_OnPlayerConnect},
 	{ "n_OnPlayerDisconnect",				n_OnPlayerDisconnect},
-	{ "n_OnPlayerRequestClass",				n_OnPlayerRequestClass},
-	{ "n_OnPlayerRequestSpawn",				n_OnPlayerRequestSpawn},
 	{ "n_OnPlayerSpawn",					n_OnPlayerSpawn},
 	{ "n_OnPlayerDeath",					n_OnPlayerDeath},
 	{ "n_OnVehicleSpawn",					n_OnVehicleSpawn},
 	{ "n_OnVehicleDeath",					n_OnVehicleDeath},
 	{ "n_OnPlayerText",						n_OnPlayerText},
 	{ "n_OnPlayerCommandText",				n_OnPlayerCommandText},
+	{ "n_OnPlayerRequestClass",				n_OnPlayerRequestClass},
 	{ "n_OnPlayerEnterVehicle",				n_OnPlayerEnterVehicle},
 	{ "n_OnPlayerExitVehicle",				n_OnPlayerExitVehicle},
 	{ "n_OnPlayerStateChange",				n_OnPlayerStateChange},
@@ -263,12 +288,16 @@ AMX_NATIVE_INFO CallbackNatives[] =
 	{ "n_OnPlayerEnterRaceCheckpoint",		n_OnPlayerEnterRaceCheckpoint},
 	{ "n_OnPlayerLeaveRaceCheckpoint",		n_OnPlayerLeaveRaceCheckpoint},
 	{ "n_OnRconCommand",					n_OnRconCommand},
+	{ "n_OnPlayerRequestSpawn",				n_OnPlayerRequestSpawn},
 	{ "n_OnObjectMoved",					n_OnObjectMoved},
 	{ "n_OnPlayerObjectMoved",				n_OnPlayerObjectMoved},
 	{ "n_OnPlayerPickUpPickup",				n_OnPlayerPickUpPickup},
 	{ "n_OnVehicleMod",						n_OnVehicleMod},
+	{ "n_OnEnterExitModShop",				n_OnEnterExitModShop},
 	{ "n_OnVehiclePaintjob",				n_OnVehiclePaintjob},
 	{ "n_OnVehicleRespray",					n_OnVehicleRespray},
+	{ "n_OnVehicleDamageStatusUpdate",		n_OnVehicleDamageStatusUpdate},
+	{ "n_OnUnoccupiedVehicleUpdate",		n_OnUnoccupiedVehicleUpdate},
 	{ "n_OnPlayerSelectedMenuRow",			n_OnPlayerSelectedMenuRow},
 	{ "n_OnPlayerExitedMenu",				n_OnPlayerExitedMenu},
 	{ "n_OnPlayerInteriorChange",			n_OnPlayerInteriorChange},
@@ -280,7 +309,9 @@ AMX_NATIVE_INFO CallbackNatives[] =
 	{ "n_OnVehicleStreamIn",				n_OnVehicleStreamIn},
 	{ "n_OnVehicleStreamOut",				n_OnVehicleStreamOut},
 	{ "n_OnDialogResponse",					n_OnDialogResponse},
+	{ "n_OnPlayerTakeDamage",				n_OnPlayerTakeDamage},
+	{ "n_OnPlayerGiveDamage",				n_OnPlayerGiveDamage},
+	{ "n_OnPlayerClickMap",					n_OnPlayerClickMap},
 	{ "n_OnPlayerClickPlayer",				n_OnPlayerClickPlayer},
-	{ "n_OnUnoccupiedVehicleUpdate",		n_OnUnoccupiedVehicleUpdate},
 	{ 0,									0 }
 };
