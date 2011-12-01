@@ -1423,17 +1423,6 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removePla
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    allowPlayerTeleport
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_allowPlayerTeleport
-  (JNIEnv *env, jclass jcls, jint playerid, jboolean allow)
-{
-	AllowPlayerTeleport( playerid, allow );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    setPlayerCameraPos
  * Signature: (IFFF)V
  */
@@ -2019,17 +2008,6 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setGravit
   (JNIEnv *env, jclass jcls, jfloat gravity)
 {
 	SetGravity( gravity );
-}
-
-/*
- * Class:     net_gtaun_shoebill_samp_SampNativeFunction
- * Method:    allowAdminTeleport
- * Signature: (Z)V
- */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_allowAdminTeleport
-  (JNIEnv *env, jclass jcls, jboolean allow)
-{
-	AllowAdminTeleport( allow );	
 }
 
 /*

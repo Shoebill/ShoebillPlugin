@@ -1717,19 +1717,6 @@ int GetPlayerCameraMode( int playerid)
 	return func(pAMX, args);
 }
 
-int AllowPlayerTeleport( int playerid, int allow )
-{
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
-
-	cell args[3] =
-	{
-		sizeof(args)- sizeof(cell),
-		playerid, allow
-	};
-
-	return func(pAMX, args);
-}
-
 
 // Player conditionals
 
@@ -2322,19 +2309,6 @@ int SetGravity( float gravity )
 	{
 		sizeof(args)- sizeof(cell),
 		amx_ftoc(gravity)
-	};
-
-	return func(pAMX, args);
-}
-
-int AllowAdminTeleport( int allow )
-{
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
-
-	cell args[2] =
-	{
-		sizeof(args)- sizeof(cell),
-		allow
 	};
 
 	return func(pAMX, args);

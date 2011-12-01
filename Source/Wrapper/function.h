@@ -138,7 +138,6 @@ int ShowPlayerNameTagForPlayer(int playerid, int showplayerid, int show);
 
 int SetPlayerMapIcon(int playerid, int iconid, float x, float y, float z, int markertype, int color, int style);
 int RemovePlayerMapIcon(int playerid, int iconid);
-int AllowPlayerTeleport(int playerid, int allow);
 
 // Player camera
 int SetPlayerCameraPos(int playerid,float x, float y, float z);
@@ -208,7 +207,6 @@ int EnableTirePopping(int enable);
 int AllowInteriorWeapons(int allow);
 int SetWeather(int weatherid);
 int SetGravity(float gravity);
-int AllowAdminTeleport(int allow);
 int SetDeathDropAmount(int amount);
 int CreateExplosion(float X, float Y, float Z, int type, float Radius);
 int EnableZoneNames(int enable);
