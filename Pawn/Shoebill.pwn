@@ -1,18 +1,18 @@
 #include <a_samp>
 
-native n_OnFilterScriptInit();
-native n_OnFilterScriptExit();
 native n_OnGameModeInit();
 native n_OnGameModeExit();
+native n_OnFilterScriptInit();
+native n_OnFilterScriptExit();
 native n_OnPlayerConnect(playerid);
 native n_OnPlayerDisconnect(playerid, reason);
-native n_OnPlayerRequestClass(playerid, classid);
 native n_OnPlayerSpawn(playerid);
 native n_OnPlayerDeath(playerid, killerid, reason);
 native n_OnVehicleSpawn(vehicleid);
 native n_OnVehicleDeath(vehicleid, killerid);
 native n_OnPlayerText(playerid, text[]);
 native n_OnPlayerCommandText(playerid, cmdtext[]);
+native n_OnPlayerRequestClass(playerid, classid);
 native n_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger);
 native n_OnPlayerExitVehicle(playerid, vehicleid);
 native n_OnPlayerStateChange(playerid, newstate, oldstate);
@@ -26,8 +26,11 @@ native n_OnObjectMoved(objectid);
 native n_OnPlayerObjectMoved(playerid, objectid);
 native n_OnPlayerPickUpPickup(playerid, pickupid);
 native n_OnVehicleMod(playerid, vehicleid, componentid);
+native n_OnEnterExitModShop(playerid, enterexit, interiorid);
 native n_OnVehiclePaintjob(playerid, vehicleid, paintjobid);
 native n_OnVehicleRespray(playerid, vehicleid, color1, color2);
+native n_OnVehicleDamageStatusUpdate(vehicleid, playerid);
+native n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat);
 native n_OnPlayerSelectedMenuRow(playerid, row);
 native n_OnPlayerExitedMenu(playerid);
 native n_OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
@@ -39,8 +42,10 @@ native n_OnPlayerStreamOut(playerid, forplayerid);
 native n_OnVehicleStreamIn(vehicleid, forplayerid);
 native n_OnVehicleStreamOut(vehicleid, forplayerid);
 native n_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
+native n_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
+native n_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid);
+native n_OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ);
 native n_OnPlayerClickPlayer(playerid, clickedplayerid, source);
-native n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat); //0.3c r3
 
 
 forward Oops();
@@ -81,16 +86,6 @@ public OnPlayerDisconnect(playerid, reason)
 	return n_OnPlayerDisconnect(playerid, reason);
 }
 
-public OnPlayerRequestClass(playerid, classid)
-{
-	return n_OnPlayerRequestClass(playerid, classid);
-}
-
-public OnPlayerRequestSpawn(playerid)
-{
-	return n_OnPlayerRequestSpawn(playerid);
-}
-
 public OnPlayerSpawn(playerid)
 {
 	return n_OnPlayerSpawn(playerid);
@@ -119,6 +114,11 @@ public OnPlayerText(playerid, text[])
 public OnPlayerCommandText(playerid, cmdtext[])
 {
 	return n_OnPlayerCommandText(playerid, cmdtext);
+}
+
+public OnPlayerRequestClass(playerid, classid)
+{
+	return n_OnPlayerRequestClass(playerid, classid);
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
@@ -161,6 +161,11 @@ public OnRconCommand(cmd[])
 	return n_OnRconCommand(cmd);
 }
 
+public OnPlayerRequestSpawn(playerid)
+{
+	return n_OnPlayerRequestSpawn(playerid);
+}
+
 public OnObjectMoved(objectid)
 {
 	return n_OnObjectMoved(objectid);
@@ -181,6 +186,11 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 	return n_OnVehicleMod(playerid, vehicleid, componentid);
 }
 
+public OnEnterExitModShop(playerid, enterexit, interiorid)
+{
+	return n_OnEnterExitModShop(playerid, enterexit, interiorid);
+}
+
 public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 {
 	return n_OnVehiclePaintjob(playerid, vehicleid, paintjobid);
@@ -189,6 +199,16 @@ public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 public OnVehicleRespray(playerid, vehicleid, color1, color2)
 {
 	return n_OnVehicleRespray(playerid, vehicleid, color1, color2);
+}
+
+public OnVehicleDamageStatusUpdate(vehicleid, playerid)
+{
+	return n_OnVehicleDamageStatusUpdate(vehicleid, playerid);
+}
+
+public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat)
+{
+	return n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat);
 }
 
 public OnPlayerSelectedMenuRow(playerid, row)
@@ -246,14 +266,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	return n_OnDialogResponse(playerid, dialogid, response, listitem, inputtext);
 }
 
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
+{
+	return n_OnPlayerTakeDamage(playerid, issuerid, amount, weaponid);
+}
+
+public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid)
+{
+	return n_OnPlayerGiveDamage(playerid, damagedid, amount, weaponid);
+}
+
+public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
+{
+	return n_OnPlayerClickMap(playerid, fX, fY, fZ);
+}
+
 public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 {
 	return n_OnPlayerClickPlayer(playerid, clickedplayerid, source);
-}
-
-public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat)
-{
-	return n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat);
 }
 
 
@@ -264,6 +294,8 @@ public Oops()
 // a_object.inc
 	CreateObject(0, 0, 0, 0, 0, 0, 0);
 	AttachObjectToVehicle(0, 0, f, f, f, f, f, f);
+	AttachObjectToObject(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	AttachObjectToPlayer(0, 0, 0, 0, 0, 0, 0, 0);
 	SetObjectPos(0, 0, 0, 0);
 	GetObjectPos(0, f, f, f);
 	SetObjectRot(0, 0, 0, 0);
@@ -272,6 +304,7 @@ public Oops()
 	DestroyObject(0);
 	MoveObject(0, 0, 0, 0, 0);
 	StopObject(0);
+	IsObjectMoving(0);
 	CreatePlayerObject(0, 0, 0, 0, 0, 0, 0, 0);
 	SetPlayerObjectPos(0, 0, 0, 0, 0);
 	GetPlayerObjectPos(0, 0, f, f, f);
@@ -281,7 +314,7 @@ public Oops()
 	DestroyPlayerObject(0, 0);
 	MovePlayerObject(0, 0, 0, 0, 0, 0);
 	StopPlayerObject(0, 0);
-	AttachObjectToPlayer(0, 0, 0, 0, 0, 0, 0, 0);
+	IsPlayerObjectMoving(0, 0);
 	AttachPlayerObjectToPlayer(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 // a_player.inc
@@ -307,6 +340,7 @@ public Oops()
 	SetPlayerAmmo(0, 0, 0);
 	GetPlayerAmmo(0);
 	GetPlayerWeaponState(0);
+	GetPlayerTargetPlayer(0);
 	SetPlayerTeam(0, 0);
 	GetPlayerTeam(0);
 	SetPlayerScore(0, 0);
@@ -343,11 +377,13 @@ public Oops()
 	SetPlayerVelocity(0, 0, 0, 0);
 	GetPlayerVelocity(0, f, f, f);
 	PlayCrimeReportForPlayer(0, 0, 0);
+	PlayAudioStreamForPlayer(0, a, 0, 0, 0, 0, 0);
+	StopAudioStreamForPlayer(0);
 	SetPlayerShopName(0, a);
 	SetPlayerSkillLevel(0, 0, 0);
 	GetPlayerSurfingVehicleID(0);
-	GetPlayerSurfingObjectID(0); //0.3c r3
-	
+	GetPlayerSurfingObjectID(0);
+	RemoveBuildingForPlayer(0, 0, 0, 0, 0, 0);
 	SetPlayerAttachedObject(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	RemovePlayerAttachedObject(0, 0);
 	IsPlayerAttachedObjectSlotUsed(0, 0);
