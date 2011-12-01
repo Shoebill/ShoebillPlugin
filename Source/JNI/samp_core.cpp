@@ -40,7 +40,7 @@ int Initialize();
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > ShoebillPlugin Milestone 2 (20111125) for SA-MP 0.3C R5 by MK124 & JoJLlmAn" );
+	logprintf( "  > ShoebillPlugin Milestone 2 (20111201) for SA-MP 0.3D by MK124 & JoJLlmAn" );
 
 	if( jni_jvm_create(classpath) < 0 )
 	{
