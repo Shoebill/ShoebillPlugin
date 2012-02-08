@@ -39,6 +39,7 @@ int player_codepage[MAX_PLAYERS] = {0};
 
 
 int Initialize();
+int Uninitialize();
 
 
 bool OnLoadPlugin()
@@ -55,6 +56,12 @@ bool OnLoadPlugin()
 
 	int ret = Initialize();
 	return ret >= 0;
+}
+
+void OnUnloadPlugin()
+{
+	Uninitialize();
+	if( jni_jvm_destroy() >= 0 ) logprintf( "Java VM destroyed." );
 }
 
 int Initialize()
@@ -85,16 +92,23 @@ int Initialize()
 		logprintf( "  > Error: Can't find main EventHandler." );
 		return -4;
 	}
-
-	event_handler_cls = env->GetObjectClass(event_handler_obj);
+	
+	shoebill_obj = env->NewGlobalRef(shoebill_obj);
+	shoebill_cls = (jclass)( env->NewGlobalRef(shoebill_cls) );
+	event_handler_obj = env->NewGlobalRef(event_handler_obj);
+	event_handler_cls = env->NewGlobalRef(env->GetObjectClass(event_handler_obj));
 
 	logprintf( "  > Shoebill has been initialized." );
 	return 0;
 }
 
-void OnUnloadPlugin()
+int Uninitialize()
 {
-	if( jni_jvm_destroy() >= 0 ) logprintf( "Java VM destroyed." );
+	env->DeleteGlobalRef( shoebill_obj );
+	env->DeleteGlobalRef( shoebill_cls );
+	env->DeleteGlobalRef( event_handler_obj );
+	env->DeleteGlobalRef( event_handler_cls );
+	return 0;
 }
 
 void OnProcessTick()
