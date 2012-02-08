@@ -25,11 +25,14 @@
 #include "linux.h"
 #endif
 
-const char classpath[] = "./shoebill/libraries/*.jar";
-const char mainclass[] = "net/gtaun/shoebill/Shoebill";
+const char jarpath[] = "./shoebill/libraries/*.jar";
+const char classpath[] = "net/gtaun/shoebill/Shoebill";
 
-jclass jmaincls = NULL;
-jobject jmainobj = NULL;
+jclass shoebill_cls = NULL;
+jobject shoebill_obj = NULL;
+
+jclass event_handler_cls = NULL;
+jobject event_handler_obj = NULL;
 
 int server_codepage = 0;
 int player_codepage[MAX_PLAYERS] = {0};
@@ -42,7 +45,7 @@ bool OnLoadPlugin()
 {
 	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3D by MK124 & JoJLlmAn" );
 
-	if( jni_jvm_create(classpath) < 0 )
+	if( jni_jvm_create(jarpath) < 0 )
 	{
 		logprintf( "  > Error: Can't create Java VM." );
 		return false;
@@ -56,18 +59,34 @@ bool OnLoadPlugin()
 
 int Initialize()
 {
-	jmaincls = env->FindClass(mainclass);
-	if( !jmaincls )
+	shoebill_cls = env->FindClass(classpath);
+	if( !shoebill_cls )
 	{
-		logprintf( "  > Error: Can't find main class [%s].", mainclass );
+		logprintf( "  > Error: Can't find main class [%s].", classpath );
 		return -1;
 	}
 
-	if( jni_jvm_newobject(jmaincls, &jmainobj) < 0 )
+	if( jni_jvm_newobject(shoebill_cls, &shoebill_obj) < 0 )
 	{
-		logprintf( "  > Error: Can't create main object [%s].", mainclass );
+		logprintf( "  > Error: Can't create main object [%s].", classpath );
 		return -2;
 	}
+
+	static jmethodID jmid = env->GetMethodID(shoebill_cls, "getCallbackHandler", "()Lnet/gtaun/shoebill/samp/ISampCallbackHandler;");
+	if( !jmid )
+	{
+		logprintf( "  > Error: Can't find method getCallbackHandler()." );
+		return -3;
+	}
+
+	event_handler_obj = env->CallObjectMethod(shoebill_obj, jmid);
+	if( event_handler_obj == NULL )
+	{
+		logprintf( "  > Error: Can't find main EventHandler." );
+		return -4;
+	}
+
+	event_handler_cls = env->GetObjectClass(event_handler_obj);
 
 	logprintf( "  > Shoebill has been initialized." );
 	return 0;
@@ -80,32 +99,32 @@ void OnUnloadPlugin()
 
 void OnProcessTick()
 {
-	if( !jmainobj ) return;
+	if( !event_handler_obj ) return;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onProcessTick", "()V");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onProcessTick", "()V");
 	if( !jmid ) return;
 
-	env->CallVoidMethod(jmainobj, jmid);
+	env->CallVoidMethod(event_handler_obj, jmid);
 }
 
 int OnGameModeInit()
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onGameModeInit", "()I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onGameModeInit", "()I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid);
+	return env->CallIntMethod(event_handler_obj, jmid);
 }
 
 int OnGameModeExit()
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onGameModeExit", "()I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onGameModeExit", "()I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid);
+	return env->CallIntMethod(event_handler_obj, jmid);
 }
 
 int OnFilterScriptInit()
@@ -120,333 +139,333 @@ int OnFilterScriptExit()
 
 int OnPlayerConnect( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerConnect", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerConnect", "(I)I");
 	if( !jmid ) return 0;
 	
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnPlayerDisconnect( int playerid, int reason )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
 	player_codepage[playerid] = 0;
 	
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerDisconnect", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerDisconnect", "(II)I");
 	if( !jmid ) return 0;
 	
-	return env->CallIntMethod(jmainobj, jmid, playerid, reason);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, reason);
 }
 
 int OnPlayerSpawn( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerSpawn", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerSpawn", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnPlayerDeath( int playerid, int killerid, int reason )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerDeath", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerDeath", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, killerid, reason);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, killerid, reason);
 }
 
 int OnVehicleSpawn( int vehicleid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehicleSpawn", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehicleSpawn", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, vehicleid);
+	return env->CallIntMethod(event_handler_obj, jmid, vehicleid);
 }
 
 int OnVehicleDeath( int vehicleid, int killerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehicleDeath", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehicleDeath", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, vehicleid, killerid);
+	return env->CallIntMethod(event_handler_obj, jmid, vehicleid, killerid);
 }
 
 int OnPlayerText( int playerid, char* text )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerText", "(ILjava/lang/String;)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerText", "(ILjava/lang/String;)I");
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
 	int len = mbs2wcs(player_codepage[playerid], text, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len-1);
-	return env->CallIntMethod(jmainobj, jmid, playerid, str);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, str);
 }
 
 int OnPlayerCommandText( int playerid, char* cmdtext )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerCommandText", "(ILjava/lang/String;)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerCommandText", "(ILjava/lang/String;)I");
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
 	int len = mbs2wcs(player_codepage[playerid], cmdtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len-1);
-	return env->CallIntMethod(jmainobj, jmid, playerid, str);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, str);
 }
 
 int OnPlayerRequestClass( int playerid, int classid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerRequestClass", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerRequestClass", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, classid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, classid);
 }
 
 int OnPlayerEnterVehicle( int playerid, int vehicleid, int ispassenger )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerEnterVehicle", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerEnterVehicle", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, vehicleid, ispassenger);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, vehicleid, ispassenger);
 }
 
 int OnPlayerExitVehicle( int playerid, int vehicleid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerExitVehicle", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerExitVehicle", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, vehicleid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, vehicleid);
 }
 
 int OnPlayerStateChange( int playerid, int newstate, int oldstate )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerStateChange", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerStateChange", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, newstate, oldstate);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, newstate, oldstate);
 }
 
 int OnPlayerEnterCheckpoint( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerEnterCheckpoint", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerEnterCheckpoint", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnPlayerLeaveCheckpoint( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerLeaveCheckpoint", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerLeaveCheckpoint", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnPlayerEnterRaceCheckpoint( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerEnterRaceCheckpoint", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerEnterRaceCheckpoint", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnPlayerLeaveRaceCheckpoint( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerLeaveRaceCheckpoint", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerLeaveRaceCheckpoint", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnRconCommand( char* cmd )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onServerRconCommand", "(Ljava/lang/String;)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onServerRconCommand", "(Ljava/lang/String;)I");
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
 	int len = mbs2wcs(server_codepage, cmd, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len-1);
-	return env->CallIntMethod(jmainobj, jmid, str);
+	return env->CallIntMethod(event_handler_obj, jmid, str);
 }
 
 int OnPlayerRequestSpawn( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerRequestSpawn", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerRequestSpawn", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnObjectMoved( int objectid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onObjectMoved", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onObjectMoved", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, objectid);
+	return env->CallIntMethod(event_handler_obj, jmid, objectid);
 }
 
 int OnPlayerObjectMoved( int playerid, int objectid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerObjectMoved", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerObjectMoved", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, objectid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, objectid);
 }
 
 int OnPlayerPickUpPickup( int playerid, int pickupid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerPickUpPickup", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerPickUpPickup", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, pickupid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, pickupid);
 }
 
 int OnVehicleMod( int playerid, int vehicleid, int componentid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehicleMod", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehicleMod", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, vehicleid, componentid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, vehicleid, componentid);
 }
 
 int OnEnterExitModShop( int playerid, int enterexit, int interiorid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onEnterExitModShop", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onEnterExitModShop", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, enterexit, interiorid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, enterexit, interiorid);
 }
 
 int OnVehiclePaintjob( int playerid, int vehicleid, int paintjobid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehiclePaintjob", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehiclePaintjob", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, vehicleid, paintjobid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, vehicleid, paintjobid);
 }
 
 int OnVehicleRespray( int playerid, int vehicleid, int color1, int color2 )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehicleRespray", "(IIII)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehicleRespray", "(IIII)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, vehicleid, color1, color2);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, vehicleid, color1, color2);
 }
 
 int OnVehicleDamageStatusUpdate( int vehicleid, int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehicleDamageStatusUpdate", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehicleDamageStatusUpdate", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, vehicleid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, vehicleid, playerid);
 }
 
 int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat)
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onUnoccupiedVehicleUpdate", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onUnoccupiedVehicleUpdate", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, vehicleid, playerid, passenger_seat);
+	return env->CallIntMethod(event_handler_obj, jmid, vehicleid, playerid, passenger_seat);
 }
 
 int OnPlayerSelectedMenuRow( int playerid, int row )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerSelectedMenuRow", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerSelectedMenuRow", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, row);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, row);
 }
 
 int OnPlayerExitedMenu( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerExitedMenu", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerExitedMenu", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnPlayerInteriorChange( int playerid, int newinteriorid, int oldinteriorid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerInteriorChange", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerInteriorChange", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, newinteriorid, oldinteriorid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, newinteriorid, oldinteriorid);
 }
 
 int OnPlayerKeyStateChange( int playerid, int newkeys, int oldkeys )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerKeyStateChange", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerKeyStateChange", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, newkeys, oldkeys);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, newkeys, oldkeys);
 }
 
 int OnRconLoginAttempt( char* ip, char* password, int success )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onServerRconLoginAttempt", "(Ljava/lang/String;Ljava/lang/String;I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onServerRconLoginAttempt", "(Ljava/lang/String;Ljava/lang/String;I)I");
 	if( !jmid ) return 0;
 
 	jstring iptext = env->NewStringUTF(ip);
@@ -455,109 +474,109 @@ int OnRconLoginAttempt( char* ip, char* password, int success )
 	int len = mbs2wcs(server_codepage, password, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 	jstring str = env->NewString(wtext, len-1);
 
-	return env->CallIntMethod(jmainobj, jmid, iptext, str, success);
+	return env->CallIntMethod(event_handler_obj, jmid, iptext, str, success);
 }
 
 int OnPlayerUpdate( int playerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerUpdate", "(I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerUpdate", "(I)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid);
 }
 
 int OnPlayerStreamIn( int playerid, int forplayerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerStreamIn", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerStreamIn", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, forplayerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, forplayerid);
 }
 
 int OnPlayerStreamOut( int playerid, int forplayerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerStreamOut", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerStreamOut", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, forplayerid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, forplayerid);
 }
 
 int OnVehicleStreamIn( int vehicleid, int forplayerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehicleStreamIn", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehicleStreamIn", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, vehicleid, forplayerid);
+	return env->CallIntMethod(event_handler_obj, jmid, vehicleid, forplayerid);
 }
 
 int OnVehicleStreamOut( int vehicleid, int forplayerid )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onVehicleStreamOut", "(II)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onVehicleStreamOut", "(II)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, vehicleid, forplayerid);
+	return env->CallIntMethod(event_handler_obj, jmid, vehicleid, forplayerid);
 }
 
 int OnDialogResponse( int playerid, int dialogid, int response, int listitem, char *inputtext )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onDialogResponse", "(IIIILjava/lang/String;)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onDialogResponse", "(IIIILjava/lang/String;)I");
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
 	int len = mbs2wcs(player_codepage[playerid], inputtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len-1);
-	return env->CallIntMethod(jmainobj, jmid, playerid, dialogid, response, listitem, str);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, dialogid, response, listitem, str);
 }
 
 int OnPlayerTakeDamage(int playerid, int issuerid, float amount, int weaponid)
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerTakeDamage", "(IIFI)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerTakeDamage", "(IIFI)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, issuerid, amount, weaponid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, issuerid, amount, weaponid);
 }
 
 int OnPlayerGiveDamage(int playerid, int damagedid, float amount, int weaponid)
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerGiveDamage", "(IIFI)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerGiveDamage", "(IIFI)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, damagedid, amount, weaponid);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, damagedid, amount, weaponid);
 }
 
 int OnPlayerClickMap(int playerid, float x, float y, float z)
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerClickMap", "(IFFF)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerClickMap", "(IFFF)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, x, y, z);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, x, y, z);
 }
 
 int OnPlayerClickPlayer( int playerid, int clickedplayerid, int source )
 {
-	if( !jmainobj ) return 0;
+	if( !event_handler_obj ) return 0;
 
-	static jmethodID jmid = env->GetMethodID(jmaincls, "onPlayerClickPlayer", "(III)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onPlayerClickPlayer", "(III)I");
 	if( !jmid ) return 0;
 
-	return env->CallIntMethod(jmainobj, jmid, playerid, clickedplayerid, source);
+	return env->CallIntMethod(event_handler_obj, jmid, playerid, clickedplayerid, source);
 }
