@@ -96,7 +96,7 @@ int Initialize()
 	shoebill_obj = env->NewGlobalRef(shoebill_obj);
 	shoebill_cls = (jclass)( env->NewGlobalRef(shoebill_cls) );
 	event_handler_obj = env->NewGlobalRef(event_handler_obj);
-	event_handler_cls = env->NewGlobalRef(env->GetObjectClass(event_handler_obj));
+	event_handler_cls = (jclass)( env->NewGlobalRef(env->GetObjectClass(event_handler_obj)) );
 
 	logprintf( "  > Shoebill has been initialized." );
 	return 0;
