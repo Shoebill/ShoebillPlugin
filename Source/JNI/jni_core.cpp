@@ -40,28 +40,25 @@ JavaVM *jvm = NULL;
 JNIEnv *env = NULL;
 
 
-int jni_jvm_create( const char* classpath )
+int jni_jvm_create( const char* jarpath )
 {
-	JavaVMInitArgs vm_args;
-	JavaVMOption options[3];
-
 	if( jvm != NULL ) return -1;
 
 	char clspath[2048] = "-Djava.class.path=";
-	char jarpath[512];
+	char basepath[512];
 
-	strcpy( jarpath, classpath );
-	for( int i=strlen(jarpath)-1; i>=0; i-- )
-		if( jarpath[i] == '/' ) { jarpath[i+1] = 0; break; }
+	strcpy( basepath, jarpath );
+	for( int i=strlen(basepath)-1; i>=0; i-- )
+		if( basepath[i] == '/' ) { basepath[i+1] = 0; break; }
 
 #if defined(WIN32)
 	_finddata_t finddata;
-	int hfind = _findfirst(classpath, &finddata);
+	int hfind = _findfirst(jarpath, &finddata);
 	if( hfind < 0 ) return -2;
 
 	do 
 	{
-		strcat( clspath, jarpath );
+		strcat( clspath, basepath );
 		strcat( clspath, finddata.name );
 		strcat( clspath, ";" );
 	} while ( !_findnext(hfind, &finddata) );
@@ -69,7 +66,7 @@ int jni_jvm_create( const char* classpath )
 #endif
 
 #if defined(LINUX)
-	DIR *dir = opendir(jarpath);
+	DIR *dir = opendir(basepath);
 	struct dirent entry;
 	struct dirent* entryPtr = NULL;
 
@@ -100,7 +97,7 @@ int jni_jvm_create( const char* classpath )
 		realpath(temp, resolved);
 
 		strcat( clspath, resolved );*/
-		strcat( clspath, jarpath );
+		strcat( clspath, basepath );
 		strcat( clspath, entry.d_name );
 		strcat( clspath, ":" );
 
@@ -111,12 +108,14 @@ int jni_jvm_create( const char* classpath )
 #endif
 
 	clspath[ strlen(clspath)-1 ] = 0;
-
+	
+	JavaVMOption options[3];
 	options[0].optionString = clspath;
 	options[1].optionString = "-Djava.library.path=./plugins";
 	options[2].optionString = "-verbose:gc";
 	//options[3].optionString = "-Djava.compiler=NONE";
 
+	JavaVMInitArgs vm_args;
 	vm_args.version = JNI_VERSION_1_6;
 	vm_args.options = options;
 	vm_args.nOptions = sizeof(options) / sizeof(JavaVMOption);
