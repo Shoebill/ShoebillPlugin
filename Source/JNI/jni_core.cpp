@@ -128,7 +128,7 @@ int jni_jvm_create( const char* classpath )
 	return 0;
 }
 
-int jni_jvm_processException()
+int jni_jvm_printExceptionStack()
 {
 	if( !env->ExceptionCheck() ) return 1;
 
@@ -143,7 +143,7 @@ int jni_jvm_processException()
 	return 0;
 }
 
-int jni_jvm_newobject( jclass jcls, jobject *pjobj )
+int jni_jvm_constructObject( jclass jcls, jobject *pjobj )
 {
 	if( !jvm ) return -1;
 
@@ -153,7 +153,7 @@ int jni_jvm_newobject( jclass jcls, jobject *pjobj )
 	*pjobj = env->NewObject( jcls, jmid );
 	if( !*pjobj )
 	{
-		jni_jvm_processException();
+		jni_jvm_printExceptionStack();
 		return -3;
 	}
 

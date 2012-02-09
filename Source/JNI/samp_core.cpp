@@ -73,7 +73,7 @@ int Initialize()
 		return -1;
 	}
 
-	if( jni_jvm_newobject(shoebill_cls, &shoebill_obj) < 0 )
+	if( jni_jvm_constructObject(shoebill_cls, &shoebill_obj) < 0 )
 	{
 		logprintf( "  > Error: Can't create main object [%s].", classpath );
 		return -2;
