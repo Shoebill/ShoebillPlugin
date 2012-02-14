@@ -18,7 +18,8 @@ OBJS = $(JNIDIR)encoding.o $(JNIDIR)jni_functions.o $(JNIDIR)jni_core.o \
 all: libShoebill.so
 
 libShoebill.so: $(OBJS)
-	$(CC) -shared $(OBJS) $(LIBDIR) -ljvm $(CFLAG) -o $@
+	$(CC) -shared $(OBJS) $(LIBDIR) -ljvm -liconv $(CFLAG) -o $@
+	-mkdir Binary
 	mv $@ Binary/$@
 
 %.o: %.cpp
