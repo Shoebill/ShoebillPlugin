@@ -15,9 +15,8 @@
  */
 
 extern JavaVM *jvm;
-extern JNIEnv *env;
 
-int jni_jvm_create( const char* basepath );
-int jni_jvm_printExceptionStack();
-int jni_jvm_constructObject( jclass jcls, jobject *pjobj );
-int jni_jvm_destroy();
+int jni_jvm_create( JNIEnv** env, const char* jarpath );
+int jni_jvm_printExceptionStack( JNIEnv *env );
+int jni_jvm_constructObject( JNIEnv *env, jclass jcls, jobject *pjobj );
+int jni_jvm_destroy( JNIEnv *env );

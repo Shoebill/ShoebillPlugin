@@ -37,10 +37,9 @@
 
 
 JavaVM *jvm = NULL;
-JNIEnv *env = NULL;
 
 
-int jni_jvm_create( const char* jarpath )
+int jni_jvm_create( JNIEnv** env, const char* jarpath )
 {
 	if( jvm != NULL ) return -1;
 
@@ -121,13 +120,13 @@ int jni_jvm_create( const char* jarpath )
 	vm_args.nOptions = sizeof(options) / sizeof(JavaVMOption);
 	vm_args.ignoreUnrecognized = JNI_FALSE;
 
-	jint res = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
+	jint res = JNI_CreateJavaVM(&jvm, (void**)env, &vm_args);
 	if (res < 0) return -3;
 
 	return 0;
 }
 
-int jni_jvm_printExceptionStack()
+int jni_jvm_printExceptionStack( JNIEnv *env )
 {
 	if( !env->ExceptionCheck() ) return 1;
 
@@ -142,7 +141,7 @@ int jni_jvm_printExceptionStack()
 	return 0;
 }
 
-int jni_jvm_constructObject( jclass jcls, jobject *pjobj )
+int jni_jvm_constructObject( JNIEnv *env, jclass jcls, jobject *pjobj )
 {
 	if( !jvm ) return -1;
 
@@ -152,14 +151,14 @@ int jni_jvm_constructObject( jclass jcls, jobject *pjobj )
 	*pjobj = env->NewObject( jcls, jmid );
 	if( !*pjobj )
 	{
-		jni_jvm_printExceptionStack();
+		jni_jvm_printExceptionStack( env );
 		return -3;
 	}
 
 	return 0;
 }
 
-int jni_jvm_destroy()
+int jni_jvm_destroy( JNIEnv *env )
 {
 	if( !jvm ) return -1;
 
