@@ -82,25 +82,9 @@ int Initialize( JNIEnv *env )
 		logprintf( "  > Error: Can't create main object [%s].", classpath );
 		return -2;
 	}
-
-	static jmethodID jmid = env->GetMethodID(shoebill_cls, "getCallbackHandler", "()Lnet/gtaun/shoebill/samp/ISampCallbackHandler;");
-	if( !jmid )
-	{
-		logprintf( "  > Error: Can't find method getCallbackHandler()." );
-		return -3;
-	}
-
-	event_handler_obj = env->CallObjectMethod(shoebill_obj, jmid);
-	if( event_handler_obj == NULL )
-	{
-		logprintf( "  > Error: Can't find main EventHandler." );
-		return -4;
-	}
 	
 	shoebill_obj = env->NewGlobalRef(shoebill_obj);
 	shoebill_cls = (jclass)( env->NewGlobalRef(shoebill_cls) );
-	event_handler_obj = env->NewGlobalRef(event_handler_obj);
-	event_handler_cls = (jclass)( env->NewGlobalRef(env->GetObjectClass(event_handler_obj)) );
 
 	logprintf( "  > Shoebill has been initialized." );
 	return 0;
@@ -110,8 +94,6 @@ int Uninitialize( JNIEnv *env )
 {
 	env->DeleteGlobalRef( shoebill_obj );
 	env->DeleteGlobalRef( shoebill_cls );
-	env->DeleteGlobalRef( event_handler_obj );
-	env->DeleteGlobalRef( event_handler_cls );
 	return 0;
 }
 
@@ -131,10 +113,27 @@ void OnProcessTick()
 
 int OnGameModeInit()
 {
-	if( !event_handler_obj ) return 0;
+	if( !shoebill_obj ) return 1;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid_gch = env->GetMethodID(shoebill_cls, "getCallbackHandler", "()Lnet/gtaun/shoebill/samp/ISampCallbackHandler;");
+	if( !jmid_gch )
+	{
+		logprintf( "ShoebillPlugin Error: Can't find method getCallbackHandler()." );
+		return 1;
+	}
+
+	event_handler_obj = env->CallObjectMethod(shoebill_obj, jmid_gch);
+	if( event_handler_obj == NULL )
+	{
+		logprintf( "ShoebillPlugin Error: Can't find main EventHandler." );
+		return 1;
+	}
+
+	event_handler_obj = env->NewGlobalRef(event_handler_obj);
+	event_handler_cls = (jclass)( env->NewGlobalRef(env->GetObjectClass(event_handler_obj)) );
 
 	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onGameModeInit", "()I");
 	if( !jmid ) return 0;
@@ -156,6 +155,12 @@ int OnGameModeExit()
 
 	jint ret = env->CallIntMethod(event_handler_obj, jmid);
 	jni_jvm_printExceptionStack( env );
+
+	env->DeleteGlobalRef( event_handler_obj );
+	env->DeleteGlobalRef( event_handler_cls );
+	event_handler_obj = NULL;
+	event_handler_cls = NULL;
+
 	return ret;
 }
 
