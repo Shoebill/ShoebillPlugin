@@ -5,6 +5,7 @@
 *.ncb
 *.suo
 *.user
+*.o
 /Dependencies/sampplugin/Release
 /Dependencies/sampplugin/Debug
 /Source/JNI/Debug

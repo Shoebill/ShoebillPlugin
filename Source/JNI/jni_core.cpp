@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+#if defined(WIN32)
+
 #pragma comment (lib, "jvm.lib")
 #pragma comment (lib, "jawt.lib")
 
-
-#if defined(WIN32)
 #define _CRT_SECURE_NO_WARNINGS
 #include <io.h>
+
 #endif
 
 #if defined(LINUX)
@@ -62,9 +63,7 @@ int jni_jvm_create( JNIEnv** env, const char* jarpath )
 		strcat( clspath, ";" );
 	} while ( !_findnext(hfind, &finddata) );
 	_findclose( hfind );
-#endif
-
-#if defined(LINUX)
+#else
 	DIR *dir = opendir(basepath);
 	struct dirent entry;
 	struct dirent* entryPtr = NULL;
@@ -89,13 +88,6 @@ int jni_jvm_create( JNIEnv** env, const char* jarpath )
 			continue;
 		}
 
-		/*char resolved[PATH_MAX];
-		char temp[PATH_MAX] = "";
-		strcat( temp, jarpath );
-		strcat( temp, entry.d_name );
-		realpath(temp, resolved);
-
-		strcat( clspath, resolved );*/
 		strcat( clspath, basepath );
 		strcat( clspath, entry.d_name );
 		strcat( clspath, ":" );

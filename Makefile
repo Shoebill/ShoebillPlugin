@@ -1,9 +1,9 @@
 CC = g++
-CFLAG = -O3 -Wall -ansi -fPIC
+CFLAG = -O3 -Wall -ansi -fPIC -fno-strict-aliasing -Wno-write-strings
 DFLAG = -DLINUX
-INCDIR = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux \
+INCDIR = -I$(JDK_HOME)/include -I$(JDK_HOME)/include/linux \
 	-I/usr/include
-LIBDIR = -L$(JAVA_HOME)/jre/lib/i386 -L$(JAVA_HOME)/jre/lib/i386/client
+LIBDIR = -L$(JDK_HOME)/jre/lib/i386 -L$(JDK_HOME)/jre/lib/i386/client
 WrapperDIR = Source/Wrapper/
 JNIDIR = Source/JNI/
 samppluginDIR = Dependencies/sampplugin/
@@ -28,5 +28,5 @@ libShoebill.so: $(OBJS)
 
 .PHONY: clean
 clean:
-	-rm Binary/libShoebill.so
+	-rm -rf Binary
 	-rm $(OBJS)
