@@ -431,7 +431,7 @@ int OnRconCommand( char* cmd )
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onServerRconCommand", "(Ljava/lang/String;)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onRconCommand", "(Ljava/lang/String;)I");
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
@@ -660,7 +660,7 @@ int OnRconLoginAttempt( char* ip, char* password, int success )
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onServerRconLoginAttempt", "(Ljava/lang/String;Ljava/lang/String;I)I");
+	static jmethodID jmid = env->GetMethodID(event_handler_cls, "onRconLoginAttempt", "(Ljava/lang/String;Ljava/lang/String;I)I");
 	if( !jmid ) return 0;
 
 	jstring iptext = env->NewStringUTF(ip);

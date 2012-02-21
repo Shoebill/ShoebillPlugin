@@ -53,7 +53,7 @@ forward Oops();
 
 main()
 {
-
+	SendRconCommand("loadfs ShoebillFS");
 }
 
 public OnGameModeInit()
