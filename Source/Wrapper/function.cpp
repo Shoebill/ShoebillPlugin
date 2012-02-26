@@ -171,14 +171,14 @@ int DestroyObject( int objectid )
 	return func(pAMX, args);
 }
 
-int MoveObject( int objectid, float x, float y, float z, float Speed )
+int MoveObject( int objectid, float x, float y, float z, float Speed, float rotX, float rotY, float rotZ )
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
 
-	cell args[6] =
+	cell args[9] =
 	{
 		sizeof(args)- sizeof(cell),
-		objectid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), amx_ftoc(Speed)
+		objectid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), amx_ftoc(Speed), amx_ftoc(rotX), amx_ftoc(rotY), amx_ftoc(rotZ)
 	};
 
 	return func(pAMX, args);
@@ -321,14 +321,14 @@ int DestroyPlayerObject( int playerid, int objectid )
 	return func(pAMX, args);
 }
 
-int MovePlayerObject( int playerid, int objectid, float x, float y, float z, float Speed )
+int MovePlayerObject( int playerid, int objectid, float x, float y, float z, float Speed, float rotX, float rotY, float rotZ )
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
 
-	cell args[7] =
+	cell args[10] =
 	{
 		sizeof(args)- sizeof(cell),
-		playerid, objectid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), amx_ftoc(Speed)
+		playerid, objectid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), amx_ftoc(Speed), amx_ftoc(rotX), amx_ftoc(rotY), amx_ftoc(rotZ)
 	};
 
 	return func(pAMX, args);

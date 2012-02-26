@@ -82,7 +82,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getObjectPos
- * Signature: (ILnet/gtaun/shoebill/data/Point;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectPos
   (JNIEnv *, jclass, jint, jobject);
@@ -98,7 +98,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getObjectRot
- * Signature: (ILnet/gtaun/shoebill/data/PointRot;)V
+ * Signature: (ILnet/gtaun/shoebill/data/LocationRotational;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectRot
   (JNIEnv *, jclass, jint, jobject);
@@ -122,10 +122,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyOb
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    moveObject
- * Signature: (IFFFF)I
+ * Signature: (IFFFFFFF)I
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_moveObject
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -162,7 +162,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerObjectPos
- * Signature: (IILnet/gtaun/shoebill/data/Point;)V
+ * Signature: (IILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectPos
   (JNIEnv *, jclass, jint, jint, jobject);
@@ -178,7 +178,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerObjectRot
- * Signature: (IILnet/gtaun/shoebill/data/PointRot;)V
+ * Signature: (IILnet/gtaun/shoebill/data/LocationRotational;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectRot
   (JNIEnv *, jclass, jint, jint, jobject);
@@ -202,10 +202,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyPl
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    movePlayerObject
- * Signature: (IIFFFF)V
+ * Signature: (IIFFFFFFF)I
  */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_movePlayerObject
-  (JNIEnv *, jclass, jint, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_movePlayerObject
+  (JNIEnv *, jclass, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -266,7 +266,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerPos
- * Signature: (ILnet/gtaun/shoebill/data/Point;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerPos
   (JNIEnv *, jclass, jint, jobject);
@@ -1026,7 +1026,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setCamera
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerCameraPos
- * Signature: (ILnet/gtaun/shoebill/data/Point;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraPos
   (JNIEnv *, jclass, jint, jobject);
@@ -1034,7 +1034,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerCameraFrontVector
- * Signature: (ILnet/gtaun/shoebill/data/Point;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraFrontVector
   (JNIEnv *, jclass, jint, jobject);
@@ -1954,7 +1954,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isVeh
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehiclePos
- * Signature: (ILnet/gtaun/shoebill/data/Point;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehiclePos
   (JNIEnv *, jclass, jint, jobject);

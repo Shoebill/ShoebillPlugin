@@ -125,12 +125,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getObjectPos
- * Signature: (ILnet/gtaun/samp/data/Point;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectPos
-  (JNIEnv *env, jclass jcls, jint objectid, jobject point)
+  (JNIEnv *env, jclass jcls, jint objectid, jobject vector3d)
 {
-	static jclass cls = env->GetObjectClass(point);
+	static jclass cls = env->GetObjectClass(vector3d);
 	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
 	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
 	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
@@ -138,9 +138,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObject
 	float x, y, z;
 	GetObjectPos( objectid, x, y, z );
 
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
+	env->SetFloatField( vector3d, fidX, x );
+	env->SetFloatField( vector3d, fidY, y );
+	env->SetFloatField( vector3d, fidZ, z );
 }
 
 /*
@@ -157,12 +157,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getObjectRot
- * Signature: (ILnet/gtaun/samp/data/PointRot;)V
+ * Signature: (ILnet/gtaun/shoebill/data/LocationRotational;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectRot
-  (JNIEnv *env, jclass jcls, jint objectid, jobject pointrot)
+  (JNIEnv *env, jclass jcls, jint objectid, jobject locationRotational)
 {
-	static jclass cls = env->GetObjectClass(pointrot);
+	static jclass cls = env->GetObjectClass(locationRotational);
 	static jfieldID fidRotX = env->GetFieldID(cls, "rotX", "F");
 	static jfieldID fidRotY = env->GetFieldID(cls, "rotY", "F");
 	static jfieldID fidRotZ = env->GetFieldID(cls, "rotZ", "F");
@@ -170,9 +170,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObject
 	float rotX, rotY, rotZ;
 	GetObjectPos( objectid, rotX, rotY, rotZ );
 
-	env->SetFloatField( pointrot, fidRotX, rotX );
-	env->SetFloatField( pointrot, fidRotY, rotY );
-	env->SetFloatField( pointrot, fidRotZ, rotZ );
+	env->SetFloatField( locationRotational, fidRotX, rotX );
+	env->SetFloatField( locationRotational, fidRotY, rotY );
+	env->SetFloatField( locationRotational, fidRotZ, rotZ );
 }
 
 /*
@@ -200,12 +200,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyOb
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    moveObject
- * Signature: (IFFFF)V
+ * Signature: (IFFFFFFF)I
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_moveObject
-  (JNIEnv *env, jclass jcls, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed)
+  (JNIEnv *env, jclass jcls, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed, jfloat rotX, jfloat rotY, jfloat rotZ)
 {
-	return MoveObject( objectid, x, y, z, speed );
+	return MoveObject( objectid, x, y, z, speed, rotX, rotY, rotZ );
 }
 
 /*
@@ -255,12 +255,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerObjectPos
- * Signature: (IILnet/gtaun/samp/data/Point;)V
+ * Signature: (IILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectPos
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject point)
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject vector3d)
 {
-	static jclass cls = env->GetObjectClass(point);
+	static jclass cls = env->GetObjectClass(vector3d);
 	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
 	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
 	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
@@ -268,9 +268,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 	float x, y, z;
 	GetPlayerObjectPos( playerid, objectid, x, y, z );
 
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
+	env->SetFloatField( vector3d, fidX, x );
+	env->SetFloatField( vector3d, fidY, y );
+	env->SetFloatField( vector3d, fidZ, z );
 }
 
 /*
@@ -287,12 +287,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerObjectRot
- * Signature: (IILnet/gtaun/samp/data/PointRot;)V
+ * Signature: (IILnet/gtaun/shoebill/data/LocationRotational;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectRot
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject pointrot)
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jobject locationRotational)
 {
-	static jclass cls = env->GetObjectClass(pointrot);
+	static jclass cls = env->GetObjectClass(locationRotational);
 	static jfieldID fidRotX = env->GetFieldID(cls, "rotX", "F");
 	static jfieldID fidRotY = env->GetFieldID(cls, "rotY", "F");
 	static jfieldID fidRotZ = env->GetFieldID(cls, "rotZ", "F");
@@ -300,9 +300,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 	float rotX, rotY, rotZ;
 	GetPlayerObjectRot( playerid, objectid, rotX, rotY, rotZ );
 
-	env->SetFloatField( pointrot, fidRotX, rotX );
-	env->SetFloatField( pointrot, fidRotY, rotY );
-	env->SetFloatField( pointrot, fidRotZ, rotZ );
+	env->SetFloatField( locationRotational, fidRotX, rotX );
+	env->SetFloatField( locationRotational, fidRotY, rotY );
+	env->SetFloatField( locationRotational, fidRotZ, rotZ );
 }
 
 /*
@@ -330,12 +330,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_destroyPl
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    movePlayerObject
- * Signature: (IIFFFF)V
+ * Signature: (IIFFFFFFF)I
  */
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_movePlayerObject
-  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed)
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_movePlayerObject
+  (JNIEnv *env, jclass jcls, jint playerid, jint objectid, jfloat x, jfloat y, jfloat z, jfloat speed, jfloat rotX, jfloat rotY, jfloat rotZ)
 {
-	MovePlayerObject( playerid, objectid, x, y, z, speed );
+	return MovePlayerObject( playerid, objectid, x, y, z, speed, rotX, rotY, rotZ );
 }
 
 /*
@@ -420,12 +420,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerPos
- * Signature: (ILnet/gtaun/samp/data/Position;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerPos
-  (JNIEnv *env, jclass jcls, jint playerid, jobject point)
+  (JNIEnv *env, jclass jcls, jint playerid, jobject vector3d)
 {
-	static jclass cls = env->GetObjectClass(point);
+	static jclass cls = env->GetObjectClass(vector3d);
 	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
 	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
 	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
@@ -433,9 +433,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 	float x, y, z;
 	GetPlayerPos( playerid, x, y, z );
 
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
+	env->SetFloatField( vector3d, fidX, x );
+	env->SetFloatField( vector3d, fidY, y );
+	env->SetFloatField( vector3d, fidZ, z );
 }
 
 /*
@@ -747,7 +747,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerWeaponData
- * Signature: (IILnet/gtaun/samp/data/WeaponData;)V
+ * Signature: (IILnet/gtaun/shoebill/data/WeaponData;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerWeaponData
   (JNIEnv *env, jclass jcls, jint playerid, jint slot, jobject weapondata)
@@ -864,7 +864,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerKeys
- * Signature: (ILnet/gtaun/samp/data/KeyState;)V
+ * Signature: (ILnet/gtaun/shoebill/data/KeyState;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerKeys
   (JNIEnv *env, jclass jcls, jint playerid, jobject keystate)
@@ -1020,7 +1020,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerVelocity
- * Signature: (ILnet/gtaun/samp/data/Velocity;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Velocity;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVelocity
   (JNIEnv *env, jclass jcls, jint playerid, jobject velocity)
@@ -1457,12 +1457,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setCamera
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerCameraPos
- * Signature: (ILnet/gtaun/samp/data/Point;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraPos
-  (JNIEnv *env, jclass jcls, jint playerid, jobject point)
+  (JNIEnv *env, jclass jcls, jint playerid, jobject vector3d)
 {
-	static jclass cls = env->GetObjectClass(point);
+	static jclass cls = env->GetObjectClass(vector3d);
 	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
 	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
 	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
@@ -1470,9 +1470,20 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 	float x, y, z;
 	GetPlayerCameraPos( playerid, x, y, z );
 
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
+	env->SetFloatField( vector3d, fidX, x );
+	env->SetFloatField( vector3d, fidY, y );
+	env->SetFloatField( vector3d, fidZ, z );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerCameraFrontVector
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCameraFrontVector
+  (JNIEnv *env, jclass jcls, jint playerid, jobject vector3d)
+{
+
 }
 
 /*
@@ -2920,12 +2931,12 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isVeh
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehiclePos
- * Signature: (ILnet/gtaun/samp/data/Position;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehiclePos
-  (JNIEnv *env, jclass jcls, jint vehicleid, jobject point)
+  (JNIEnv *env, jclass jcls, jint vehicleid, jobject vector3d)
 {
-	static jclass cls = env->GetObjectClass(point);
+	static jclass cls = env->GetObjectClass(vector3d);
 	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
 	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
 	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
@@ -2933,9 +2944,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicl
 	float x, y, z;
 	GetVehiclePos( vehicleid, x, y, z );
 
-	env->SetFloatField( point, fidX, x );
-	env->SetFloatField( point, fidY, y );
-	env->SetFloatField( point, fidZ, z );
+	env->SetFloatField( vector3d, fidX, x );
+	env->SetFloatField( vector3d, fidY, y );
+	env->SetFloatField( vector3d, fidZ, z );
 }
 
 /*
@@ -2966,7 +2977,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehi
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehicleRotationQuat
- * Signature: (ILnet/gtaun/samp/data/Quaternions;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Quaternions;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleRotationQuat
   (JNIEnv *env, jclass jcls, jint vehicleid, jobject quat)
@@ -3034,7 +3045,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setVehicl
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehicleParamsEx
- * Signature: (ILnet/gtaun/samp/data/VehicleState;)V
+ * Signature: (ILnet/gtaun/shoebill/object/VehicleParam;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleParamsEx
   (JNIEnv *env, jclass jcls, jint vehicleid, jobject state)
@@ -3257,7 +3268,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_repairVeh
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehicleVelocity
- * Signature: (ILnet/gtaun/samp/data/Velocity;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Velocity;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleVelocity
   (JNIEnv *env, jclass jcls, jint vehicleid, jobject velocity)
@@ -3300,7 +3311,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setVehicl
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehicleDamageStatus
- * Signature: (ILnet/gtaun/samp/data/VehicleDamage;)V
+ * Signature: (ILnet/gtaun/shoebill/object/VehicleDamage;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleDamageStatus
   (JNIEnv *env, jclass jcls, jint vehicleid, jobject damage )

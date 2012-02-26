@@ -22,7 +22,7 @@ int SetObjectRot(int objectid, float RotX, float RotY, float RotZ);
 int GetObjectRot(int objectid, float &RotX, float &RotY, float &RotZ);
 int IsValidObject(int objectid);
 int DestroyObject(int objectid);
-int MoveObject(int objectid, float X, float Y, float Z, float Speed);
+int MoveObject(int objectid, float X, float Y, float Z, float Speed, float rotX, float rotY, float rotZ);
 int StopObject(int objectid);
 int IsObjectMoving(int objectid);
 int CreatePlayerObject(int playerid, int modelid, float X, float Y, float Z, float rX, float rY, float rZ, float drawDistance);
@@ -32,7 +32,7 @@ int SetPlayerObjectRot(int playerid, int objectid, float RotX, float RotY, float
 int GetPlayerObjectRot(int playerid, int objectid, float &RotX, float &RotY, float &RotZ);
 int IsValidPlayerObject(int playerid, int objectid);
 int DestroyPlayerObject(int playerid, int objectid);
-int MovePlayerObject(int playerid, int objectid, float X, float Y, float Z, float Speed);
+int MovePlayerObject(int playerid, int objectid, float X, float Y, float Z, float Speed, float rotX, float rotY, float rotZ);
 int StopPlayerObject(int playerid, int objectid);
 int IsPlayerObjectMoving(int playerid, int objectid);
 int AttachPlayerObjectToPlayer(int objectplayer, int objectid, int attachplayer, float OffsetX, float OffsetY, float OffsetZ, float rX, float rY, float rZ);
