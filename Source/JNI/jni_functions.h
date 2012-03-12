@@ -98,7 +98,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getObjectRot
- * Signature: (ILnet/gtaun/shoebill/data/LocationRotational;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getObjectRot
   (JNIEnv *, jclass, jint, jobject);
@@ -178,7 +178,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerObjectRot
- * Signature: (IILnet/gtaun/shoebill/data/LocationRotational;)V
+ * Signature: (IILnet/gtaun/shoebill/data/Vector3D;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerObjectRot
   (JNIEnv *, jclass, jint, jint, jobject);
@@ -562,7 +562,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerKeys
- * Signature: (ILnet/gtaun/shoebill/data/KeyState;)V
+ * Signature: (ILnet/gtaun/shoebill/object/PlayerKeyState;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerKeys
   (JNIEnv *, jclass, jint, jobject);
