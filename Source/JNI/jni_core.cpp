@@ -40,68 +40,15 @@
 JavaVM *jvm = NULL;
 
 
-int jni_jvm_create( JNIEnv** env, const char* jarpath )
+int jni_jvm_create( JNIEnv** env, const char* clspath )
 {
 	if( jvm != NULL ) return -1;
 
-	char clspath[2048] = "-Djava.class.path=";
-	char basepath[512];
-
-	strcpy( basepath, jarpath );
-	for( int i=strlen(basepath)-1; i>=0; i-- )
-		if( basepath[i] == '/' ) { basepath[i+1] = 0; break; }
-
-#if defined(WIN32)
-	_finddata_t finddata;
-	int hfind = _findfirst(jarpath, &finddata);
-	if( hfind < 0 ) return -2;
-
-	do 
-	{
-		strcat( clspath, basepath );
-		strcat( clspath, finddata.name );
-		strcat( clspath, ";" );
-	} while ( !_findnext(hfind, &finddata) );
-	_findclose( hfind );
-#else
-	DIR *dir = opendir(basepath);
-	struct dirent entry;
-	struct dirent* entryPtr = NULL;
-
-	readdir_r(dir, &entry, &entryPtr);
-	if(entryPtr == NULL) return -2;
-
-	while(entryPtr != NULL)
-	{
-		if(strncmp(entry.d_name, ".", PATH_MAX) ==0 ||
-			strncmp(entry.d_name, "..", PATH_MAX) ==0)
-		{
-			readdir_r(dir, &entry, &entryPtr);
-			continue;
-		}
-
-		int len = strlen(entry.d_name);
-
-		if(strcmp(strlwr(&(entry.d_name[len-4])), ".jar") != 0)
-		{
-			readdir_r(dir, &entry, &entryPtr);
-			continue;
-		}
-
-		strcat( clspath, basepath );
-		strcat( clspath, entry.d_name );
-		strcat( clspath, ":" );
-
-		readdir_r(dir, &entry, &entryPtr);
-	}
-
-	closedir(dir);
-#endif
-
-	clspath[ strlen(clspath)-1 ] = 0;
+	char clspathOpt[2048] = "-Djava.class.path=";
+	strcat( clspathOpt, clspath );
 	
 	JavaVMOption options[3];
-	options[0].optionString = clspath;
+	options[0].optionString = clspathOpt;
 	options[1].optionString = "-Djava.library.path=./plugins";
 	options[2].optionString = "-verbose:gc";
 	//options[3].optionString = "-Djava.compiler=NONE";
@@ -160,4 +107,63 @@ int jni_jvm_destroy( JNIEnv *env )
 	env = NULL;
 	jvm = NULL;
 	return 0;
+}
+
+int findAndGenerateClassPath(const char* searchPath, char* classPath)
+{
+	char basepath[512];
+
+	strcpy( basepath, searchPath );
+	for( int i=strlen(basepath)-1; i>=0; i-- )
+		if( basepath[i] == '/' ) { basepath[i+1] = 0; break; }
+
+#if defined(WIN32)
+		_finddata_t finddata;
+		int hfind = _findfirst(searchPath, &finddata);
+		if( hfind < 0 ) return -2;
+
+		do 
+		{
+			strcat( classPath, basepath );
+			strcat( classPath, finddata.name );
+			strcat( classPath, ";" );
+		} while ( !_findnext(hfind, &finddata) );
+		_findclose( hfind );
+#else
+		DIR *dir = opendir(basepath);
+		struct dirent entry;
+		struct dirent* entryPtr = NULL;
+
+		readdir_r(dir, &entry, &entryPtr);
+		if(entryPtr == NULL) return -2;
+
+		while(entryPtr != NULL)
+		{
+			if(strncmp(entry.d_name, ".", PATH_MAX) ==0 ||
+				strncmp(entry.d_name, "..", PATH_MAX) ==0)
+			{
+				readdir_r(dir, &entry, &entryPtr);
+				continue;
+			}
+
+			int len = strlen(entry.d_name);
+
+			if(strcmp(strlwr(&(entry.d_name[len-4])), ".jar") != 0)
+			{
+				readdir_r(dir, &entry, &entryPtr);
+				continue;
+			}
+
+			strcat( classPath, basepath );
+			strcat( classPath, entry.d_name );
+			strcat( classPath, ":" );
+
+			readdir_r(dir, &entry, &entryPtr);
+		}
+
+		closedir(dir);
+#endif
+
+		classPath[ strlen(classPath)-1 ] = 0;
+		return 0;
 }

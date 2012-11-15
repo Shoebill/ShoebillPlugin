@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-extern int server_codepage;
-extern int player_codepage[];
+extern int serverCodepage;
+extern int playerCodepage[];
