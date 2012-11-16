@@ -54,7 +54,7 @@ bool OnLoadPlugin()
 {
 	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3D by MK124 & JoJLlmAn" );
 
-	char classpath[2048];
+	char classpath[2048] = {0};
 	findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath);
 
 	JNIEnv *env;
