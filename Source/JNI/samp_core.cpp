@@ -29,10 +29,10 @@ const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher
 const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/launcher/ShoebillLauncher";
 
 const char RESOLVE_DEPENDENCIES_METHOD_NAME[] = "resolveDependencies";
-const char RESOLVE_DEPENDENCIES_METHOD_SIGN[] = "()Z";
+const char RESOLVE_DEPENDENCIES_METHOD_SIGN[] = "()Ljava/util/List;";
 
 const char CREATE_SHOEBILL_METHOD_NAME[] = "createShoebill";
-const char CREATE_SHOEBILL_METHOD_SIGN[] = "()Ljava/lang/Object;";
+const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/util/List;)Ljava/lang/Object;";
 
 jclass shoebillLauncherClass = NULL;
 
@@ -88,6 +88,7 @@ int Initialize( JNIEnv *env )
 		return -1;
 	}
 
+	jobject files;
 	static jmethodID resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
 	if( !resolveDependenciesMethodID )
 	{
@@ -95,8 +96,8 @@ int Initialize( JNIEnv *env )
 	}
 	else
 	{
-		jboolean isResolved = env->CallStaticBooleanMethod(shoebillLauncherClass, resolveDependenciesMethodID);
-		if( !isResolved )
+		files = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
+		if( !files )
 		{
 			jni_jvm_printExceptionStack( env );
 			logprintf( "  > Error: Can't resolve dependencies." );
@@ -111,7 +112,7 @@ int Initialize( JNIEnv *env )
 		return -3;
 	}
 
-	shoebillObject = env->CallStaticObjectMethod(shoebillLauncherClass, createShoebillMethodID);
+	shoebillObject = env->CallStaticObjectMethod(shoebillLauncherClass, createShoebillMethodID, files);
 	if( !shoebillObject )
 	{
 		jni_jvm_printExceptionStack( env );
