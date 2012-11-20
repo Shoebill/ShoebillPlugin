@@ -29,10 +29,10 @@ const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher
 const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/launcher/ShoebillLauncher";
 
 const char RESOLVE_DEPENDENCIES_METHOD_NAME[] = "resolveDependencies";
-const char RESOLVE_DEPENDENCIES_METHOD_SIGN[] = "()Ljava/util/List;";
+const char RESOLVE_DEPENDENCIES_METHOD_SIGN[] = "()Ljava/util/Object;";
 
 const char CREATE_SHOEBILL_METHOD_NAME[] = "createShoebill";
-const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/util/List;)Ljava/lang/Object;";
+const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/util/Object;)Ljava/lang/Object;";
 
 jclass shoebillLauncherClass = NULL;
 
