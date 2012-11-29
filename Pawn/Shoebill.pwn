@@ -45,7 +45,12 @@ native n_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
 native n_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
 native n_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid);
 native n_OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ);
+native n_OnPlayerClickTextDraw(playerid, Text:clickedid);
+native n_OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid);
 native n_OnPlayerClickPlayer(playerid, clickedplayerid, source);
+native n_OnPlayerEditObject( playerid, playerobject, objectid, response, Float:fX, Float:fY, Float:fZ, Float:fRotX, Float:fRotY, Float:fRotZ );
+native n_OnPlayerEditAttachedObject( playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ );
+native n_OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ);
 
 
 forward Oops();
@@ -281,9 +286,34 @@ public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
 	return n_OnPlayerClickMap(playerid, fX, fY, fZ);
 }
 
+public OnPlayerClickTextDraw(playerid, Text:clickedid)
+{
+	return n_OnPlayerClickTextDraw(playerid, clickedid);
+}
+
+public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
+{
+	return n_OnPlayerClickPlayerTextDraw(playerid, playertextid);
+}
+
 public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 {
 	return n_OnPlayerClickPlayer(playerid, clickedplayerid, source);
+}
+
+public OnPlayerEditObject( playerid, playerobject, objectid, response, Float:fX, Float:fY, Float:fZ, Float:fRotX, Float:fRotY, Float:fRotZ )
+{
+	return n_OnPlayerEditObject(playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
+}
+
+public OnPlayerEditAttachedObject( playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ )
+{
+	return n_OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+}
+
+public OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ)
+{
+	return n_OnPlayerSelectObject(playerid, type, objectid, modelid, fX, fY, fZ);
 }
 
 
@@ -305,7 +335,12 @@ public Oops()
 	MoveObject(0, 0, 0, 0, 0);
 	StopObject(0);
 	IsObjectMoving(0);
+	EditObject(0, 0);
+	EditPlayerObject(0, 0);
+	SelectObject(0);
+	CancelEdit(0);
 	CreatePlayerObject(0, 0, 0, 0, 0, 0, 0, 0);
+	AttachPlayerObjectToVehicle(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	SetPlayerObjectPos(0, 0, 0, 0, 0);
 	GetPlayerObjectPos(0, 0, f, f, f);
 	SetPlayerObjectRot(0, 0, 0, 0, 0);
@@ -316,6 +351,12 @@ public Oops()
 	StopPlayerObject(0, 0);
 	IsPlayerObjectMoving(0, 0);
 	AttachPlayerObjectToPlayer(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	
+	SetObjectMaterial(0, 0, 0, a, a, 0);
+	SetPlayerObjectMaterial(0, 0, 0, 0, a, a, 0);
+
+	SetObjectMaterialText(0, a, 0, 0, a, 0, 0, 0, 0, 0);
+	SetPlayerObjectMaterialText(0, 0, a, 0, 0, a, 0, 0, 0, 0, 0);
 
 // a_player.inc
 
@@ -384,9 +425,31 @@ public Oops()
 	GetPlayerSurfingVehicleID(0);
 	GetPlayerSurfingObjectID(0);
 	RemoveBuildingForPlayer(0, 0, 0, 0, 0, 0);
+
+	// Attached to bone objects
 	SetPlayerAttachedObject(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	RemovePlayerAttachedObject(0, 0);
 	IsPlayerAttachedObjectSlotUsed(0, 0);
+	EditAttachedObject(0, 0);
+	
+	// Per-player TextDraws
+	CreatePlayerTextDraw(0, 0, 0, a);
+	PlayerTextDrawDestroy(0, PlayerText:0);
+	PlayerTextDrawLetterSize(0, PlayerText:0, 0, 0);
+	PlayerTextDrawTextSize(0, PlayerText:0, 0, 0);
+	PlayerTextDrawAlignment(0, PlayerText:0, 0);
+	PlayerTextDrawColor(0, PlayerText:0, 0);
+	PlayerTextDrawUseBox(0, PlayerText:0, 0);
+	PlayerTextDrawBoxColor(0, PlayerText:0, 0);
+	PlayerTextDrawSetShadow(0, PlayerText:0, 0);
+	PlayerTextDrawSetOutline(0, PlayerText:0, 0);
+	PlayerTextDrawBackgroundColor(0, PlayerText:0, 0);
+	PlayerTextDrawFont(0, PlayerText:0, 0);
+	PlayerTextDrawSetProportional(0, PlayerText:0, 0);
+	PlayerTextDrawSetSelectable(0, PlayerText:0, 0);
+	PlayerTextDrawShow(0, PlayerText:0);
+	PlayerTextDrawHide(0, PlayerText:0);
+	PlayerTextDrawSetString(0, PlayerText:0, a);
 
 	SetPVarInt(0, a, 0);
 	GetPVarInt(0, a);
@@ -433,6 +496,10 @@ public Oops()
 	GetPlayerCameraPos(0, f, f, f);
 	GetPlayerCameraFrontVector(0, f, f, f);
 	GetPlayerCameraMode(0); //0.3c r3
+	AttachCameraToObject(0, 0);
+	AttachCameraToPlayerObject(0, 0);
+	InterpolateCameraPos(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	InterpolateCameraLookAt(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 	// Player conditionals
 	IsPlayerConnected(0);
@@ -452,8 +519,13 @@ public Oops()
 	TogglePlayerSpectating(0, 0);
 	PlayerSpectatePlayer(0, 0, 0);
 	PlayerSpectateVehicle(0, 0, 0);
+	
+	// Recording for NPC playback
 	StartRecordingPlayerData(0, 0, a);
 	StopRecordingPlayerData(0);
+	
+	SelectTextDraw(0, 0); 		// enables the mouse so the player can select a textdraw
+	CancelSelectTextDraw(0);	// cancel textdraw selection with the mouse
 
 // a_samp.inc
 
@@ -521,6 +593,7 @@ public Oops()
 	GetServerVarAsBool(a);
 	GetPlayerNetworkStats(0, a, 0);
 	GetNetworkStats(a, 0);
+	GetPlayerVersion(0, a, 0); // Returns the SA-MP client revision as reported by the player
 
 	// Menu
 	CreateMenu(a, 0, 0, 0, 0, 0);
@@ -548,6 +621,7 @@ public Oops()
 	TextDrawBackgroundColor(Text:0, 0);
 	TextDrawFont(Text:0, 0);
 	TextDrawSetProportional(Text:0, 0);
+	TextDrawSetSelectable(Text:0, 0);
 	TextDrawShowForPlayer(0, Text:0);
 	TextDrawHideForPlayer(0, Text:0);
 	TextDrawShowForAll(Text:0);
@@ -615,6 +689,8 @@ public Oops()
 	SetVehicleAngularVelocity(0, 0, 0, 0);
 	GetVehicleDamageStatus(0, n, n, n, n);
 	UpdateVehicleDamageStatus(0, 0, 0, 0, 0);
+	
+	GetVehicleModelInfo(0, 0, f, f, f);
 
 	// Virtual Worlds
 	SetVehicleVirtualWorld(0, 0);
