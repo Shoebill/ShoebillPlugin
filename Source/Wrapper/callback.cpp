@@ -259,9 +259,34 @@ static cell AMX_NATIVE_CALL n_OnPlayerClickMap( AMX* amx, cell* params )
 	return OnPlayerClickMap(params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]));
 }
 
+static cell AMX_NATIVE_CALL n_OnPlayerClickTextDraw( AMX* amx, cell* params )
+{
+	return OnPlayerClickTextDraw(params[1], params[2]);
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerClickPlayerTextDraw( AMX* amx, cell* params )
+{
+	return OnPlayerClickPlayerTextDraw(params[1], params[2]);
+}
+
 static cell AMX_NATIVE_CALL n_OnPlayerClickPlayer( AMX* amx, cell* params )
 {
 	return OnPlayerClickPlayer(params[1], params[2], params[3]);
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerEditObject( AMX* amx, cell* params )
+{
+	return OnPlayerEditObject(params[1], params[2], params[3], params[4], amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]), amx_ctof(params[9]), amx_ctof(params[10]));
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerEditAttachedObject( AMX* amx, cell* params )
+{
+	return OnPlayerEditAttachedObject(params[1], params[2], params[3], params[4], params[5], amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]), amx_ctof(params[9]), amx_ctof(params[10]), amx_ctof(params[11]), amx_ctof(params[12]), amx_ctof(params[13]), amx_ctof(params[14]));
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerSelectObject( AMX* amx, cell* params )
+{
+	return OnPlayerSelectObject(params[1], params[2], params[3], params[4], amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]));
 }
 
 
@@ -312,6 +337,11 @@ AMX_NATIVE_INFO CallbackNatives[] =
 	{ "n_OnPlayerTakeDamage",				n_OnPlayerTakeDamage},
 	{ "n_OnPlayerGiveDamage",				n_OnPlayerGiveDamage},
 	{ "n_OnPlayerClickMap",					n_OnPlayerClickMap},
+	{ "n_OnPlayerClickTextDraw",			n_OnPlayerClickTextDraw},
+	{ "n_OnPlayerClickPlayerTextDraw",		n_OnPlayerClickPlayerTextDraw},
 	{ "n_OnPlayerClickPlayer",				n_OnPlayerClickPlayer},
+	{ "n_OnPlayerEditObject",				n_OnPlayerEditObject},
+	{ "n_OnPlayerEditAttachedObject",		n_OnPlayerEditAttachedObject},
+	{ "n_OnPlayerSelectObject",				n_OnPlayerSelectObject},
 	{ 0,									0 }
 };

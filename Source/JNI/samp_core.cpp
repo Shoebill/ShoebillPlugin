@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011 MK124
+ * Copyright (C) 2011-2012 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ int Uninitialize( JNIEnv *env );
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3D by MK124 & JoJLlmAn" );
+	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3E by MK124 & JoJLlmAn" );
 
 	char classpath[2048] = {0};
 	findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath);
@@ -859,6 +859,36 @@ int OnPlayerClickMap(int playerid, float x, float y, float z)
 	return ret;
 }
 
+int OnPlayerClickTextDraw(int playerid, int clickedid)
+{
+	if( !callbackHandlerObject ) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickTextDraw", "(II)I");
+	if( !jmid ) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, clickedid);
+	jni_jvm_printExceptionStack( env );
+	return ret;
+}
+
+int OnPlayerClickPlayerTextDraw(int playerid, int playertextid)
+{
+	if( !callbackHandlerObject ) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickPlayerTextDraw", "(II)I");
+	if( !jmid ) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, playertextid);
+	jni_jvm_printExceptionStack( env );
+	return ret;
+}
+
 int OnPlayerClickPlayer( int playerid, int clickedplayerid, int source )
 {
 	if( !callbackHandlerObject ) return 0;
@@ -870,6 +900,51 @@ int OnPlayerClickPlayer( int playerid, int clickedplayerid, int source )
 	if( !jmid ) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, clickedplayerid, source);
+	jni_jvm_printExceptionStack( env );
+	return ret;
+}
+
+int OnPlayerEditObject(int playerid, int playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ)
+{
+	if( !callbackHandlerObject ) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEditObject", "(IIIIFFFFFF)I");
+	if( !jmid ) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
+	jni_jvm_printExceptionStack( env );
+	return ret;
+}
+
+int OnPlayerEditAttachedObject(int playerid, int response, int index, int modelid, int boneid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ, float fScaleX, float fScaleY, float fScaleZ)
+{
+	if( !callbackHandlerObject ) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEditAttachedObject", "(IIIIIFFFFFFFFF)I");
+	if( !jmid ) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+	jni_jvm_printExceptionStack( env );
+	return ret;
+}
+
+int OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float fX, float fY, float fZ)
+{
+	if( !callbackHandlerObject ) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerSelectObject", "(IIIIFFF)I");
+	if( !jmid ) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, type, objectid, modelid, fX, fY, fZ);
 	jni_jvm_printExceptionStack( env );
 	return ret;
 }

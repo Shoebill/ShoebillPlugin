@@ -25,7 +25,12 @@ int DestroyObject(int objectid);
 int MoveObject(int objectid, float X, float Y, float Z, float Speed, float rotX, float rotY, float rotZ);
 int StopObject(int objectid);
 int IsObjectMoving(int objectid);
+int EditObject(int playerid, int objectid);
+int EditPlayerObject(int playerid, int objectid);
+int SelectObject(int playerid);
+int CancelEdit(int playerid);
 int CreatePlayerObject(int playerid, int modelid, float X, float Y, float Z, float rX, float rY, float rZ, float drawDistance);
+int AttachPlayerObjectToVehicle(int playerid, int objectid, int vehicleid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ);
 int SetPlayerObjectPos(int playerid, int objectid, float X, float Y, float Z);
 int GetPlayerObjectPos(int playerid, int objectid, float &X, float &Y, float &Z);
 int SetPlayerObjectRot(int playerid, int objectid, float RotX, float RotY, float RotZ);
@@ -36,6 +41,12 @@ int MovePlayerObject(int playerid, int objectid, float X, float Y, float Z, floa
 int StopPlayerObject(int playerid, int objectid);
 int IsPlayerObjectMoving(int playerid, int objectid);
 int AttachPlayerObjectToPlayer(int objectplayer, int objectid, int attachplayer, float OffsetX, float OffsetY, float OffsetZ, float rX, float rY, float rZ);
+
+int SetObjectMaterial(int objectid, int materialindex, int modelid, char* txdname, char* texturename, int materialcolor);
+int SetPlayerObjectMaterial(int playerid, int objectid, int materialindex, int modelid, char* txdname, char* texturename, int materialcolor);
+
+int SetObjectMaterialText(int objectid, char* text, int materialindex, int materialsize, char* fontface, int fontsize, int bold, int fontcolor, int backcolor, int textalignment);
+int SetPlayerObjectMaterialText(int playerid, int objectid, char* text, int materialindex, int materialsize, char* fontface, int fontsize, int bold, int fontcolor, int backcolor, int textalignment);
 
 
 //----------------------------------------------------------
@@ -110,6 +121,26 @@ int RemoveBuildingForPlayer( int playerid, int modelid, float x, float y, float 
 int SetPlayerAttachedObject(int playerid, int index, int modelid, int bone, float fOffsetX = 0.0, float fOffsetY = 0.0, float fOffsetZ = 0.0, float fRotX = 0.0, float fRotY = 0.0, float fRotZ = 0.0, float fScaleX = 1.0, float fScaleY = 1.0, float fScaleZ = 1.0);
 int RemovePlayerAttachedObject(int playerid, int index);
 int IsPlayerAttachedObjectSlotUsed(int playerid, int index);
+int EditAttachedObject(int playerid, int index);
+
+// Per-player TextDraws
+int CreatePlayerTextDraw(int playerid, float x, float y, char* text);
+int PlayerTextDrawDestroy(int playerid, int textId);
+int PlayerTextDrawLetterSize(int playerid, int textId, float x, float y);
+int PlayerTextDrawTextSize(int playerid, int textId, float x, float y);
+int PlayerTextDrawAlignment(int playerid, int textId, int alignment);
+int PlayerTextDrawColor(int playerid, int textId, int color);
+int PlayerTextDrawUseBox(int playerid, int textId, int use);
+int PlayerTextDrawBoxColor(int playerid, int textId, int color);
+int PlayerTextDrawSetShadow(int playerid, int textId, int size);
+int PlayerTextDrawSetOutline(int playerid, int textId, int size);
+int PlayerTextDrawBackgroundColor(int playerid, int textId, int color);
+int PlayerTextDrawFont(int playerid, int textId, int font);
+int PlayerTextDrawSetProportional(int playerid, int textId, int set);
+int PlayerTextDrawSetSelectable(int playerid, int textId, int set);
+int PlayerTextDrawShow(int playerid, int textId);
+int PlayerTextDrawHide(int playerid, int textId);
+int PlayerTextDrawSetString(int playerid, int textId, char* string);
 
 int SetPlayerChatBubble(int playerid, const char* text, int color, float drawdistance, int expiretime);
 
@@ -146,6 +177,10 @@ int SetCameraBehindPlayer(int playerid);
 int GetPlayerCameraPos(int playerid, float &x, float &y, float &z);
 int GetPlayerCameraFrontVector(int playerid, float &x, float &y, float &z);
 int GetPlayerCameraMode(int playerid); //0.3c r3
+int AttachCameraToObject(int playerid, int objectid);
+int AttachCameraToPlayerObject(int playerid, int playerobjectid);
+int InterpolateCameraPos(int playerid, float FromX, float FromY, float FromZ, float ToX, float ToY, float ToZ, int time, int cut);
+int InterpolateCameraLookAt(int playerid, float FromX, float FromY, float FromZ, float ToX, float ToY, float ToZ, int time, int cut);
 
 // Player conditionals
 int IsPlayerConnected(int playerid);
@@ -170,6 +205,9 @@ int PlayerSpectateVehicle(int playerid, int targetvehicleid, int mode = SPECTATE
 // Npc Record
 int StartRecordingPlayerData(int playerid, int recordtype, const char* recordname);
 int StopRecordingPlayerData(int playerid);
+
+int SelectTextDraw(int playerid, int hovercolor); // enables the mouse so the player can select a textdraw
+int CancelSelectTextDraw(int playerid);	// cancel textdraw selection with the mouse
 
 
 //----------------------------------------------------------
@@ -232,6 +270,7 @@ int GetServerVarAsInt(const char* varname);
 int GetServerVarAsBool(const char* varname);
 int GetPlayerNetworkStats(int playerid, char* retstr, int retstr_size);
 int GetNetworkStats(char* retstr, int retstr_size);
+int GetPlayerVersion(int playerid, char* version, int len); // Returns the SA-MP client revision as reported by the player
 
 // Menu
 int CreateMenu(const char* title, int columns, float x, float y, float col1width, float col2width = 0.0);
@@ -259,6 +298,7 @@ int TextDrawSetOutline(int text, int size);
 int TextDrawBackgroundColor(int text, int color);
 int TextDrawFont(int text, int font);
 int TextDrawSetProportional(int text, int set);
+int TextDrawSetSelectable(int textid, int set);
 int TextDrawShowForPlayer(int playerid, int text);
 int TextDrawHideForPlayer(int playerid, int text);
 int TextDrawShowForAll(int text);
@@ -331,6 +371,8 @@ int SetVehicleVelocity(int vehicleid, float X, float Y, float Z);
 int SetVehicleAngularVelocity(int vehicleid, float X, float Y, float Z);
 int GetVehicleDamageStatus(int vehicleid, int &panels, int &doors, int &lights, int &tires);
 int UpdateVehicleDamageStatus(int vehicleid, int panels, int doors, int lights,int tires);
+
+int GetVehicleModelInfo(int vehiclemodel, int infotype, float &X, float &Y, float &Z);
 
 // Virtual Worlds
 int SetVehicleVirtualWorld(int vehicleid, int worldid);

@@ -57,4 +57,9 @@ int OnDialogResponse(int playerid, int dialogid, int response, int listitem, cha
 int OnPlayerTakeDamage(int playerid, int issuerid, float amount, int weaponid);
 int OnPlayerGiveDamage(int playerid, int damagedid, float amount, int weaponid);
 int OnPlayerClickMap(int playerid, float fX, float fY, float fZ);
+int OnPlayerClickTextDraw(int playerid, int clickedid);
+int OnPlayerClickPlayerTextDraw(int playerid, int playertextid);
 int OnPlayerClickPlayer(int playerid, int clickedplayerid, int source);
+int OnPlayerEditObject(int playerid, int playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ);
+int OnPlayerEditAttachedObject(int playerid, int response, int index, int modelid, int boneid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ, float fScaleX, float fScaleY, float fScaleZ);
+int OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float fX, float fY, float fZ);

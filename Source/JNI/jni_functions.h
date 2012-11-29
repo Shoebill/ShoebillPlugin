@@ -145,11 +145,51 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isObj
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    editObject
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_editObject
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    editPlayerObject
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_editPlayerObject
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    selectObject
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_selectObject
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    cancelEdit
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_cancelEdit
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    createPlayerObject
  * Signature: (IIFFFFFFF)I
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createPlayerObject
   (JNIEnv *, jclass, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    attachPlayerObjectToVehicle
+ * Signature: (IIIFFFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachPlayerObjectToVehicle
+  (JNIEnv *, jclass, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -230,6 +270,38 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPla
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachPlayerObjectToPlayer
   (JNIEnv *, jclass, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setObjectMaterial
+ * Signature: (IIILjava/lang/String;Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObjectMaterial
+  (JNIEnv *, jclass, jint, jint, jint, jstring, jstring, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerObjectMaterial
+ * Signature: (IIIILjava/lang/String;Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerObjectMaterial
+  (JNIEnv *, jclass, jint, jint, jint, jint, jstring, jstring, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setObjectMaterialText
+ * Signature: (ILjava/lang/String;IILjava/lang/String;IIIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObjectMaterialText
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jstring, jint, jint, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    setPlayerObjectMaterialText
+ * Signature: (IILjava/lang/String;IILjava/lang/String;IIIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerObjectMaterialText
+  (JNIEnv *, jclass, jint, jint, jstring, jint, jint, jstring, jint, jint, jint, jint, jint);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -562,7 +634,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getPlayerKeys
- * Signature: (ILnet/gtaun/shoebill/object/PlayerKeyState;)V
+ * Signature: (ILnet/gtaun/shoebill/object/impl/PlayerKeyStateImpl;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerKeys
   (JNIEnv *, jclass, jint, jobject);
@@ -750,6 +822,150 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_remov
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_isPlayerAttachedObjectSlotUsed
   (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    editAttachedObject
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_editAttachedObject
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    createPlayerTextDraw
+ * Signature: (IFFLjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createPlayerTextDraw
+  (JNIEnv *, jclass, jint, jfloat, jfloat, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawDestroy
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawDestroy
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawLetterSize
+ * Signature: (IIFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawLetterSize
+  (JNIEnv *, jclass, jint, jint, jfloat, jfloat);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawTextSize
+ * Signature: (IIFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawTextSize
+  (JNIEnv *, jclass, jint, jint, jfloat, jfloat);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawAlignment
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawAlignment
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawColor
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawColor
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawUseBox
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawUseBox
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawBoxColor
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawBoxColor
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawSetShadow
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawSetShadow
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawSetOutline
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawSetOutline
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawBackgroundColor
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawBackgroundColor
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawFont
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawFont
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawSetProportional
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawSetProportional
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawSetSelectable
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawSetSelectable
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawShow
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawShow
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawHide
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawHide
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    playerTextDrawSetString
+ * Signature: (IILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTextDrawSetString
+  (JNIEnv *, jclass, jint, jint, jstring);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -1049,6 +1265,38 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    attachCameraToObject
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachCameraToObject
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    attachCameraToPlayerObject
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_attachCameraToPlayerObject
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    interpolateCameraPos
+ * Signature: (IFFFFFFII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_interpolateCameraPos
+  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    interpolateCameraLookAt
+ * Signature: (IFFFFFFII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_interpolateCameraLookAt
+  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    isPlayerConnected
  * Signature: (I)Z
  */
@@ -1157,6 +1405,22 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_startReco
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_stopRecordingPlayerData
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    selectTextDraw
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_selectTextDraw
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    cancelSelectTextDraw
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_cancelSelectTextDraw
   (JNIEnv *, jclass, jint);
 
 /*
@@ -1553,6 +1817,14 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getNet
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getPlayerVersion
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerVersion
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    createMenu
  * Signature: (Ljava/lang/String;IFFFF)I
  */
@@ -1733,6 +2005,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_textDrawF
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_textDrawSetProportional
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    textDrawSetSelectable
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_textDrawSetSelectable
   (JNIEnv *, jclass, jint, jint);
 
 /*
@@ -1978,7 +2258,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehi
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehicleRotationQuat
- * Signature: (ILnet/gtaun/shoebill/data/Quaternions;)V
+ * Signature: (ILnet/gtaun/shoebill/data/Quaternion;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleRotationQuat
   (JNIEnv *, jclass, jint, jobject);
@@ -2018,7 +2298,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setVehicl
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehicleParamsEx
- * Signature: (ILnet/gtaun/shoebill/object/VehicleParam;)V
+ * Signature: (ILnet/gtaun/shoebill/object/impl/VehicleParamImpl;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleParamsEx
   (JNIEnv *, jclass, jint, jobject);
@@ -2186,7 +2466,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setVehicl
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getVehicleDamageStatus
- * Signature: (ILnet/gtaun/shoebill/object/VehicleDamage;)V
+ * Signature: (ILnet/gtaun/shoebill/object/impl/VehicleDamageImpl;)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleDamageStatus
   (JNIEnv *, jclass, jint, jobject);
@@ -2198,6 +2478,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicl
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_updateVehicleDamageStatus
   (JNIEnv *, jclass, jint, jint, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_samp_SampNativeFunction
+ * Method:    getVehicleModelInfo
+ * Signature: (IILnet/gtaun/shoebill/data/Vector3D;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getVehicleModelInfo
+  (JNIEnv *, jclass, jint, jint, jobject);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction

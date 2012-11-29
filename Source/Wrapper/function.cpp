@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011 MK124
+ * Copyright (C) 2011-2012 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -210,6 +210,58 @@ int IsObjectMoving( int objectid )
 	return func(pAMX, args);
 }
 
+int EditObject(int playerid, int objectid)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, objectid
+	};
+
+	return func(pAMX, args);
+}
+
+int EditPlayerObject(int playerid, int objectid)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, objectid
+	};
+
+	return func(pAMX, args);
+}
+
+int SelectObject(int playerid)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int CancelEdit(int playerid)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
 int CreatePlayerObject( int playerid, int modelid, float x, float y, float z, float rx, float ry, float rz, float drawDistance )
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
@@ -218,6 +270,19 @@ int CreatePlayerObject( int playerid, int modelid, float x, float y, float z, fl
 	{
 		sizeof(args)- sizeof(cell),
 		playerid, modelid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), amx_ftoc(rx), amx_ftoc(ry), amx_ftoc(rz), amx_ftoc(drawDistance)
+	};
+
+	return func(pAMX, args);
+}
+
+int AttachPlayerObjectToVehicle(int playerid, int objectid, int vehicleid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[10] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, objectid, vehicleid, amx_ftoc(fOffsetX), amx_ftoc(fOffsetY), amx_ftoc(fOffsetZ), amx_ftoc(fRotX), amx_ftoc(fRotY), amx_ftoc(fRotZ)
 	};
 
 	return func(pAMX, args);
@@ -371,6 +436,75 @@ int AttachPlayerObjectToPlayer( int objectplayer, int objectid, int attachplayer
 	};
 
 	return func(pAMX, args);
+}
+
+
+int SetObjectMaterial(int objectid, int materialindex, int modelid, char* txdname, char* texturename, int materialcolor)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[7] =
+	{
+		sizeof(args)- sizeof(cell),
+		objectid, materialindex, modelid, amx_NewString(pAMX, txdname), amx_NewString(pAMX, texturename), materialcolor
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[4]);
+	amx_Release(pAMX, args[5]);
+	return ret;
+}
+
+int SetPlayerObjectMaterial(int playerid, int objectid, int materialindex, int modelid, char* txdname, char* texturename, int materialcolor)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[8] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, objectid, materialindex, modelid, amx_NewString(pAMX, txdname), amx_NewString(pAMX, texturename), materialcolor
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[5]);
+	amx_Release(pAMX, args[6]);
+	return ret;
+}
+
+int SetObjectMaterialText(int objectid, char* text, int materialindex, int materialsize, char* fontface, int fontsize, int bold, int fontcolor, int backcolor, int textalignment)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[11] =
+	{
+		sizeof(args)- sizeof(cell),
+		objectid, amx_NewString(pAMX, text), materialindex, materialsize, amx_NewString(pAMX, fontface), fontsize, bold, fontcolor, backcolor, textalignment
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[2]);
+	amx_Release(pAMX, args[5]);
+	return ret;
+}
+
+int SetPlayerObjectMaterialText(int playerid, int objectid, char* text, int materialindex, int materialsize, char* fontface, int fontsize, int bold, int fontcolor, int backcolor, int textalignment)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[12] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, objectid, amx_NewString(pAMX, text), materialindex, materialsize, amx_NewString(pAMX, fontface), fontsize, bold, fontcolor, backcolor, textalignment
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[3]);
+	amx_Release(pAMX, args[6]);
+	return ret;
 }
 
 
@@ -1317,6 +1451,249 @@ int IsPlayerAttachedObjectSlotUsed( int playerid, int index )
 	return func(pAMX, args);
 }
 
+int EditAttachedObject(int playerid, int index)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, index
+	};
+
+	return func(pAMX, args);
+}
+
+
+// Per-player TextDraws
+
+int CreatePlayerTextDraw(int playerid, float x, float y, char* text)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[5] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, amx_ftoc(x), amx_ftoc(y), amx_NewString(pAMX, text)
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[4]);
+	return ret;
+}
+
+int PlayerTextDrawDestroy(int playerid, int textId)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawLetterSize(int playerid, int textId, float x, float y)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[5] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, amx_ftoc(x), amx_ftoc(y)
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawTextSize(int playerid, int textId, float x, float y)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[5] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, amx_ftoc(x), amx_ftoc(y)
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawAlignment(int playerid, int textId, int alignment)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, alignment
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawColor(int playerid, int textId, int color)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, color
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawUseBox(int playerid, int textId, int use)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, use
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawBoxColor(int playerid, int textId, int color)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, color
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawSetShadow(int playerid, int textId, int size)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, size
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawSetOutline(int playerid, int textId, int size)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, size
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawBackgroundColor(int playerid, int textId, int color)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, color
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawFont(int playerid, int textId, int font)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, font
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawSetProportional(int playerid, int textId, int set)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, set
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawSetSelectable(int playerid, int textId, int set)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, set
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawShow(int playerid, int textId)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawHide(int playerid, int textId)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawSetString(int playerid, int textId, char* string)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, amx_NewString(pAMX, string)
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[3]);
+	return ret;
+}
+
 
 int SetPlayerChatBubble( int playerid, const char* text, int color, float drawdistance, int expiretime )
 {
@@ -1717,6 +2094,58 @@ int GetPlayerCameraMode( int playerid)
 	return func(pAMX, args);
 }
 
+int AttachCameraToObject(int playerid, int objectid)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, objectid
+	};
+
+	return func(pAMX, args);
+}
+
+int AttachCameraToPlayerObject(int playerid, int playerobjectid)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, playerobjectid
+	};
+
+	return func(pAMX, args);
+}
+
+int InterpolateCameraPos(int playerid, float FromX, float FromY, float FromZ, float ToX, float ToY, float ToZ, int time, int cut)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[10] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, amx_ftoc(FromX), amx_ftoc(FromY), amx_ftoc(FromZ), amx_ftoc(ToX), amx_ftoc(ToY), amx_ftoc(ToZ), time, cut 
+	};
+
+	return func(pAMX, args);
+}
+
+int InterpolateCameraLookAt(int playerid, float FromX, float FromY, float FromZ, float ToX, float ToY, float ToZ, int time, int cut)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[10] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, amx_ftoc(FromX), amx_ftoc(FromY), amx_ftoc(FromZ), amx_ftoc(ToX), amx_ftoc(ToY), amx_ftoc(ToZ), time, cut 
+	};
+
+	return func(pAMX, args);
+}
+
 
 // Player conditionals
 
@@ -1905,6 +2334,32 @@ int StartRecordingPlayerData( int playerid, int recordtype, const char* recordna
 }
 
 int StopRecordingPlayerData( int playerid )
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int SelectTextDraw(int playerid, int hovercolor)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, hovercolor
+	};
+
+	return func(pAMX, args);
+}
+
+int CancelSelectTextDraw(int playerid)
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
 
@@ -2623,6 +3078,24 @@ int GetNetworkStats(char* retstr, int retstr_size)
 	return ret;
 }
 
+int GetPlayerVersion(int playerid, char* version, int len)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	cell *str_phys;
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, amx_Allot(pAMX, len, &str_phys), len
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_GetString( version, str_phys, 0, len );
+	amx_Release( pAMX, args[2] );
+	return ret;
+}
+
 
 // Menu
 
@@ -2935,6 +3408,19 @@ int TextDrawSetProportional( int text, int set )
 	{
 		sizeof(args)- sizeof(cell),
 		text, set
+	};
+
+	return func(pAMX, args);
+}
+
+int TextDrawSetSelectable(int textid, int set)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		textid, set
 	};
 
 	return func(pAMX, args);
@@ -3821,6 +4307,29 @@ int UpdateVehicleDamageStatus( int vehicleid, int panels, int doors, int lights,
 	};
 
 	return func(pAMX, args);
+}
+
+int GetVehicleModelInfo(int vehiclemodel, int infotype, float &x, float &y, float &z)
+{
+	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	cell *x_phys, *y_phys, *z_phys;
+
+	cell args[6] =
+	{
+		sizeof(args)- sizeof(cell),
+		vehiclemodel, infotype, amx_Allot(pAMX, 1, &x_phys), amx_Allot(pAMX, 1, &y_phys), amx_Allot(pAMX, 1, &z_phys)
+	};
+
+	int ret = func(pAMX, args);
+
+	x = *((float*)x_phys);
+	y = *((float*)y_phys);
+	z = *((float*)z_phys);
+
+	amx_Release( pAMX, args[5] );
+	amx_Release( pAMX, args[4] );
+	amx_Release( pAMX, args[3] );
+	return ret;
 }
 
 
