@@ -802,10 +802,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removeBui
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    setPlayerAttachedObject
- * Signature: (IIIIFFFFFFFFF)Z
+ * Signature: (IIIIFFFFFFFFFII)Z
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerAttachedObject
-  (JNIEnv *, jclass, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
+  (JNIEnv *, jclass, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jint);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -1226,10 +1226,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    setPlayerCameraLookAt
- * Signature: (IFFF)V
+ * Signature: (IFFFI)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCameraLookAt
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat);
+  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jint);
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction

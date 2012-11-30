@@ -118,7 +118,7 @@ int GetPlayerSurfingVehicleID(int playerid);
 int GetPlayerSurfingObjectID(int playerid);
 int RemoveBuildingForPlayer( int playerid, int modelid, float x, float y, float z, float radius );
 
-int SetPlayerAttachedObject(int playerid, int index, int modelid, int bone, float fOffsetX = 0.0, float fOffsetY = 0.0, float fOffsetZ = 0.0, float fRotX = 0.0, float fRotY = 0.0, float fRotZ = 0.0, float fScaleX = 1.0, float fScaleY = 1.0, float fScaleZ = 1.0);
+int SetPlayerAttachedObject(int playerid, int index, int modelid, int bone, float fOffsetX = 0.0, float fOffsetY = 0.0, float fOffsetZ = 0.0, float fRotX = 0.0, float fRotY = 0.0, float fRotZ = 0.0, float fScaleX = 1.0, float fScaleY = 1.0, float fScaleZ = 1.0, int materialcolor1 = 0, int materialcolor2 = 0);
 int RemovePlayerAttachedObject(int playerid, int index);
 int IsPlayerAttachedObjectSlotUsed(int playerid, int index);
 int EditAttachedObject(int playerid, int index);
@@ -172,7 +172,7 @@ int RemovePlayerMapIcon(int playerid, int iconid);
 
 // Player camera
 int SetPlayerCameraPos(int playerid,float x, float y, float z);
-int SetPlayerCameraLookAt(int playerid, float x, float y, float z);
+int SetPlayerCameraLookAt(int playerid, float x, float y, float z, int cut = CAMERA_CUT);
 int SetCameraBehindPlayer(int playerid);
 int GetPlayerCameraPos(int playerid, float &x, float &y, float &z);
 int GetPlayerCameraFrontVector(int playerid, float &x, float &y, float &z);

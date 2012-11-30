@@ -1412,14 +1412,14 @@ int RemoveBuildingForPlayer( int playerid, int modelid, float x, float y, float 
 	return func(pAMX, args);
 }
 
-int SetPlayerAttachedObject( int playerid, int index, int modelid, int bone, float fOffsetX, float fOffsetY, float fOffsetZ, float frotX, float frotY, float frotZ, float fScaleX, float fScaleY, float fScaleZ )
+int SetPlayerAttachedObject( int playerid, int index, int modelid, int bone, float fOffsetX, float fOffsetY, float fOffsetZ, float frotX, float frotY, float frotZ, float fScaleX, float fScaleY, float fScaleZ, int materialcolor1, int materialcolor2 )
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
 
-	cell args[14] =
+	cell args[16] =
 	{
 		sizeof(args)- sizeof(cell),
-		playerid, index, modelid, bone, amx_ftoc(fOffsetX), amx_ftoc(fOffsetY), amx_ftoc(fOffsetZ), amx_ftoc(frotX), amx_ftoc(frotY), amx_ftoc(frotZ), amx_ftoc(fScaleX), amx_ftoc(fScaleY), amx_ftoc(fScaleZ)
+		playerid, index, modelid, bone, amx_ftoc(fOffsetX), amx_ftoc(fOffsetY), amx_ftoc(fOffsetZ), amx_ftoc(frotX), amx_ftoc(frotY), amx_ftoc(frotZ), amx_ftoc(fScaleX), amx_ftoc(fScaleY), amx_ftoc(fScaleZ), materialcolor1, materialcolor2
 	};
 
 	return func(pAMX, args);
@@ -2009,14 +2009,14 @@ int SetPlayerCameraPos ( int playerid, float x, float y, float z )
 	return func(pAMX, args);
 }
 
-int SetPlayerCameraLookAt ( int playerid, float x, float y, float z )
+int SetPlayerCameraLookAt ( int playerid, float x, float y, float z, int cut )
 {
 	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
 
-	cell args[5] =
+	cell args[6] =
 	{
 		sizeof(args)- sizeof(cell),
-		playerid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z)
+		playerid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), cut
 	};
 
 	return func(pAMX, args);

@@ -1,6 +1,6 @@
 /*  SA-MP Functions
  *
- *  (c) Copyright 2005-2010, SA-MP Team
+ *  (c) Copyright 2005-2012, SA-MP Team
  *
  */
 
@@ -15,14 +15,15 @@
 #define INVALID_PLAYER_ID						(0xFFFF)
 #define INVALID_VEHICLE_ID						(0xFFFF)
 #define NO_TEAM									(255)
-#define MAX_OBJECTS								(400)
+#define MAX_OBJECTS								(1000)
 #define INVALID_OBJECT_ID						(0xFFFF)
 #define MAX_GANG_ZONES							(1024)
 #define MAX_TEXT_DRAWS							(2048)
+#define MAX_PLAYER_TEXT_DRAWS					(256)
 #define MAX_MENUS								(128)
 #define MAX_3DTEXT_GLOBAL						(1024)
 #define MAX_3DTEXT_PLAYER						(1024)
-#define MAX_PICKUPS								(2048)
+#define MAX_PICKUPS								(4096)
 #define INVALID_MENU							(0xFF)
 #define INVALID_TEXT_DRAW						(0xFFFF)
 #define INVALID_GANG_ZONE						(-1)
@@ -32,6 +33,7 @@
 #define DIALOG_STYLE_MSGBOX		0
 #define DIALOG_STYLE_INPUT		1
 #define DIALOG_STYLE_LIST		2
+#define DIALOG_STYLE_PASSWORD	3
 
 // States
 #define PLAYER_STATE_NONE						(0)
@@ -113,6 +115,9 @@
 #define KEY_ANALOG_DOWN			(4096)
 #define KEY_ANALOG_LEFT			(8192)
 #define KEY_ANALOG_RIGHT		(16384)
+#define KEY_YES					(65536)
+#define KEY_NO					(131072)
+#define KEY_CTRL_BACK			(262144)
 
 #define KEY_UP					(-128)
 #define KEY_DOWN				(128)
@@ -121,6 +126,13 @@
 
 
 #define CLICK_SOURCE_SCOREBOARD		0
+
+#define EDIT_RESPONSE_CANCEL		0
+#define EDIT_RESPONSE_FINAL			1
+#define EDIT_RESPONSE_UPDATE		2
+
+#define SELECT_OBJECT_GLOBAL_OBJECT	1
+#define SELECT_OBJECT_PLAYER_OBJECT 2
 
 
 //----------------------------------------------------------
@@ -144,6 +156,7 @@
 #define SPECIAL_ACTION_SMOKE_CIGGY		21
 #define SPECIAL_ACTION_DRINK_WINE		22
 #define SPECIAL_ACTION_DRINK_SPRUNK		23
+#define SPECIAL_ACTION_CUFFED			24
 
 #define FIGHT_STYLE_NORMAL				4
 #define FIGHT_STYLE_BOXING				5
@@ -170,7 +183,13 @@
 #define WEAPONSTATE_MORE_BULLETS		2
 #define WEAPONSTATE_RELOADING			3
 
-#define MAX_PLAYER_ATTACHED_OBJECTS		5 // This is the number of attached indexes 
+#define MAX_PLAYER_ATTACHED_OBJECTS 10 // This is the number of attached indexes available ie 10 = 0-9
+
+// PVar enumeration
+#define PLAYER_VARTYPE_NONE			0
+#define PLAYER_VARTYPE_INT			1
+#define PLAYER_VARTYPE_STRING		2
+#define PLAYER_VARTYPE_FLOAT		3
 
 #define MAX_CHATBUBBLE_LENGTH		144
 
@@ -178,6 +197,9 @@
 #define MAPICON_GLOBAL			  1 // displays always
 #define MAPICON_LOCAL_CHECKPOINT  2 // displays in the player's local area and has a checkpoint marker
 #define MAPICON_GLOBAL_CHECKPOINT 3 // displays always and has a checkpoint marker
+
+#define CAMERA_CUT	2
+#define CAMERA_MOVE 1
 
 // Spectating
 #define SPECTATE_MODE_NORMAL	1
@@ -211,6 +233,39 @@
 #define VEHICLE_PARAMS_UNSET	-1
 #define VEHICLE_PARAMS_OFF		0
 #define VEHICLE_PARAMS_ON		1
+
+#define VEHICLE_MODEL_INFO_SIZE				1
+#define VEHICLE_MODEL_INFO_FRONTSEAT		2
+#define VEHICLE_MODEL_INFO_REARSEAT			3
+#define VEHICLE_MODEL_INFO_PETROLCAP		4
+#define VEHICLE_MODEL_INFO_WHEELSFRONT		5
+#define VEHICLE_MODEL_INFO_WHEELSREAR		6
+#define VEHICLE_MODEL_INFO_WHEELSMID		7
+#define VEHICLE_MODEL_INFO_FRONT_BUMPER_Z	8
+#define VEHICLE_MODEL_INFO_REAR_BUMPER_Z	9
+
+
+//----------------------------------------------------------
+// a_objects.inc defines
+
+#define OBJECT_MATERIAL_SIZE_32x32		10
+#define OBJECT_MATERIAL_SIZE_64x32		20
+#define OBJECT_MATERIAL_SIZE_64x64		30
+#define OBJECT_MATERIAL_SIZE_128x32		40
+#define OBJECT_MATERIAL_SIZE_128x64		50
+#define OBJECT_MATERIAL_SIZE_128x128	60
+#define OBJECT_MATERIAL_SIZE_256x32		70
+#define OBJECT_MATERIAL_SIZE_256x64		80
+#define OBJECT_MATERIAL_SIZE_256x128	90
+#define OBJECT_MATERIAL_SIZE_256x256	100
+#define OBJECT_MATERIAL_SIZE_512x64		110
+#define OBJECT_MATERIAL_SIZE_512x128	120
+#define OBJECT_MATERIAL_SIZE_512x256	130
+#define OBJECT_MATERIAL_SIZE_512x512	140
+
+#define OBJECT_MATERIAL_TEXT_ALIGN_LEFT		0
+#define OBJECT_MATERIAL_TEXT_ALIGN_CENTER	1
+#define OBJECT_MATERIAL_TEXT_ALIGN_RIGHT	2
 
 
 //----------------------------------------------------------

@@ -1302,10 +1302,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_removeBui
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerAttachedObject
   (JNIEnv *env, jclass jcls, jint playerid, jint index, jint modelid, jint bone, jfloat offsetX, jfloat offsetY,
-  jfloat offsetZ, jfloat rotX, jfloat rotY, jfloat rotZ, jfloat scaleX, jfloat scaleY, jfloat scaleZ)
+  jfloat offsetZ, jfloat rotX, jfloat rotY, jfloat rotZ, jfloat scaleX, jfloat scaleY, jfloat scaleZ, jint materialcolor1, jint materialcolor2)
 {
 	return SetPlayerAttachedObject( playerid, index, modelid, bone,
-		offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ );
+		offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, materialcolor1, materialcolor2 );
 }
 
 /*
@@ -1801,12 +1801,12 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    setPlayerCameraLookAt
- * Signature: (IFFF)V
+ * Signature: (IFFFI)V
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCameraLookAt
-  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z)
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z, jint cut)
 {
-	SetPlayerCameraLookAt( playerid, x, y, z );
+	SetPlayerCameraLookAt( playerid, x, y, z, cut );
 }
 
 /*
