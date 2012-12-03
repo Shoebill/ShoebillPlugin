@@ -7,6 +7,7 @@ LIBDIR = -L$(JAVA_HOME)/jre/lib/i386 -L$(JAVA_HOME)/jre/lib/i386/client
 WrapperDIR = Source/Wrapper/
 JNIDIR = Source/JNI/
 samppluginDIR = Dependencies/sampplugin/
+SHELL = /bin/bash
 
 OBJS = $(JNIDIR)encoding.o $(JNIDIR)jni_functions.o $(JNIDIR)jni_core.o \
 	$(JNIDIR)samp_core.o $(JNIDIR)linux.o $(WrapperDIR)callback.o \
@@ -16,6 +17,15 @@ OBJS = $(JNIDIR)encoding.o $(JNIDIR)jni_functions.o $(JNIDIR)jni_core.o \
 .SUFFIXES: .o
 
 all: libShoebill.so
+ifndef JAVA_HOME
+	echo "Please define the evironment variable."
+endif
+	@if [ -f Binary/libShoebill.so ]; \
+		then \
+			echo "Make successful."; \
+	else \
+		echo "Make failed."; \
+	fi
 
 libShoebill.so: $(OBJS)
 	$(CC) -shared $(OBJS) $(LIBDIR) -ljvm -liconv $(CFLAG) -o $@
