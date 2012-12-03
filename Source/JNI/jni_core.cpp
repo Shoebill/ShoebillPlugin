@@ -156,7 +156,7 @@ int findAndGenerateClassPath(const char* searchPath, char* classPath)
 
 			strcat( classPath, basepath );
 			strcat( classPath, entry.d_name );
-			strcat( classPath, ":" );
+			strcat( classPath, ";" );
 
 			readdir_r(dir, &entry, &entryPtr);
 		}

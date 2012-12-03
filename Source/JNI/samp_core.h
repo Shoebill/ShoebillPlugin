@@ -16,3 +16,9 @@
 
 extern int serverCodepage;
 extern int playerCodepage[];
+
+#if defined(LINUX)
+#include <string>
+#include <map>
+extern std::map<unsigned int, std::string> codepages;
+#endif

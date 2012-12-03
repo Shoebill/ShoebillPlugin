@@ -16,18 +16,18 @@ OBJS = $(JNIDIR)encoding.o $(JNIDIR)jni_functions.o $(JNIDIR)jni_core.o \
 
 .SUFFIXES: .o
 
-all: libShoebill.so
+all: Shoebill
 ifndef JAVA_HOME
 	echo "Please define the evironment variable."
 endif
-	@if [ -f Binary/libShoebill.so ]; \
+	@if [ -f Binary/$< ]; \
 		then \
 			echo "Make successful."; \
 	else \
 		echo "Make failed."; \
 	fi
 
-libShoebill.so: $(OBJS)
+Shoebill: $(OBJS)
 	$(CC) -shared $(OBJS) $(LIBDIR) -ljvm -liconv $(CFLAG) -o $@
 	-mkdir Binary
 	mv $@ Binary/$@

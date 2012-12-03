@@ -23,6 +23,9 @@
 
 #if defined(LINUX)
 #include "linux.h"
+#include <map>
+#include <fstream>
+extern std::map<int, std::string> codepages;
 #endif
 
 const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher*.jar";
@@ -130,6 +133,36 @@ int Initialize( JNIEnv *env )
 	shoebillLauncherClass = (jclass)( env->NewGlobalRef(shoebillLauncherClass) );
 	shoebillObject = env->NewGlobalRef(shoebillObject);
 	shoebillClass = (jclass)( env->NewGlobalRef(shoebillClass) );
+
+#if defined(LINUX)
+	std::ifstream codepageFile( "./shoebill/codepages.txt", std::ifstream::in);
+	if(codepageFile.is_open())
+	{
+		char input[256], charset[256];
+		unsigned int code = 0;
+		while ( codepageFile.good() )
+		{
+			codepageFile.getline( input, 256 );
+			sscanf( input, "%u %s", &code, charset);
+			if( code && charset[0] )
+			{
+				if( codepages.find( code ) != codepages.end() )
+					logprintf( "  > Error: Codepage already in use, %d=%s", code, codepages[code].c_str() );
+				else
+				{
+					codepages[code] = std::string( charset );
+				}
+			}
+			code = 0;
+			charset[0] = 0;
+		}
+		codepageFile.close();
+	}
+	else
+	{
+		logprintf( "  > Error: Can't open ./shoebill/codepages.txt." );
+	}
+#endif
 
 	logprintf( "  > Shoebill has been initialized." );
 	return 0;

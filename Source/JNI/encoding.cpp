@@ -49,6 +49,10 @@ int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char*
 #else
 
 #include <iconv.h>
+#include <map>
+#include <string>
+
+std::map<unsigned int, std::string> codepages;
 
 int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen )
 {
@@ -56,8 +60,11 @@ int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short*
 	char *in = (char*)src, *out = (char*)dst;
 
 	int value = 1;
-
-	iconv_t cd = iconv_open("UTF-16LE", "BIG5");
+	iconv_t cd;
+	if( codepages.find( codepage ) != codepages.end() )
+		cd = iconv_open("UTF-16LE", codepages[codepage].c_str());
+	else
+		cd = iconv_open("UTF-16LE", "BIG5");
 	iconvctl( cd, ICONV_SET_TRANSLITERATE, &value);
 	iconvctl( cd, ICONV_SET_DISCARD_ILSEQ, &value);
 	iconv( cd, &in, &inbytesleft, &out, &outbytesleft );
@@ -74,8 +81,11 @@ int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char*
 	char *in = (char*)src, *out = (char*)dst;
 
 	int value = 1;
-
-	iconv_t cd = iconv_open("BIG5", "UTF-16LE");
+	iconv_t cd;
+	if( codepages.find( codepage ) != codepages.end() )
+		cd = iconv_open(codepages[codepage].c_str(), "UTF-16LE");
+	else
+		cd = iconv_open("BIG5", "UTF-16LE");
 	iconvctl( cd, ICONV_SET_TRANSLITERATE, &value);
 	iconvctl( cd, ICONV_SET_DISCARD_ILSEQ, &value);
 	iconv( cd, &in, &inbytesleft, &out, &outbytesleft );
