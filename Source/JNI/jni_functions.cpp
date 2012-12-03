@@ -496,8 +496,8 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 	len = env->GetStringLength(fontface);
 
 	char _fontface[1024];
-	wcs2mbs( serverCodepage, wmsg, len, _fontface, sizeof(_fontface) );
-	env->ReleaseStringChars(fontface, wmsg);
+	wcs2mbs( serverCodepage, wmsg2, len, _fontface, sizeof(_fontface) );
+	env->ReleaseStringChars(fontface, wmsg2);
 
 	SetObjectMaterialText(objectid, _text, materialindex, materialsize, _fontface, fontsize, bold, fontcolor, backcolor, textalignment);
 }
@@ -521,8 +521,8 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 	len = env->GetStringLength(fontface);
 
 	char _fontface[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, _fontface, sizeof(_fontface) );
-	env->ReleaseStringChars(fontface, wmsg);
+	wcs2mbs( playerCodepage[playerid], wmsg2, len, _fontface, sizeof(_fontface) );
+	env->ReleaseStringChars(fontface, wmsg2);
 
 	SetPlayerObjectMaterialText(playerid, objectid, _text, materialindex, materialsize, _fontface, fontsize, bold, fontcolor, backcolor, textalignment);
 }

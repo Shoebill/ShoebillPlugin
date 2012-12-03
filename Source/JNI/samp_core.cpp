@@ -91,7 +91,7 @@ int Initialize( JNIEnv *env )
 		return -1;
 	}
 
-	jobject files;
+	jobject files = NULL;
 	static jmethodID resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
 	if( !resolveDependenciesMethodID )
 	{
@@ -180,7 +180,7 @@ void OnProcessTick()
 {
 	if( !callbackHandlerObject ) return;
 
-	JNIEnv *env;
+	JNIEnv *env = NULL;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onProcessTick", "()V");
@@ -194,7 +194,7 @@ int OnGameModeInit()
 {
 	if( !shoebillObject ) return 1;
 
-	JNIEnv *env;
+	JNIEnv *env = NULL;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid_gch = env->GetMethodID(shoebillClass, "getCallbackHandler", "()Lnet/gtaun/shoebill/samp/SampCallbackHandler;");
