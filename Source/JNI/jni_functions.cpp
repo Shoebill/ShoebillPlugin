@@ -1051,7 +1051,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPla
 	jchar wstr[MAX_PLAYER_NAME];
 	int len = mbs2wcs( serverCodepage, name, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
 
-	return env->NewString(wstr, len-1);
+	return env->NewString(wstr, len);
 }
 
 /*
@@ -2675,7 +2675,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getSer
 
 	jchar wstr[256];
 	int len = mbs2wcs( serverCodepage, var, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
-	return env->NewString(wstr, len-1);
+	return env->NewString(wstr, len);
 }
 
 /*
@@ -2724,7 +2724,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPla
 	jchar wstr[2048];
 	int len = mbs2wcs( serverCodepage, retstr, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
 
-	return env->NewString(wstr, len-1);
+	return env->NewString(wstr, len);
 }
 
 /*
@@ -2741,7 +2741,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getNet
 	jchar wstr[2048];
 	int len = mbs2wcs( serverCodepage, retstr, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
 
-	return env->NewString(wstr, len-1);
+	return env->NewString(wstr, len);
 }
 
 /*

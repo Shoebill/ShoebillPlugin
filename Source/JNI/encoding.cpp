@@ -22,25 +22,30 @@
 
 int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen )
 {
-	return MultiByteToWideChar(codepage, MB_COMPOSITE, src, srclen, (LPWSTR)dst, dstlen);
+	if( srclen<0 ) srclen = strlen(src);
+
+	int ret = MultiByteToWideChar(codepage, MB_COMPOSITE, src, srclen, (LPWSTR)dst, dstlen-1);
+	dst[ret] = 0;
+	return ret;
 }
 
 int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char* dst, int dstlen, bool* usedDefChar )
 {
+	if( srclen<0 ) srclen = wcslen((LPCWSTR)src);
+
 	BOOL usedDefaultChar = FALSE;
-	int ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, (LPCWSTR)src, srclen, dst, dstlen, "?", &usedDefaultChar);
+	int ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, (LPCWSTR)src, srclen, dst, dstlen-1, "?", &usedDefaultChar);
 	
 	if( usedDefaultChar && (codepage == 950 || codepage == 932) )	// BIG5(TW) or SHIFT-JIS(JP)
 	{
-		if( srclen<0 ) srclen = wcslen((LPCWSTR)src);
-
 		wchar_t* convsrc = new wchar_t[srclen+1];
 		int rett = LCMapStringW( 0x804, LCMAP_TRADITIONAL_CHINESE, (LPCWSTR)src, srclen, convsrc, srclen+1 ) ;
 
-		ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, convsrc, rett, dst, dstlen, "?", &usedDefaultChar);
+		ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, convsrc, rett, dst, dstlen-1, "?", &usedDefaultChar);
 		delete[] convsrc;
 	}
-	
+
+	dst[ret] = 0;
 	if(usedDefChar) *usedDefChar = usedDefaultChar!=FALSE;
 	return ret;
 }
@@ -87,7 +92,7 @@ int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short*
 
 	int len = (dstlen-1)-(outbytesleft/sizeof(unsigned short));
 	dst[len] = 0;
-	return len+1;
+	return len;
 }
 
 int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char* dst, int dstlen, bool* usedDefChar )
@@ -122,7 +127,7 @@ int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char*
 
 	int len = (dstlen-1)-outbytesleft;
 	dst[len] = 0;
-	return len+1;
+	return len;
 }
 
 #endif

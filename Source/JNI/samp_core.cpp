@@ -358,7 +358,7 @@ int OnPlayerText( int playerid, char* text )
 	jchar wtext[1024];
 	int len = mbs2wcs(playerCodepage[playerid], text, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
-	jstring str = env->NewString(wtext, len-1);
+	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str);
 	jni_jvm_printExceptionStack( env );
 	return ret;
@@ -377,7 +377,7 @@ int OnPlayerCommandText( int playerid, char* cmdtext )
 	jchar wtext[1024];
 	int len = mbs2wcs(playerCodepage[playerid], cmdtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
-	jstring str = env->NewString(wtext, len-1);
+	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str);
 	jni_jvm_printExceptionStack( env );
 	return ret;
@@ -516,7 +516,7 @@ int OnRconCommand( char* cmd )
 	jchar wtext[1024];
 	int len = mbs2wcs(serverCodepage, cmd, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
-	jstring str = env->NewString(wtext, len-1);
+	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, str);
 	jni_jvm_printExceptionStack( env );
 	return ret;
@@ -746,7 +746,7 @@ int OnRconLoginAttempt( char* ip, char* password, int success )
 
 	jchar wtext[1024];
 	int len = mbs2wcs(serverCodepage, password, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
-	jstring str = env->NewString(wtext, len-1);
+	jstring str = env->NewString(wtext, len);
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, iptext, str, success);
 	jni_jvm_printExceptionStack( env );
@@ -841,7 +841,7 @@ int OnDialogResponse( int playerid, int dialogid, int response, int listitem, ch
 	jchar wtext[1024];
 	int len = mbs2wcs(playerCodepage[playerid], inputtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
-	jstring str = env->NewString(wtext, len-1);
+	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, dialogid, response, listitem, str);
 	jni_jvm_printExceptionStack( env );
 	return ret;
