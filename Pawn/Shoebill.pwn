@@ -53,7 +53,7 @@ native n_OnPlayerEditAttachedObject( playerid, response, index, modelid, boneid,
 native n_OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ);
 
 
-forward Oops();
+forward Shoebill_Oops();
 
 
 main()
@@ -68,7 +68,9 @@ public OnGameModeInit()
 
 public OnGameModeExit()
 {
-	return n_OnGameModeExit();
+	new ret = n_OnGameModeExit();
+	SendRconCommand("unloadfs ShoebillFS");
+	return ret;
 }
 
 public OnFilterScriptInit()
@@ -317,7 +319,7 @@ public OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:f
 }
 
 
-public Oops()
+public Shoebill_Oops()
 {
 	new n, a[2], Float:f;
 

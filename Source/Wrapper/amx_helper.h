@@ -30,11 +30,11 @@ extern AMX_NATIVE_INFO CallbackNatives[];
 
 inline amx_native_t amx_FindNative( AMX *amx, const char *func )
 {
-	if( !amx )						return NULL;
+	if( !amx ) return NULL;
 
 	int index;
 	amx_FindNative( amx, func, &index);
-	if( index == 2147483647 )		return NULL;
+	if( index == 0x7FFFFFFF ) return NULL;
 
 	AMX_HEADER *hdr = (AMX_HEADER*)amx->base;
 	AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB*)( (char*)(hdr)+ hdr->natives + hdr->defsize*index );

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-#include "amx.h"
+#include "amx_helper.h"
 #include "callback.h"
 #include "a_samp.h"
 
+
+const char SHOEBILL_PUBLIC_MARK[] = "Shoebill_Oops";
 
 AMX *pAMX = NULL;
 logprintf_t logprintf = NULL;
@@ -43,16 +45,26 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload( )
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad( AMX *amx ) 
 {
-	if( pAMX ) return AMX_ERR_EXIT;
-	pAMX = amx;
+	if( pAMX ) return AMX_ERR_NONE;
 	
+	int index;
+	amx_FindPublic(amx, SHOEBILL_PUBLIC_MARK, &index);
+	if( index == 0x7FFFFFFF ) return AMX_ERR_NONE;
+	
+	pAMX = amx;
 	amx_Register( amx, CallbackNatives, -1 );
+
+	logprintf("ShoebillPlugin: AMX registered.");
 	return AMX_ERR_NONE;
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload( AMX *amx ) 
 {
+	if( pAMX != amx ) return AMX_ERR_NONE;
+
 	pAMX = NULL;
+
+	logprintf("ShoebillPlugin: AMX unregistered.");
 	return AMX_ERR_NONE;
 }
 

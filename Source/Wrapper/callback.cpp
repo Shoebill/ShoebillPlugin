@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "amx.h"
+#include "amx_helper.h"
 #include "a_samp.h"
 
 

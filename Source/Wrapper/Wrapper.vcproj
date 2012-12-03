@@ -182,7 +182,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\amx.h"
+				RelativePath=".\amx_helper.h"
 				>
 			</File>
 			<File
