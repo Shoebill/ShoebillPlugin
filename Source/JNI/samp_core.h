@@ -14,8 +14,32 @@
  * limitations under the License.
  */
 
-extern int serverCodepage;
-extern int playerCodepage[];
+inline int getServerCodepage()
+{
+	extern int serverCodepage;
+	return serverCodepage;
+}
+
+inline void setServerCodepage(int codepage)
+{
+	extern int serverCodepage;
+	serverCodepage = codepage;
+}
+
+inline int getPlayerCodepage(int playerid)
+{
+	extern int playerCodepage[];
+	extern int serverCodepage;
+	int ret = playerCodepage[playerid];
+	if(ret == 0) ret = serverCodepage;
+	return ret;
+}
+
+inline void setPlayerCodepage(int playerid, int codepage)
+{
+	extern int playerCodepage[];
+	playerCodepage[playerid] = codepage;
+}
 
 #if defined(LINUX)
 #include <string>

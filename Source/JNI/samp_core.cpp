@@ -28,6 +28,8 @@
 extern std::map<int, std::string> codepages;
 #endif
 
+const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
+
 const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher*.jar";
 const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/launcher/ShoebillLauncher";
 
@@ -45,7 +47,7 @@ jobject shoebillObject = NULL;
 jclass callbackHandlerClass = NULL;
 jobject callbackHandlerObject = NULL;
 
-int serverCodepage = 0;
+int serverCodepage = 1252;
 int playerCodepage[MAX_PLAYERS] = {0};
 
 
@@ -135,7 +137,7 @@ int Initialize( JNIEnv *env )
 	shoebillClass = (jclass)( env->NewGlobalRef(shoebillClass) );
 
 #if defined(LINUX)
-	std::ifstream codepageFile( "./shoebill/codepages.txt", std::ifstream::in);
+	std::ifstream codepageFile( CODEPAGE_FILE_PATH, std::ifstream::in);
 	if(codepageFile.is_open())
 	{
 		char input[256], charset[256];
@@ -160,7 +162,7 @@ int Initialize( JNIEnv *env )
 	}
 	else
 	{
-		logprintf( "  > Error: Can't open ./shoebill/codepages.txt." );
+		logprintf( "  > Error: Can't open %s.", CODEPAGE_FILE_PATH );
 	}
 #endif
 

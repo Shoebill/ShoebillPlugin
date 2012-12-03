@@ -47,11 +47,12 @@ int jni_jvm_create( JNIEnv** env, const char* clspath )
 	char clspathOpt[2048] = "-Djava.class.path=";
 	strcat( clspathOpt, clspath );
 	
-	JavaVMOption options[3];
+	JavaVMOption options[5];
 	options[0].optionString = clspathOpt;
 	options[1].optionString = "-Djava.library.path=./plugins";
 	options[2].optionString = "-verbose:gc";
-	//options[3].optionString = "-Djava.compiler=NONE";
+	options[3].optionString = "-Xms32m";
+	options[4].optionString = "-Xmx1024m";
 
 	JavaVMInitArgs vm_args;
 	vm_args.version = JNI_VERSION_1_6;

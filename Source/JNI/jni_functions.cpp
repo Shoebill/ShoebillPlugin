@@ -30,7 +30,7 @@
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setServerCodepage
   (JNIEnv *env, jclass jcls, jint codepage)
 {
-	serverCodepage = codepage;
+	setServerCodepage(codepage);
 }
 
 /*
@@ -41,7 +41,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setServer
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getServerCodepage
   (JNIEnv *env, jclass jcls)
 {
-	return serverCodepage;
+	return getServerCodepage();
 }
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getServer
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayerCodepage
   (JNIEnv *env, jclass jcls, jint playerid, jint codepage)
 {
-	playerCodepage[playerid] = codepage;
+	setPlayerCodepage(playerid, codepage);
 }
 
 /*
@@ -63,7 +63,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayerCodepage
   (JNIEnv *env, jclass jcls, jint playerid)
 {
-	return playerCodepage[playerid];
+	return getPlayerCodepage(playerid);
 }
 
 /*
@@ -439,14 +439,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 	int len = env->GetStringLength(txdname);
 
 	char _txdname[1024];
-	wcs2mbs( serverCodepage, wmsg, len, _txdname, sizeof(_txdname) );
+	wcs2mbs( getServerCodepage(), wmsg, len, _txdname, sizeof(_txdname) );
 	env->ReleaseStringChars(txdname, wmsg);
 
 	const jchar* wmsg2 = env->GetStringChars(texturename, NULL);
 	len = env->GetStringLength(texturename);
 
 	char _texturename[1024];
-	wcs2mbs( serverCodepage, wmsg2, len, _texturename, sizeof(_texturename) );
+	wcs2mbs( getServerCodepage(), wmsg2, len, _texturename, sizeof(_texturename) );
 	env->ReleaseStringChars(texturename, wmsg2);
 
 	SetObjectMaterial(objectid, materialindex, modelid, _txdname, _texturename, materialcolor);
@@ -464,14 +464,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 	int len = env->GetStringLength(txdname);
 
 	char _txdname[1024];
-	wcs2mbs( serverCodepage, wmsg, len, _txdname, sizeof(_txdname) );
+	wcs2mbs( getServerCodepage(), wmsg, len, _txdname, sizeof(_txdname) );
 	env->ReleaseStringChars(txdname, wmsg);
 
 	wmsg = env->GetStringChars(texturename, NULL);
 	len = env->GetStringLength(texturename);
 
 	char _texturename[1024];
-	wcs2mbs( serverCodepage, wmsg, len, _texturename, sizeof(_texturename) );
+	wcs2mbs( getServerCodepage(), wmsg, len, _texturename, sizeof(_texturename) );
 	env->ReleaseStringChars(texturename, wmsg);
 
 	SetPlayerObjectMaterial(playerid, objectid, materialindex, modelid, _txdname, _texturename, materialcolor);
@@ -489,14 +489,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setObject
 	int len = env->GetStringLength(text);
 
 	char _text[1024];
-	wcs2mbs( serverCodepage, wmsg, len, _text, sizeof(_text) );
+	wcs2mbs( getServerCodepage(), wmsg, len, _text, sizeof(_text) );
 	env->ReleaseStringChars(text, wmsg);
 
 	const jchar* wmsg2 = env->GetStringChars(fontface, NULL);
 	len = env->GetStringLength(fontface);
 
 	char _fontface[1024];
-	wcs2mbs( serverCodepage, wmsg2, len, _fontface, sizeof(_fontface) );
+	wcs2mbs( getServerCodepage(), wmsg2, len, _fontface, sizeof(_fontface) );
 	env->ReleaseStringChars(fontface, wmsg2);
 
 	SetObjectMaterialText(objectid, _text, materialindex, materialsize, _fontface, fontsize, bold, fontcolor, backcolor, textalignment);
@@ -514,14 +514,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 	int len = env->GetStringLength(text);
 
 	char _text[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, _text, sizeof(_text) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, _text, sizeof(_text) );
 	env->ReleaseStringChars(text, wmsg);
 
 	const jchar* wmsg2 = env->GetStringChars(fontface, NULL);
 	len = env->GetStringLength(fontface);
 
 	char _fontface[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg2, len, _fontface, sizeof(_fontface) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg2, len, _fontface, sizeof(_fontface) );
 	env->ReleaseStringChars(fontface, wmsg2);
 
 	SetPlayerObjectMaterialText(playerid, objectid, _text, materialindex, materialsize, _fontface, fontsize, bold, fontcolor, backcolor, textalignment);
@@ -952,7 +952,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 	int len = env->GetStringLength(name);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wmsg, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(name, wmsg);
 
 	return SetPlayerName(playerid, str);
@@ -1049,7 +1049,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPla
 	GetPlayerName( playerid, name, sizeof(name) );
 
 	jchar wstr[MAX_PLAYER_NAME];
-	int len = mbs2wcs( serverCodepage, name, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
+	int len = mbs2wcs( getServerCodepage(), name, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
 
 	return env->NewString(wstr, len);
 }
@@ -1216,7 +1216,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playAudio
 	int len = env->GetStringLength(url);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wurl, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wurl, len, str, sizeof(str) );
 	env->ReleaseStringChars(url, wurl);
 
 	PlayAudioStreamForPlayer( player, str, posX, posY, posZ, distance, usepos );
@@ -1245,7 +1245,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 	int len = env->GetStringLength(name);
 
 	char str[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, str, sizeof(str) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(name, wmsg);
 
 	SetPlayerShopName( playerid, str );
@@ -1352,7 +1352,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createPla
 	int len = env->GetStringLength(text);
 
 	char _text[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, _text, sizeof(_text) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, _text, sizeof(_text) );
 	env->ReleaseStringChars(text, wmsg);
 
 	return CreatePlayerTextDraw(playerid, x, y, _text);
@@ -1535,7 +1535,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_playerTex
 	int len = env->GetStringLength(string);
 
 	char _string[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, _string, sizeof(_string) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, _string, sizeof(_string) );
 	env->ReleaseStringChars(string, wmsg);
 
 	PlayerTextDrawSetString(playerid, textid, _string);
@@ -1553,7 +1553,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setPlayer
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, str, sizeof(str) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	SetPlayerChatBubble( playerid, str, color, drawdistance, expiretime );
@@ -2109,7 +2109,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_sendClien
 	int len = env->GetStringLength(message);
 	
 	char msg[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, msg, sizeof(msg) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 
 	SendClientMessage( playerid, color, msg );
@@ -2127,7 +2127,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_sendClien
 	int len = env->GetStringLength(message);
 
 	char msg[1024];
-	wcs2mbs( serverCodepage, wmsg, len, msg, sizeof(msg) );
+	wcs2mbs( getServerCodepage(), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 
 	SendClientMessageToAll( color, msg );
@@ -2145,7 +2145,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_sendPlaye
 	int len = env->GetStringLength(message);
 
 	char msg[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, msg, sizeof(msg) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 
 	SendPlayerMessageToPlayer( playerid, senderid, msg );
@@ -2163,7 +2163,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_sendPlaye
 	int len = env->GetStringLength(message);
 
 	char msg[1024];
-	wcs2mbs( serverCodepage, wmsg, len, msg, sizeof(msg) );
+	wcs2mbs( getServerCodepage(), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 	
 	SendPlayerMessageToAll( senderid, msg );
@@ -2192,7 +2192,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_gameTextF
 	int len = env->GetStringLength(string);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wmsg, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(string, wmsg);
 
 	GameTextForAll( str, time, style );
@@ -2210,7 +2210,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_gameTextF
 	int len = env->GetStringLength(string);
 
 	char str[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, str, sizeof(str) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(string, wmsg);
 
 	GameTextForPlayer( playerid, str, time, style );
@@ -2261,7 +2261,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_setGameMo
 	int len = env->GetStringLength(string);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wmsg, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(string, wmsg);
 
 	SetGameModeText( str );
@@ -2635,7 +2635,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_banEx
 	int len = env->GetStringLength(reason);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wmsg, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(reason, wmsg);
 
 	BanEx( playerid, str );
@@ -2653,7 +2653,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_sendRconC
 	int len = env->GetStringLength(cmd);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wmsg, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(cmd, wmsg);
 
 	SendRconCommand( str );
@@ -2674,7 +2674,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getSer
 	env->ReleaseStringUTFChars(varname, str_varname);
 
 	jchar wstr[256];
-	int len = mbs2wcs( serverCodepage, var, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
+	int len = mbs2wcs( getServerCodepage(), var, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
 	return env->NewString(wstr, len);
 }
 
@@ -2722,7 +2722,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPla
 	GetPlayerNetworkStats( playerid, retstr, sizeof(retstr) );
 
 	jchar wstr[2048];
-	int len = mbs2wcs( serverCodepage, retstr, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
+	int len = mbs2wcs( getServerCodepage(), retstr, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
 
 	return env->NewString(wstr, len);
 }
@@ -2739,7 +2739,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getNet
 	GetNetworkStats( retstr, sizeof(retstr) );
 
 	jchar wstr[2048];
-	int len = mbs2wcs( serverCodepage, retstr, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
+	int len = mbs2wcs( getServerCodepage(), retstr, -1, wstr, sizeof(wstr)/sizeof(wstr[0]) );
 
 	return env->NewString(wstr, len);
 }
@@ -3222,7 +3222,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_create3DT
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wmsg, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	return Create3DTextLabel(str, color, x, y, z, drawDistance, worldid, testLOS);
@@ -3273,7 +3273,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_update3DT
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( serverCodepage, wmsg, len, str, sizeof(str) );
+	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	Update3DTextLabelText( id, color, str );
@@ -3292,7 +3292,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_createPla
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, str, sizeof(str) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	return CreatePlayer3DTextLabel( playerid, str, color, x, y, z, drawDistance, attachedplayerid, attachedvehicleid, testLOS );
@@ -3321,7 +3321,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_updatePla
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( playerCodepage[playerid], wmsg, len, str, sizeof(str) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	UpdatePlayer3DTextLabelText( playerid, id, color, str );
@@ -3341,22 +3341,22 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_showPlaye
 	
 	const jchar* wmsg1 = env->GetStringChars(caption, NULL);
 	len = env->GetStringLength(caption);
-	wcs2mbs( playerCodepage[playerid], wmsg1, len, str_caption, sizeof(str_caption) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg1, len, str_caption, sizeof(str_caption) );
 	env->ReleaseStringChars(caption, wmsg1);
 
 	const jchar* wmsg2 = env->GetStringChars(info, NULL);
 	len = env->GetStringLength(info);
-	wcs2mbs( playerCodepage[playerid], wmsg2, len, str_info, sizeof(str_info) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg2, len, str_info, sizeof(str_info) );
 	env->ReleaseStringChars(info, wmsg2);
 
 	const jchar* wmsg3 = env->GetStringChars(button1, NULL);
 	len = env->GetStringLength(button1);
-	wcs2mbs( playerCodepage[playerid], wmsg3, len, str_button1, sizeof(str_button1) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg3, len, str_button1, sizeof(str_button1) );
 	env->ReleaseStringChars(button1, wmsg3);
 
 	const jchar* wmsg4 = env->GetStringChars(button2, NULL);
 	len = env->GetStringLength(button2);
-	wcs2mbs( playerCodepage[playerid], wmsg4, len, str_button2, sizeof(str_button2) );
+	wcs2mbs( getPlayerCodepage(playerid), wmsg4, len, str_button2, sizeof(str_button2) );
 	env->ReleaseStringChars(button2, wmsg4);
 
 	return ShowPlayerDialog(playerid, dialogid, style, str_caption, str_info, str_button1, str_button2);
