@@ -33,6 +33,8 @@
 #include <jni.h>
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
+#include <vector>
 
 #include "jni_core.h"
 
@@ -40,27 +42,48 @@
 JavaVM *jvm = NULL;
 
 
-int jni_jvm_create( JNIEnv** env, const char* clspath )
+int jni_jvm_create( JNIEnv** env, const char* clspath, const char* jvmOptionPath )
 {
 	if( jvm != NULL ) return -1;
 
 	char clspathOpt[2048] = "-Djava.class.path=";
 	strcat( clspathOpt, clspath );
-	
-	JavaVMOption options[5];
+
+	std::vector<char*> optionStrings;
+	std::ifstream optionStream( jvmOptionPath, std::ifstream::in );
+	if( optionStream.is_open() )
+	{
+		optionStrings.reserve( 20 );
+		while( optionStream.good() )
+		{
+			char* option = new char[128];
+			optionStream.getline( option, 128 );
+			optionStrings.push_back( option );
+		}
+		optionStream.close();
+	}
+
+	JavaVMOption* options = new JavaVMOption[optionStrings.size()+2];
 	options[0].optionString = clspathOpt;
 	options[1].optionString = "-Djava.library.path=./plugins";
-	options[2].optionString = "-verbose:gc";
-	options[3].optionString = "-Xms32m";
-	options[4].optionString = "-Xmx1024m";
+	for(unsigned int i=0;i<optionStrings.size();i++)
+	{
+		options[i+2].optionString = optionStrings[i];
+	}
 
 	JavaVMInitArgs vm_args;
 	vm_args.version = JNI_VERSION_1_6;
 	vm_args.options = options;
-	vm_args.nOptions = sizeof(options) / sizeof(JavaVMOption);
+	vm_args.nOptions = optionStrings.size()+2;
 	vm_args.ignoreUnrecognized = JNI_FALSE;
 
 	jint res = JNI_CreateJavaVM(&jvm, (void**)env, &vm_args);
+	for(unsigned int i=0;i<optionStrings.size();i++)
+	{
+		delete[] optionStrings.at(i);
+	}
+	delete[] options;
+
 	if (res < 0) return -3;
 
 	return 0;

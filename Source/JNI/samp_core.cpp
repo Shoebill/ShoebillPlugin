@@ -30,6 +30,7 @@ extern std::map<int, std::string> codepages;
 #endif
 
 const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
+const char JVM_OPTION_FILE_PATH[] = "./shoebill/jvm_options.txt";
 
 const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher*.jar";
 const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/launcher/ShoebillLauncher";
@@ -64,7 +65,7 @@ bool OnLoadPlugin()
 	findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath);
 
 	JNIEnv *env;
-	if( jni_jvm_create(&env, classpath) < 0 )
+	if( jni_jvm_create(&env, classpath, JVM_OPTION_FILE_PATH) < 0 )
 	{
 		logprintf( "  > Error: Can't create Java VM." );
 		return false;
