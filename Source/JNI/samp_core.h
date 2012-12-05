@@ -40,9 +40,3 @@ inline void setPlayerCodepage(int playerid, int codepage)
 	extern int playerCodepage[];
 	playerCodepage[playerid] = codepage;
 }
-
-#if defined(LINUX)
-#include <string>
-#include <map>
-extern std::map<unsigned int, std::string> codepages;
-#endif

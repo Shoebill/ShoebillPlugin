@@ -19,6 +19,7 @@
 
 #include "encoding.h"
 #include "jni_core.h"
+#include "samp_core.h"
 #include "../Wrapper/a_samp.h"
 
 #if defined(LINUX)
@@ -358,7 +359,7 @@ int OnPlayerText( int playerid, char* text )
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(playerCodepage[playerid], text, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getPlayerCodepage(playerid), text, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str);
@@ -377,7 +378,7 @@ int OnPlayerCommandText( int playerid, char* cmdtext )
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(playerCodepage[playerid], cmdtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getPlayerCodepage(playerid), cmdtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str);
@@ -516,7 +517,7 @@ int OnRconCommand( char* cmd )
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(serverCodepage, cmd, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getServerCodepage(), cmd, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, str);
@@ -747,7 +748,7 @@ int OnRconLoginAttempt( char* ip, char* password, int success )
 	jstring iptext = env->NewStringUTF(ip);
 
 	jchar wtext[1024];
-	int len = mbs2wcs(serverCodepage, password, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getServerCodepage(), password, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 	jstring str = env->NewString(wtext, len);
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, iptext, str, success);
@@ -841,7 +842,7 @@ int OnDialogResponse( int playerid, int dialogid, int response, int listitem, ch
 	if( !jmid ) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(playerCodepage[playerid], inputtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getPlayerCodepage(playerid), inputtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, dialogid, response, listitem, str);
