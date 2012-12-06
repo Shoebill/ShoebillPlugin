@@ -1026,8 +1026,8 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_samp_SampNativeFunction_getPlayer
 {
 	static jclass cls = env->GetObjectClass(keystate);
 	static jfieldID fidKeys = env->GetFieldID(cls, "keys", "I");
-	static jfieldID fidUpdown = env->GetFieldID(cls, "updown", "I");
-	static jfieldID fidLeftright = env->GetFieldID(cls, "leftright", "I");
+	static jfieldID fidUpdown = env->GetFieldID(cls, "updownValue", "I");
+	static jfieldID fidLeftright = env->GetFieldID(cls, "leftrightValue", "I");
 
 	int keys, updown, leftright;
 	GetPlayerKeys( playerid, keys, updown, leftright );
