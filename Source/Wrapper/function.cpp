@@ -1330,8 +1330,10 @@ int PlayAudioStreamForPlayer( int playerid, const char* url, float posX, float p
 		playerid, amx_NewString(pAMX, url), amx_ftoc(posX), amx_ftoc(posY), amx_ftoc(posZ), amx_ftoc(distance), usepos
 	};
 
+	int ret = func(pAMX, args);
+
 	amx_Release( pAMX, args[2] );
-	return func(pAMX, args);
+	return ret;
 }
 
 int StopAudioStreamForPlayer( int playerid )
@@ -1705,8 +1707,10 @@ int SetPlayerChatBubble( int playerid, const char* text, int color, float drawdi
 		playerid, amx_NewString(pAMX, text), color, amx_ftoc(drawdistance), expiretime
 	};
 
+	int ret = func(pAMX, args);
+
 	amx_Release( pAMX, args[2] );
-	return func(pAMX, args);
+	return ret;
 }
 
 // Player controls
@@ -1799,9 +1803,11 @@ int ApplyAnimation( int playerid, const char* animlib, const char* animname, flo
 		playerid, amx_NewString(pAMX, animlib), amx_NewString(pAMX, animname), amx_ftoc(fDelta), loop, lockx, locky, freeze, time, forcesync
 	};
 
+	int ret = func(pAMX, args);
+
 	amx_Release( pAMX, args[2] );
 	amx_Release( pAMX, args[1] );
-	return func(pAMX, args);
+	return ret;
 }
 
 int ClearAnimations( int playerid, int forcesync )
