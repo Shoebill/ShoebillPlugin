@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="amx">
+      <UniqueIdentifier>{5c87ce42-bfe1-4a25-ba84-a1bdb4ad8d87}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="amx\amx.h">
+      <Filter>amx</Filter>
+    </ClInclude>
+    <ClInclude Include="amx\getch.h">
+      <Filter>amx</Filter>
+    </ClInclude>
+    <ClInclude Include="amx\sclinux.h">
+      <Filter>amx</Filter>
+    </ClInclude>
+    <ClInclude Include="plugin.h" />
+    <ClInclude Include="plugincommon.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="amx\getch.c">
+      <Filter>amx</Filter>
+    </ClCompile>
+    <ClCompile Include="amxplugin.cpp" />
+  </ItemGroup>
+</Project>
