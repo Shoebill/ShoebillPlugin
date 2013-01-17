@@ -32,16 +32,20 @@ extern std::map<int, std::string> codepages;
 const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
 const char JVM_OPTION_FILE_PATH[] = "./shoebill/jvm_options.txt";
 
-const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher*.jar";
-const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/launcher/ShoebillLauncher";
+const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher-0.2.*.jar";
+const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/ShoebillLauncher";
 
 const char RESOLVE_DEPENDENCIES_METHOD_NAME[] = "resolveDependencies";
 const char RESOLVE_DEPENDENCIES_METHOD_SIGN[] = "()Ljava/lang/Object;";
+
+const char LOAD_NATIVE_LIBRARY_METHOD_NAME[] = "loadNativeLibrary";
+const char LOAD_NATIVE_LIBRARY_METHOD_SIGN[] = "()V";
 
 const char CREATE_SHOEBILL_METHOD_NAME[] = "createShoebill";
 const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/lang/Object;)Ljava/lang/Object;";
 
 jclass shoebillLauncherClass = NULL;
+jclass systemClass = NULL;
 
 jclass shoebillClass = NULL;
 jobject shoebillObject = NULL;
@@ -55,6 +59,9 @@ int playerCodepage[MAX_PLAYERS] = {0};
 
 int Initialize( JNIEnv *env );
 int Uninitialize( JNIEnv *env );
+
+int CreateShoebillObject( JNIEnv *env );
+int ReleaseShoebillObject( JNIEnv *env );
 
 
 bool OnLoadPlugin()
@@ -96,26 +103,55 @@ int Initialize( JNIEnv *env )
 	}
 
 	jobject files = NULL;
+	static jmethodID loadNativeLibraryMethodID = env->GetStaticMethodID(shoebillLauncherClass, LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN);
+	if( !loadNativeLibraryMethodID )
+	{
+		logprintf( "  > Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN );
+		return -6;
+	}
+
+	env->CallStaticVoidMethod(shoebillLauncherClass, loadNativeLibraryMethodID);
+	if( env->ExceptionCheck() )
+	{
+		jni_jvm_printExceptionStack( env );
+		logprintf( "  > Error: Can't load Shoebill JNI library." );
+		return -7;
+	}
+
+	shoebillLauncherClass = (jclass)( env->NewGlobalRef(shoebillLauncherClass) );
+	return 0;
+}
+
+int Uninitialize( JNIEnv *env )
+{
+	if (shoebillLauncherClass) env->DeleteGlobalRef( shoebillLauncherClass );
+	shoebillLauncherClass = NULL;
+
+	return 0;
+}
+
+int CreateShoebillObject( JNIEnv *env )
+{
+	jobject files = NULL;
 	static jmethodID resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
 	if( !resolveDependenciesMethodID )
 	{
-		logprintf( "  > Error: Can't find launcher method [%s::%s%s], ignore.", LAUNCHER_CLASS_NAME, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN );
+		logprintf( "ShoebillPlugin Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN );
+		return -8;
 	}
-	else
+
+	files = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
+	if( !files )
 	{
-		files = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
-		if( !files )
-		{
-			jni_jvm_printExceptionStack( env );
-			logprintf( "  > Error: Can't resolve dependencies." );
-			return -2;
-		}
+		jni_jvm_printExceptionStack( env );
+		logprintf( "ShoebillPlugin Error: Can't resolve dependencies." );
+		return -2;
 	}
 
 	static jmethodID createShoebillMethodID = env->GetStaticMethodID(shoebillLauncherClass, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN);
 	if( !createShoebillMethodID )
 	{
-		logprintf( "  > Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN );
+		logprintf( "ShoebillPlugin Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN );
 		return -3;
 	}
 
@@ -123,20 +159,16 @@ int Initialize( JNIEnv *env )
 	if( !shoebillObject )
 	{
 		jni_jvm_printExceptionStack( env );
-		logprintf( "  > Error: Can't create shoebill object." );
+		logprintf( "ShoebillPlugin Error: Can't create shoebill object." );
 		return -4;
 	}
 
 	shoebillClass = env->GetObjectClass(shoebillObject);
 	if( !shoebillClass )
 	{
-		logprintf( "  > Error: Can't get shoebill class." );
+		logprintf( "ShoebillPlugin Error: Can't get shoebill class." );
 		return -5;
 	}
-	
-	shoebillLauncherClass = (jclass)( env->NewGlobalRef(shoebillLauncherClass) );
-	shoebillObject = env->NewGlobalRef(shoebillObject);
-	shoebillClass = (jclass)( env->NewGlobalRef(shoebillClass) );
 
 #if defined(LINUX)
 	std::ifstream codepageFile( CODEPAGE_FILE_PATH, std::ifstream::in);
@@ -168,15 +200,43 @@ int Initialize( JNIEnv *env )
 	}
 #endif
 
+	static jmethodID getCallbackHandlerMethodID = env->GetMethodID(shoebillClass, "getCallbackHandler", "()Lnet/gtaun/shoebill/samp/SampCallbackHandler;");
+	if( !getCallbackHandlerMethodID )
+	{
+		logprintf( "ShoebillPlugin Error: Can't find method getCallbackHandler()." );
+		return 1;
+	}
+
+	callbackHandlerObject = env->CallObjectMethod(shoebillObject, getCallbackHandlerMethodID);
+	if( callbackHandlerObject == NULL )
+	{
+		logprintf( "ShoebillPlugin Error: Can't find main EventHandler." );
+		return 1;
+	}
+
+	shoebillObject = env->NewGlobalRef(shoebillObject);
+	shoebillClass = (jclass)( env->NewGlobalRef(shoebillClass) );
+	callbackHandlerObject = env->NewGlobalRef(callbackHandlerObject);
+	callbackHandlerClass = (jclass)( env->NewGlobalRef(env->GetObjectClass(callbackHandlerObject)) );
+
 	logprintf( "  > Shoebill has been initialized." );
 	return 0;
 }
 
-int Uninitialize( JNIEnv *env )
+int ReleaseShoebillObject( JNIEnv *env )
 {
-	env->DeleteGlobalRef( shoebillObject );
-	env->DeleteGlobalRef( shoebillClass );
-	env->DeleteGlobalRef( shoebillLauncherClass );
+	if (shoebillObject) env->DeleteGlobalRef( shoebillObject );
+	shoebillObject = NULL;
+
+	if (shoebillClass) env->DeleteGlobalRef( shoebillClass );
+	shoebillClass = NULL;
+
+	if (callbackHandlerObject) env->DeleteGlobalRef( callbackHandlerObject );
+	callbackHandlerObject = NULL;
+
+	if (callbackHandlerClass) env->DeleteGlobalRef( callbackHandlerClass );
+	callbackHandlerClass = NULL;
+
 	return 0;
 }
 
@@ -196,27 +256,10 @@ void OnProcessTick()
 
 int OnGameModeInit()
 {
-	if( !shoebillObject ) return 1;
-
 	JNIEnv *env = NULL;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid_gch = env->GetMethodID(shoebillClass, "getCallbackHandler", "()Lnet/gtaun/shoebill/samp/SampCallbackHandler;");
-	if( !jmid_gch )
-	{
-		logprintf( "ShoebillPlugin Error: Can't find method getCallbackHandler()." );
-		return 1;
-	}
-
-	callbackHandlerObject = env->CallObjectMethod(shoebillObject, jmid_gch);
-	if( callbackHandlerObject == NULL )
-	{
-		logprintf( "ShoebillPlugin Error: Can't find main EventHandler." );
-		return 1;
-	}
-
-	callbackHandlerObject = env->NewGlobalRef(callbackHandlerObject);
-	callbackHandlerClass = (jclass)( env->NewGlobalRef(env->GetObjectClass(callbackHandlerObject)) );
+	CreateShoebillObject(env);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onGameModeInit", "()I");
 	if( !jmid ) return 0;
@@ -239,11 +282,7 @@ int OnGameModeExit()
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid);
 	jni_jvm_printExceptionStack( env );
 
-	env->DeleteGlobalRef( callbackHandlerObject );
-	env->DeleteGlobalRef( callbackHandlerClass );
-	callbackHandlerObject = NULL;
-	callbackHandlerClass = NULL;
-
+	ReleaseShoebillObject(env);
 	return ret;
 }
 
