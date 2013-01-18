@@ -68,7 +68,11 @@ bool OnLoadPlugin()
 	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3E by MK124 & JoJLlmAn" );
 
 	char classpath[2048] = {0};
-	findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath);
+	if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
+	{
+		logprintf( "  > Error: Can't find launcher library." );
+		return false;
+	}
 
 	JNIEnv *env;
 	if( jni_jvm_create(&env, classpath, JVM_OPTION_FILE_PATH) < 0 )

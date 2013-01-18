@@ -143,7 +143,7 @@ int findAndGenerateClassPath(const char* searchPath, char* classPath)
 
 	_finddata_t finddata;
 	int hfind = _findfirst(searchPath, &finddata);
-	if( hfind < 0 ) return -2;
+	if( hfind < 0 ) return -1;
 
 	do 
 	{
