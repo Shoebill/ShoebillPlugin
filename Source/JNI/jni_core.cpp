@@ -20,13 +20,7 @@
 #pragma comment (lib, "jawt.lib")
 
 #define _CRT_SECURE_NO_WARNINGS
-#include <io.h>
 
-#endif
-
-#if defined(LINUX)
-#include <dirent.h>
-#include "linux.h"
 #endif
 
 
@@ -133,61 +127,55 @@ int jni_jvm_destroy( JNIEnv *env )
 	return 0;
 }
 
+#if defined(WIN32)
+#include <io.h>
+
 int findAndGenerateClassPath(const char* searchPath, char* classPath)
 {
 	char basepath[512];
 
 	strcpy( basepath, searchPath );
-	for( int i=strlen(basepath)-1; i>=0; i-- )
-		if( basepath[i] == '/' ) { basepath[i+1] = 0; break; }
+	char *lastPos = strrchr(basepath, '/');
+	if (lastPos) *(lastPos+1) = 0;
 
-#if defined(WIN32)
-		_finddata_t finddata;
-		int hfind = _findfirst(searchPath, &finddata);
-		if( hfind < 0 ) return -2;
+	_finddata_t finddata;
+	int hfind = _findfirst(searchPath, &finddata);
+	if( hfind < 0 ) return -2;
 
-		do 
-		{
-			strcat( classPath, basepath );
-			strcat( classPath, finddata.name );
-			strcat( classPath, ";" );
-		} while ( !_findnext(hfind, &finddata) );
-		_findclose( hfind );
-#else
-		DIR *dir = opendir(basepath);
-		struct dirent entry;
-		struct dirent* entryPtr = NULL;
+	do 
+	{
+		strcat( classPath, basepath );
+		strcat( classPath, finddata.name );
+		strcat( classPath, ";" );
+	} while ( !_findnext(hfind, &finddata) );
+	_findclose( hfind );
 
-		readdir_r(dir, &entry, &entryPtr);
-		if(entryPtr == NULL) return -2;
-
-		while(entryPtr != NULL)
-		{
-			if(strncmp(entry.d_name, ".", PATH_MAX) ==0 ||
-				strncmp(entry.d_name, "..", PATH_MAX) ==0)
-			{
-				readdir_r(dir, &entry, &entryPtr);
-				continue;
-			}
-
-			int len = strlen(entry.d_name);
-
-			if(strcmp(strlwr(&(entry.d_name[len-4])), ".jar") != 0)
-			{
-				readdir_r(dir, &entry, &entryPtr);
-				continue;
-			}
-
-			strcat( classPath, basepath );
-			strcat( classPath, entry.d_name );
-			strcat( classPath, ":" );
-
-			readdir_r(dir, &entry, &entryPtr);
-		}
-
-		closedir(dir);
-#endif
-
-		classPath[ strlen(classPath)-1 ] = 0;
-		return 0;
+	classPath[ strlen(classPath)-1 ] = 0;
+	return 0;
 }
+
+#else
+#include <glob.h>
+
+int findAndGenerateClassPath(const char* searchPath, char* classPath)
+{
+	glob_t globdata;
+	glob(searchPath, 0, 0, &globdata);
+
+	size_t files = globdata.gl_pathc;
+	if (files < 1) return -1;
+
+	char **p = globdata.gl_pathv;
+	for (int i=0; i<files; i++)
+	{
+		strcat( classPath, *p );
+		strcat( classPath, ":" );
+		p++;
+	}
+	globfree(&globdata);
+
+	classPath[ strlen(classPath)-1 ] = 0;
+	return 0;
+}
+
+#endif

@@ -45,7 +45,6 @@ const char CREATE_SHOEBILL_METHOD_NAME[] = "createShoebill";
 const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/lang/Object;)Ljava/lang/Object;";
 
 jclass shoebillLauncherClass = NULL;
-jclass systemClass = NULL;
 
 jclass shoebillClass = NULL;
 jobject shoebillObject = NULL;
