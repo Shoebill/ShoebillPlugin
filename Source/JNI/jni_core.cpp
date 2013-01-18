@@ -52,6 +52,9 @@ int jni_jvm_create( JNIEnv** env, const char* clspath, const char* jvmOptionPath
 		{
 			char* option = new char[128];
 			optionStream.getline( option, 128 );
+			char* p = option + strlen(option)-1;
+			if (p >= option && *p == '\r') *p = 0;
+			if (strlen(option) < 1) continue;
 			optionStrings.push_back( option );
 		}
 		optionStream.close();
