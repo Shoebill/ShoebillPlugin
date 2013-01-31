@@ -23,7 +23,7 @@
 
 int CreateObject( int modelid, float x, float y, float z, float rX, float rY, float rZ, float drawDistance)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -36,7 +36,7 @@ int CreateObject( int modelid, float x, float y, float z, float rX, float rY, fl
 
 int AttachObjectToVehicle(int objectid, int vehicleid, float OffsetX, float OffsetY, float OffsetZ, float RotX, float RotY, float RotZ)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -49,7 +49,7 @@ int AttachObjectToVehicle(int objectid, int vehicleid, float OffsetX, float Offs
 
 int AttachObjectToObject( int objectid, int attachtoid, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, int syncRotation )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -62,7 +62,7 @@ int AttachObjectToObject( int objectid, int attachtoid, float offsetX, float off
 
 int AttachObjectToPlayer( int objectid, int playerid, float OffsetX, float OffsetY, float OffsetZ, float rX, float rY, float rZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -75,7 +75,7 @@ int AttachObjectToPlayer( int objectid, int playerid, float OffsetX, float Offse
 
 int SetObjectPos( int objectid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -88,7 +88,7 @@ int SetObjectPos( int objectid, float x, float y, float z )
 
 int GetObjectPos( int objectid, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -111,7 +111,7 @@ int GetObjectPos( int objectid, float &x, float &y, float &z )
 
 int SetObjectRot( int objectid, float rotX, float rotY, float rotZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -124,7 +124,7 @@ int SetObjectRot( int objectid, float rotX, float rotY, float rotZ )
 
 int GetObjectRot( int objectid, float &rotX, float &rotY, float &rotZ)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -147,7 +147,7 @@ int GetObjectRot( int objectid, float &rotX, float &rotY, float &rotZ)
 
 int IsValidObject( int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -160,7 +160,7 @@ int IsValidObject( int objectid )
 
 int DestroyObject( int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -173,7 +173,7 @@ int DestroyObject( int objectid )
 
 int MoveObject( int objectid, float x, float y, float z, float Speed, float rotX, float rotY, float rotZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -186,7 +186,7 @@ int MoveObject( int objectid, float x, float y, float z, float Speed, float rotX
 
 int StopObject( int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -199,7 +199,7 @@ int StopObject( int objectid )
 
 int IsObjectMoving( int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -212,7 +212,7 @@ int IsObjectMoving( int objectid )
 
 int EditObject(int playerid, int objectid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -225,7 +225,7 @@ int EditObject(int playerid, int objectid)
 
 int EditPlayerObject(int playerid, int objectid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -238,7 +238,7 @@ int EditPlayerObject(int playerid, int objectid)
 
 int SelectObject(int playerid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -251,7 +251,7 @@ int SelectObject(int playerid)
 
 int CancelEdit(int playerid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -264,7 +264,7 @@ int CancelEdit(int playerid)
 
 int CreatePlayerObject( int playerid, int modelid, float x, float y, float z, float rx, float ry, float rz, float drawDistance )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -277,7 +277,7 @@ int CreatePlayerObject( int playerid, int modelid, float x, float y, float z, fl
 
 int AttachPlayerObjectToVehicle(int playerid, int objectid, int vehicleid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -290,7 +290,7 @@ int AttachPlayerObjectToVehicle(int playerid, int objectid, int vehicleid, float
 
 int SetPlayerObjectPos( int playerid, int objectid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -303,7 +303,7 @@ int SetPlayerObjectPos( int playerid, int objectid, float x, float y, float z )
 
 int GetPlayerObjectPos( int playerid, int objectid, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[6] =
@@ -326,7 +326,7 @@ int GetPlayerObjectPos( int playerid, int objectid, float &x, float &y, float &z
 
 int SetPlayerObjectRot( int playerid, int objectid, float rotX, float rotY, float rotZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -339,7 +339,7 @@ int SetPlayerObjectRot( int playerid, int objectid, float rotX, float rotY, floa
 
 int GetPlayerObjectRot( int playerid, int objectid, float &rotX, float &rotY, float &rotZ)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[6] =
@@ -362,7 +362,7 @@ int GetPlayerObjectRot( int playerid, int objectid, float &rotX, float &rotY, fl
 
 int IsValidPlayerObject( int playerid, int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -375,7 +375,7 @@ int IsValidPlayerObject( int playerid, int objectid )
 
 int DestroyPlayerObject( int playerid, int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -388,7 +388,7 @@ int DestroyPlayerObject( int playerid, int objectid )
 
 int MovePlayerObject( int playerid, int objectid, float x, float y, float z, float Speed, float rotX, float rotY, float rotZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -401,7 +401,7 @@ int MovePlayerObject( int playerid, int objectid, float x, float y, float z, flo
 
 int StopPlayerObject( int playerid, int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -414,7 +414,7 @@ int StopPlayerObject( int playerid, int objectid )
 
 int IsPlayerObjectMoving( int playerid, int objectid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -427,7 +427,7 @@ int IsPlayerObjectMoving( int playerid, int objectid )
 
 int AttachPlayerObjectToPlayer( int objectplayer, int objectid, int attachplayer, float OffsetX, float OffsetY, float OffsetZ, float rX, float rY, float rZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -441,7 +441,7 @@ int AttachPlayerObjectToPlayer( int objectplayer, int objectid, int attachplayer
 
 int SetObjectMaterial(int objectid, int materialindex, int modelid, char* txdname, char* texturename, int materialcolor)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[7] =
 	{
@@ -458,7 +458,7 @@ int SetObjectMaterial(int objectid, int materialindex, int modelid, char* txdnam
 
 int SetPlayerObjectMaterial(int playerid, int objectid, int materialindex, int modelid, char* txdname, char* texturename, int materialcolor)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[8] =
 	{
@@ -475,7 +475,7 @@ int SetPlayerObjectMaterial(int playerid, int objectid, int materialindex, int m
 
 int SetObjectMaterialText(int objectid, char* text, int materialindex, int materialsize, char* fontface, int fontsize, int bold, int fontcolor, int backcolor, int textalignment)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[11] =
 	{
@@ -492,7 +492,7 @@ int SetObjectMaterialText(int objectid, char* text, int materialindex, int mater
 
 int SetPlayerObjectMaterialText(int playerid, int objectid, char* text, int materialindex, int materialsize, char* fontface, int fontsize, int bold, int fontcolor, int backcolor, int textalignment)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[12] =
 	{
@@ -513,7 +513,7 @@ int SetPlayerObjectMaterialText(int playerid, int objectid, char* text, int mate
 
 int SetSpawnInfo( int playerid, int team, int skin, float x, float y, float z, float rotation, int weapon1, int weapon1_ammo, int weapon2, int weapon2_ammo, int weapon3, int weapon3_ammo )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[14] =
 	{
@@ -526,7 +526,7 @@ int SetSpawnInfo( int playerid, int team, int skin, float x, float y, float z, f
 
 int SpawnPlayer( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -542,7 +542,7 @@ int SpawnPlayer( int playerid )
 
 int SetPlayerPos( int playerid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -555,7 +555,7 @@ int SetPlayerPos( int playerid, float x, float y, float z )
 
 int SetPlayerPosFindZ( int playerid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -568,7 +568,7 @@ int SetPlayerPosFindZ( int playerid, float x, float y, float z )
 
 int GetPlayerPos( int playerid, float& x, float& y, float& z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -591,7 +591,7 @@ int GetPlayerPos( int playerid, float& x, float& y, float& z )
 
 int SetPlayerFacingAngle( int playerid, float ang )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -604,7 +604,7 @@ int SetPlayerFacingAngle( int playerid, float ang )
 
 int GetPlayerFacingAngle( int playerid, float& ang )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *phys;
 
 	cell args[3] =
@@ -623,7 +623,7 @@ int GetPlayerFacingAngle( int playerid, float& ang )
 
 int IsPlayerInRangeOfPoint( int playerid, float range, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -636,7 +636,7 @@ int IsPlayerInRangeOfPoint( int playerid, float range, float x, float y, float z
 
 float GetPlayerDistanceFromPoint( int playerid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -650,7 +650,7 @@ float GetPlayerDistanceFromPoint( int playerid, float x, float y, float z )
 
 int IsPlayerStreamedIn( int playerid, int forplayerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -663,7 +663,7 @@ int IsPlayerStreamedIn( int playerid, int forplayerid )
 
 int SetPlayerInterior( int playerid, int interiorid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -676,7 +676,7 @@ int SetPlayerInterior( int playerid, int interiorid )
 
 int GetPlayerInterior( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -689,7 +689,7 @@ int GetPlayerInterior( int playerid )
 
 int SetPlayerHealth( int playerid, float health )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -702,7 +702,7 @@ int SetPlayerHealth( int playerid, float health )
 
 int GetPlayerHealth( int playerid, float &health )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *phys;
 
 	cell args[3] =
@@ -721,7 +721,7 @@ int GetPlayerHealth( int playerid, float &health )
 
 int SetPlayerArmour( int playerid, float armour )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -734,7 +734,7 @@ int SetPlayerArmour( int playerid, float armour )
 
 int GetPlayerArmour( int playerid, float &armour)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *phys;
 
 	cell args[3] =
@@ -753,7 +753,7 @@ int GetPlayerArmour( int playerid, float &armour)
 
 int SetPlayerAmmo( int playerid, int weaponslot, int ammo )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -766,7 +766,7 @@ int SetPlayerAmmo( int playerid, int weaponslot, int ammo )
 
 int GetPlayerAmmo( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -779,7 +779,7 @@ int GetPlayerAmmo( int playerid )
 
 int GetPlayerWeaponState( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -792,7 +792,7 @@ int GetPlayerWeaponState( int playerid )
 
 int GetPlayerTargetPlayer( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -805,7 +805,7 @@ int GetPlayerTargetPlayer( int playerid )
 
 int SetPlayerTeam( int playerid, int teamid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -818,7 +818,7 @@ int SetPlayerTeam( int playerid, int teamid )
 
 int GetPlayerTeam( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -831,7 +831,7 @@ int GetPlayerTeam( int playerid )
 
 int SetPlayerScore( int playerid, int score )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -844,7 +844,7 @@ int SetPlayerScore( int playerid, int score )
 
 int GetPlayerScore( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -857,7 +857,7 @@ int GetPlayerScore( int playerid )
 
 int GetPlayerDrunkLevel( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -870,7 +870,7 @@ int GetPlayerDrunkLevel( int playerid )
 
 int SetPlayerDrunkLevel( int playerid, int level )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -883,7 +883,7 @@ int SetPlayerDrunkLevel( int playerid, int level )
 
 int SetPlayerColor( int playerid, int color )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -896,7 +896,7 @@ int SetPlayerColor( int playerid, int color )
 
 int GetPlayerColor( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -909,7 +909,7 @@ int GetPlayerColor( int playerid )
 
 int SetPlayerSkin( int playerid, int skinid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -922,7 +922,7 @@ int SetPlayerSkin( int playerid, int skinid )
 
 int GetPlayerSkin( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -935,7 +935,7 @@ int GetPlayerSkin( int playerid )
 
 int GivePlayerWeapon( int playerid, int weaponid, int ammo )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -948,7 +948,7 @@ int GivePlayerWeapon( int playerid, int weaponid, int ammo )
 
 int ResetPlayerWeapons( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -961,7 +961,7 @@ int ResetPlayerWeapons( int playerid )
 
 int SetPlayerArmedWeapon( int playerid, int weaponid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -974,7 +974,7 @@ int SetPlayerArmedWeapon( int playerid, int weaponid )
 
 int GetPlayerWeaponData( int playerid, int slot, int &weapons, int &ammo )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *w_phys, *a_phys;
 
 	cell args[5] =
@@ -995,7 +995,7 @@ int GetPlayerWeaponData( int playerid, int slot, int &weapons, int &ammo )
 
 int GivePlayerMoney( int playerid, int money )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1008,7 +1008,7 @@ int GivePlayerMoney( int playerid, int money )
 
 int ResetPlayerMoney( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1021,7 +1021,7 @@ int ResetPlayerMoney( int playerid )
 
 int SetPlayerName( int playerid, const char* name )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1037,7 +1037,7 @@ int SetPlayerName( int playerid, const char* name )
 
 int GetPlayerMoney( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1050,7 +1050,7 @@ int GetPlayerMoney( int playerid )
 
 int GetPlayerState( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1063,7 +1063,7 @@ int GetPlayerState( int playerid )
 
 int GetPlayerIp( int playerid, char* name, int len )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *phys;
 
 	cell args[4] =
@@ -1081,7 +1081,7 @@ int GetPlayerIp( int playerid, char* name, int len )
 
 int GetPlayerPing( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1094,7 +1094,7 @@ int GetPlayerPing( int playerid )
 
 int GetPlayerWeapon( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1107,7 +1107,7 @@ int GetPlayerWeapon( int playerid )
 
 int GetPlayerKeys( int playerid, int &keys, int &updown, int &leftright )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *k_phys, *u_phys, *l_phys;
 
 	cell args[5] =
@@ -1130,7 +1130,7 @@ int GetPlayerKeys( int playerid, int &keys, int &updown, int &leftright )
 
 int GetPlayerName( int playerid, char* name, int len )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *str_phys;
 
 	cell args[4] =
@@ -1148,7 +1148,7 @@ int GetPlayerName( int playerid, char* name, int len )
 
 int SetPlayerTime( int playerid, int hour, int minute )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1161,7 +1161,7 @@ int SetPlayerTime( int playerid, int hour, int minute )
 
 int GetPlayerTime( int playerid, int &hour, int &minute )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *h_phys, *m_phys;
 
 	cell args[4] =
@@ -1182,7 +1182,7 @@ int GetPlayerTime( int playerid, int &hour, int &minute )
 
 int TogglePlayerClock( int playerid, int toggle )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1195,7 +1195,7 @@ int TogglePlayerClock( int playerid, int toggle )
 
 int SetPlayerWeather( int playerid, int weather )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1208,7 +1208,7 @@ int SetPlayerWeather( int playerid, int weather )
 
 int ForceClassSelection( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1221,7 +1221,7 @@ int ForceClassSelection( int playerid )
 
 int SetPlayerWantedLevel( int playerid, int level )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1234,7 +1234,7 @@ int SetPlayerWantedLevel( int playerid, int level )
 
 int GetPlayerWantedLevel( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1247,7 +1247,7 @@ int GetPlayerWantedLevel( int playerid )
 
 int SetPlayerFightingStyle( int playerid, int style )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1260,7 +1260,7 @@ int SetPlayerFightingStyle( int playerid, int style )
 
 int GetPlayerFightingStyle( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1273,7 +1273,7 @@ int GetPlayerFightingStyle( int playerid )
 
 int SetPlayerVelocity( int playerid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -1286,7 +1286,7 @@ int SetPlayerVelocity( int playerid, float x, float y, float z )
 
 int GetPlayerVelocity( int playerid, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -1309,7 +1309,7 @@ int GetPlayerVelocity( int playerid, float &x, float &y, float &z )
 
 int PlayCrimeReportForPlayer( int playerid, int suspectid, int crime )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1322,7 +1322,7 @@ int PlayCrimeReportForPlayer( int playerid, int suspectid, int crime )
 
 int PlayAudioStreamForPlayer( int playerid, const char* url, float posX, float posY, float posZ, float distance, int usepos )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[8] =
 	{
@@ -1338,7 +1338,7 @@ int PlayAudioStreamForPlayer( int playerid, const char* url, float posX, float p
 
 int StopAudioStreamForPlayer( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1351,7 +1351,7 @@ int StopAudioStreamForPlayer( int playerid )
 
 int SetPlayerShopName( int playerid, const char* shopname )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1364,7 +1364,7 @@ int SetPlayerShopName( int playerid, const char* shopname )
 
 int SetPlayerSkillLevel( int playerid, int skill, int level )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1377,7 +1377,7 @@ int SetPlayerSkillLevel( int playerid, int skill, int level )
 
 int GetPlayerSurfingVehicleID( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1390,7 +1390,7 @@ int GetPlayerSurfingVehicleID( int playerid )
 
 int GetPlayerSurfingObjectID( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1403,7 +1403,7 @@ int GetPlayerSurfingObjectID( int playerid )
 
 int RemoveBuildingForPlayer( int playerid, int modelid, float x, float y, float z, float radius )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[7] =
 	{
@@ -1416,7 +1416,7 @@ int RemoveBuildingForPlayer( int playerid, int modelid, float x, float y, float 
 
 int SetPlayerAttachedObject( int playerid, int index, int modelid, int bone, float fOffsetX, float fOffsetY, float fOffsetZ, float frotX, float frotY, float frotZ, float fScaleX, float fScaleY, float fScaleZ, int materialcolor1, int materialcolor2 )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[16] =
 	{
@@ -1429,7 +1429,7 @@ int SetPlayerAttachedObject( int playerid, int index, int modelid, int bone, flo
 
 int RemovePlayerAttachedObject( int playerid, int index )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1442,7 +1442,7 @@ int RemovePlayerAttachedObject( int playerid, int index )
 
 int IsPlayerAttachedObjectSlotUsed( int playerid, int index )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1455,7 +1455,7 @@ int IsPlayerAttachedObjectSlotUsed( int playerid, int index )
 
 int EditAttachedObject(int playerid, int index)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1471,7 +1471,7 @@ int EditAttachedObject(int playerid, int index)
 
 int CreatePlayerTextDraw(int playerid, float x, float y, char* text)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -1487,7 +1487,7 @@ int CreatePlayerTextDraw(int playerid, float x, float y, char* text)
 
 int PlayerTextDrawDestroy(int playerid, int textId)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1500,7 +1500,7 @@ int PlayerTextDrawDestroy(int playerid, int textId)
 
 int PlayerTextDrawLetterSize(int playerid, int textId, float x, float y)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -1513,7 +1513,7 @@ int PlayerTextDrawLetterSize(int playerid, int textId, float x, float y)
 
 int PlayerTextDrawTextSize(int playerid, int textId, float x, float y)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -1526,7 +1526,7 @@ int PlayerTextDrawTextSize(int playerid, int textId, float x, float y)
 
 int PlayerTextDrawAlignment(int playerid, int textId, int alignment)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1539,7 +1539,7 @@ int PlayerTextDrawAlignment(int playerid, int textId, int alignment)
 
 int PlayerTextDrawColor(int playerid, int textId, int color)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1552,7 +1552,7 @@ int PlayerTextDrawColor(int playerid, int textId, int color)
 
 int PlayerTextDrawUseBox(int playerid, int textId, int use)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1565,7 +1565,7 @@ int PlayerTextDrawUseBox(int playerid, int textId, int use)
 
 int PlayerTextDrawBoxColor(int playerid, int textId, int color)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1578,7 +1578,7 @@ int PlayerTextDrawBoxColor(int playerid, int textId, int color)
 
 int PlayerTextDrawSetShadow(int playerid, int textId, int size)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1591,7 +1591,7 @@ int PlayerTextDrawSetShadow(int playerid, int textId, int size)
 
 int PlayerTextDrawSetOutline(int playerid, int textId, int size)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1604,7 +1604,7 @@ int PlayerTextDrawSetOutline(int playerid, int textId, int size)
 
 int PlayerTextDrawBackgroundColor(int playerid, int textId, int color)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1617,7 +1617,7 @@ int PlayerTextDrawBackgroundColor(int playerid, int textId, int color)
 
 int PlayerTextDrawFont(int playerid, int textId, int font)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1630,7 +1630,7 @@ int PlayerTextDrawFont(int playerid, int textId, int font)
 
 int PlayerTextDrawSetProportional(int playerid, int textId, int set)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1643,7 +1643,7 @@ int PlayerTextDrawSetProportional(int playerid, int textId, int set)
 
 int PlayerTextDrawSetSelectable(int playerid, int textId, int set)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1656,7 +1656,7 @@ int PlayerTextDrawSetSelectable(int playerid, int textId, int set)
 
 int PlayerTextDrawShow(int playerid, int textId)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1669,7 +1669,7 @@ int PlayerTextDrawShow(int playerid, int textId)
 
 int PlayerTextDrawHide(int playerid, int textId)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1682,7 +1682,7 @@ int PlayerTextDrawHide(int playerid, int textId)
 
 int PlayerTextDrawSetString(int playerid, int textId, char* string)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1699,7 +1699,7 @@ int PlayerTextDrawSetString(int playerid, int textId, char* string)
 
 int SetPlayerChatBubble( int playerid, const char* text, int color, float drawdistance, int expiretime )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -1717,7 +1717,7 @@ int SetPlayerChatBubble( int playerid, const char* text, int color, float drawdi
 
 int PutPlayerInVehicle( int playerid, int vehicleid, int seatid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1730,7 +1730,7 @@ int PutPlayerInVehicle( int playerid, int vehicleid, int seatid )
 
 int GetPlayerVehicleID( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1743,7 +1743,7 @@ int GetPlayerVehicleID( int playerid )
 
 int GetPlayerVehicleSeat( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1756,7 +1756,7 @@ int GetPlayerVehicleSeat( int playerid )
 
 int RemovePlayerFromVehicle( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1769,7 +1769,7 @@ int RemovePlayerFromVehicle( int playerid )
 
 int TogglePlayerControllable( int playerid, int toggle )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1782,7 +1782,7 @@ int TogglePlayerControllable( int playerid, int toggle )
 
 int PlayerPlaySound( int playerid, int soundid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -1795,7 +1795,7 @@ int PlayerPlaySound( int playerid, int soundid, float x, float y, float z )
 
 int ApplyAnimation( int playerid, const char* animlib, const char* animname, float fDelta, int loop, int lockx, int locky, int freeze, int time, int forcesync )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[11] =
 	{
@@ -1812,7 +1812,7 @@ int ApplyAnimation( int playerid, const char* animlib, const char* animname, flo
 
 int ClearAnimations( int playerid, int forcesync )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1825,7 +1825,7 @@ int ClearAnimations( int playerid, int forcesync )
 
 int GetPlayerAnimationIndex( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1838,7 +1838,7 @@ int GetPlayerAnimationIndex( int playerid )
 
 int GetAnimationName( int index, char* animlib, int len1, char* animname, int len2 )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *phys1, *phys2;
 
 	cell args[6] =
@@ -1858,7 +1858,7 @@ int GetAnimationName( int index, char* animlib, int len1, char* animname, int le
 
 int GetPlayerSpecialAction( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1871,7 +1871,7 @@ int GetPlayerSpecialAction( int playerid )
 
 int SetPlayerSpecialAction( int playerid, int actionid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -1887,7 +1887,7 @@ int SetPlayerSpecialAction( int playerid, int actionid )
 
 int SetPlayerCheckpoint( int playerid, float x, float y, float z, float size )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -1900,7 +1900,7 @@ int SetPlayerCheckpoint( int playerid, float x, float y, float z, float size )
 
 int DisablePlayerCheckpoint( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1913,7 +1913,7 @@ int DisablePlayerCheckpoint( int playerid )
 
 int SetPlayerRaceCheckpoint( int playerid, int type, float x, float y, float z, float nextx, float nexty, float nextz, float size )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -1926,7 +1926,7 @@ int SetPlayerRaceCheckpoint( int playerid, int type, float x, float y, float z, 
 
 int DisablePlayerRaceCheckpoint( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -1939,7 +1939,7 @@ int DisablePlayerRaceCheckpoint( int playerid )
 
 int SetPlayerWorldBounds( int playerid, float x_max, float x_min, float y_max, float y_min )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -1952,7 +1952,7 @@ int SetPlayerWorldBounds( int playerid, float x_max, float x_min, float y_max, f
 
 int SetPlayerMarkerForPlayer( int playerid, int showplayerid, int color )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1965,7 +1965,7 @@ int SetPlayerMarkerForPlayer( int playerid, int showplayerid, int color )
 
 int ShowPlayerNameTagForPlayer( int playerid, int showplayerid, int show )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -1978,7 +1978,7 @@ int ShowPlayerNameTagForPlayer( int playerid, int showplayerid, int show )
 
 int SetPlayerMapIcon( int playerid, int iconid, float x, float y, float z, int markertype, int color, int style )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -1991,7 +1991,7 @@ int SetPlayerMapIcon( int playerid, int iconid, float x, float y, float z, int m
 
 int RemovePlayerMapIcon( int playerid, int iconid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2004,7 +2004,7 @@ int RemovePlayerMapIcon( int playerid, int iconid )
 
 int SetPlayerCameraPos ( int playerid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -2017,7 +2017,7 @@ int SetPlayerCameraPos ( int playerid, float x, float y, float z )
 
 int SetPlayerCameraLookAt ( int playerid, float x, float y, float z, int cut )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -2030,7 +2030,7 @@ int SetPlayerCameraLookAt ( int playerid, float x, float y, float z, int cut )
 
 int SetCameraBehindPlayer( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2043,7 +2043,7 @@ int SetCameraBehindPlayer( int playerid )
 
 int GetPlayerCameraPos( int playerid, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -2066,7 +2066,7 @@ int GetPlayerCameraPos( int playerid, float &x, float &y, float &z )
 
 int GetPlayerCameraFrontVector( int playerid, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -2089,7 +2089,7 @@ int GetPlayerCameraFrontVector( int playerid, float &x, float &y, float &z )
 
 int GetPlayerCameraMode( int playerid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2102,7 +2102,7 @@ int GetPlayerCameraMode( int playerid)
 
 int AttachCameraToObject(int playerid, int objectid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2115,7 +2115,7 @@ int AttachCameraToObject(int playerid, int objectid)
 
 int AttachCameraToPlayerObject(int playerid, int playerobjectid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2128,7 +2128,7 @@ int AttachCameraToPlayerObject(int playerid, int playerobjectid)
 
 int InterpolateCameraPos(int playerid, float FromX, float FromY, float FromZ, float ToX, float ToY, float ToZ, int time, int cut)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -2141,7 +2141,7 @@ int InterpolateCameraPos(int playerid, float FromX, float FromY, float FromZ, fl
 
 int InterpolateCameraLookAt(int playerid, float FromX, float FromY, float FromZ, float ToX, float ToY, float ToZ, int time, int cut)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[10] =
 	{
@@ -2157,7 +2157,7 @@ int InterpolateCameraLookAt(int playerid, float FromX, float FromY, float FromZ,
 
 int IsPlayerConnected( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2170,7 +2170,7 @@ int IsPlayerConnected( int playerid )
 
 int IsPlayerInVehicle( int playerid, int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2183,7 +2183,7 @@ int IsPlayerInVehicle( int playerid, int vehicleid )
 
 int IsPlayerInAnyVehicle( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2196,7 +2196,7 @@ int IsPlayerInAnyVehicle( int playerid )
 
 int IsPlayerInCheckpoint( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2209,7 +2209,7 @@ int IsPlayerInCheckpoint( int playerid )
 
 int IsPlayerInRaceCheckpoint( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2225,7 +2225,7 @@ int IsPlayerInRaceCheckpoint( int playerid )
 
 int SetPlayerVirtualWorld( int playerid, int worldid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2238,7 +2238,7 @@ int SetPlayerVirtualWorld( int playerid, int worldid )
 
 int GetPlayerVirtualWorld( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2254,7 +2254,7 @@ int GetPlayerVirtualWorld( int playerid )
 
 int EnableStuntBonusForPlayer( int playerid, int enable )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2267,7 +2267,7 @@ int EnableStuntBonusForPlayer( int playerid, int enable )
 
 int EnableStuntBonusForAll( int enable )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2283,7 +2283,7 @@ int EnableStuntBonusForAll( int enable )
 
 int TogglePlayerSpectating( int playerid, int toggle )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2296,7 +2296,7 @@ int TogglePlayerSpectating( int playerid, int toggle )
 
 int PlayerSpectatePlayer( int playerid, int targetplayerid, int mode )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2309,7 +2309,7 @@ int PlayerSpectatePlayer( int playerid, int targetplayerid, int mode )
 
 int PlayerSpectateVehicle( int playerid, int targetvehicleid, int mode )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2325,7 +2325,7 @@ int PlayerSpectateVehicle( int playerid, int targetvehicleid, int mode )
 
 int StartRecordingPlayerData( int playerid, int recordtype, const char* recordname )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2341,7 +2341,7 @@ int StartRecordingPlayerData( int playerid, int recordtype, const char* recordna
 
 int StopRecordingPlayerData( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2354,7 +2354,7 @@ int StopRecordingPlayerData( int playerid )
 
 int SelectTextDraw(int playerid, int hovercolor)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2367,7 +2367,7 @@ int SelectTextDraw(int playerid, int hovercolor)
 
 int CancelSelectTextDraw(int playerid)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2386,7 +2386,7 @@ int CancelSelectTextDraw(int playerid)
 
 int SendClientMessage( int playerid, int color, const char* message )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2402,7 +2402,7 @@ int SendClientMessage( int playerid, int color, const char* message )
 
 int SendClientMessageToAll( int color, const char* message )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2418,7 +2418,7 @@ int SendClientMessageToAll( int color, const char* message )
 
 int SendPlayerMessageToPlayer( int playerid, int senderid, const char* message )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2434,7 +2434,7 @@ int SendPlayerMessageToPlayer( int playerid, int senderid, const char* message )
 
 int SendPlayerMessageToAll( int senderid, const char* message )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2450,7 +2450,7 @@ int SendPlayerMessageToAll( int senderid, const char* message )
 
 int SendDeathMessage( int killer, int victim, int weapon )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2463,7 +2463,7 @@ int SendDeathMessage( int killer, int victim, int weapon )
 
 int GameTextForAll( const char* string, int time, int style )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2479,7 +2479,7 @@ int GameTextForAll( const char* string, int time, int style )
 
 int GameTextForPlayer( int playerid, const char* string, int time, int style )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -2495,7 +2495,7 @@ int GameTextForPlayer( int playerid, const char* string, int time, int style )
 
 int SetTimer( int timerIndex, int interval, int repeating )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -2508,7 +2508,7 @@ int SetTimer( int timerIndex, int interval, int repeating )
 
 int KillTimer( int timerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2521,7 +2521,7 @@ int KillTimer( int timerid )
 
 int GetMaxPlayers()
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[1] =
 	{
@@ -2536,7 +2536,7 @@ int GetMaxPlayers()
 
 int SetGameModeText( const char* text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2552,7 +2552,7 @@ int SetGameModeText( const char* text )
 
 int SetTeamCount( int count )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2565,7 +2565,7 @@ int SetTeamCount( int count )
 
 int AddPlayerClass( int modelid, float x, float y, float z, float z_angle, int weapon1id, int weapon1ammo, int weapon2id, int weapon2ammo, int weapon3id, int weapon3ammo )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[12] =
 	{
@@ -2578,7 +2578,7 @@ int AddPlayerClass( int modelid, float x, float y, float z, float z_angle, int w
 
 int AddPlayerClassEx( int teamid, int modelid, float x, float y, float z, float z_angle, int weapon1id, int weapon1ammo, int weapon2id, int weapon2ammo, int weapon3id, int weapon3ammo )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[13] =
 	{
@@ -2591,7 +2591,7 @@ int AddPlayerClassEx( int teamid, int modelid, float x, float y, float z, float 
 
 int AddStaticVehicle( int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int color1, int color2 )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[8] =
 	{
@@ -2604,7 +2604,7 @@ int AddStaticVehicle( int modelid, float spawn_x, float spawn_y, float spawn_z, 
 
 int AddStaticVehicleEx( int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int color1, int color2, int respawn_delay )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -2617,7 +2617,7 @@ int AddStaticVehicleEx( int modelid, float spawn_x, float spawn_y, float spawn_z
 
 int AddStaticPickup( int model, int type, float x, float y, float z, int virtualworld )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[7] =
 	{
@@ -2630,7 +2630,7 @@ int AddStaticPickup( int model, int type, float x, float y, float z, int virtual
 
 int CreatePickup( int model, int type, float x, float y, float z, int virtualworld )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[7] =
 	{
@@ -2643,7 +2643,7 @@ int CreatePickup( int model, int type, float x, float y, float z, int virtualwor
 
 int DestroyPickup( int pickup )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2656,7 +2656,7 @@ int DestroyPickup( int pickup )
 
 int ShowNameTags( int show )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2669,7 +2669,7 @@ int ShowNameTags( int show )
 
 int ShowPlayerMarkers( int show )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2682,7 +2682,7 @@ int ShowPlayerMarkers( int show )
 
 int GameModeExit()
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[1] =
 	{
@@ -2694,7 +2694,7 @@ int GameModeExit()
 
 int SetWorldTime( int hour )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2707,7 +2707,7 @@ int SetWorldTime( int hour )
 
 int GetWeaponName( int weaponid, char* weapon, int len )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *str_phys;
 
 	cell args[4] =
@@ -2725,7 +2725,7 @@ int GetWeaponName( int weaponid, char* weapon, int len )
 
 int EnableTirePopping( int enable )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2738,7 +2738,7 @@ int EnableTirePopping( int enable )
 
 int AllowInteriorWeapons( int allow )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2751,7 +2751,7 @@ int AllowInteriorWeapons( int allow )
 
 int SetWeather( int weatherid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2764,7 +2764,7 @@ int SetWeather( int weatherid )
 
 int SetGravity( float gravity )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2777,7 +2777,7 @@ int SetGravity( float gravity )
 
 int SetDeathDropAmount( int amount )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2790,7 +2790,7 @@ int SetDeathDropAmount( int amount )
 
 int CreateExplosion( float x, float y, float z, int type, float Radius )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -2803,7 +2803,7 @@ int CreateExplosion( float x, float y, float z, int type, float Radius )
 
 int EnableZoneNames( int enable )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2816,7 +2816,7 @@ int EnableZoneNames( int enable )
 
 int UsePlayerPedAnims()
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[1] =
 	{
@@ -2828,7 +2828,7 @@ int UsePlayerPedAnims()
 
 int DisableInteriorEnterExits()
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[1] =
 	{
@@ -2840,7 +2840,7 @@ int DisableInteriorEnterExits()
 
 int SetNameTagDrawDistance( float distance )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2853,7 +2853,7 @@ int SetNameTagDrawDistance( float distance )
 
 int DisableNameTagLOS()
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[1] =
 	{
@@ -2865,7 +2865,7 @@ int DisableNameTagLOS()
 
 int LimitGlobalChatRadius( float chat_radius )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2878,7 +2878,7 @@ int LimitGlobalChatRadius( float chat_radius )
 
 int LimitPlayerMarkerRadius( float marker_radius )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2894,7 +2894,7 @@ int LimitPlayerMarkerRadius( float marker_radius )
 
 int ConnectNPC( const char* name, const char* script )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2911,7 +2911,7 @@ int ConnectNPC( const char* name, const char* script )
 
 int IsPlayerNPC( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2927,7 +2927,7 @@ int IsPlayerNPC( int playerid )
 
 int IsPlayerAdmin( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2940,7 +2940,7 @@ int IsPlayerAdmin( int playerid )
 
 int Kick( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2953,7 +2953,7 @@ int Kick( int playerid )
 
 int Ban( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2966,7 +2966,7 @@ int Ban( int playerid )
 
 int BanEx( int playerid, const char* reason )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -2983,7 +2983,7 @@ int BanEx( int playerid, const char* reason )
 
 int SendRconCommand( const char* cmd )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -2999,7 +2999,7 @@ int SendRconCommand( const char* cmd )
 
 int GetServerVarAsString( const char* varname, char* buffer, int len )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *str_phys;
 
 	cell args[4] =
@@ -3018,7 +3018,7 @@ int GetServerVarAsString( const char* varname, char* buffer, int len )
 
 int GetServerVarAsInt( const char* varname )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3034,7 +3034,7 @@ int GetServerVarAsInt( const char* varname )
 
 int GetServerVarAsBool( const char* varname )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3050,7 +3050,7 @@ int GetServerVarAsBool( const char* varname )
 
 int GetPlayerNetworkStats(int playerid, char* retstr, int retstr_size)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *str_phys;
 
 	cell args[4] =
@@ -3068,7 +3068,7 @@ int GetPlayerNetworkStats(int playerid, char* retstr, int retstr_size)
 
 int GetNetworkStats(char* retstr, int retstr_size)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *str_phys;
 
 	cell args[3] =
@@ -3086,7 +3086,7 @@ int GetNetworkStats(char* retstr, int retstr_size)
 
 int GetPlayerVersion(int playerid, char* version, int len)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *str_phys;
 
 	cell args[4] =
@@ -3107,7 +3107,7 @@ int GetPlayerVersion(int playerid, char* version, int len)
 
 int CreateMenu( const char* title, int columns, float x, float y, float col1width, float col2width )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[7] =
 	{
@@ -3123,7 +3123,7 @@ int CreateMenu( const char* title, int columns, float x, float y, float col1widt
 
 int DestroyMenu( int menuid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3136,7 +3136,7 @@ int DestroyMenu( int menuid )
 
 int AddMenuItem( int menuid, int column, const char* menutext )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3152,7 +3152,7 @@ int AddMenuItem( int menuid, int column, const char* menutext )
 
 int SetMenuColumnHeader( int menuid, int column, const char* columnheader )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3168,7 +3168,7 @@ int SetMenuColumnHeader( int menuid, int column, const char* columnheader )
 
 int ShowMenuForPlayer( int menuid, int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3181,7 +3181,7 @@ int ShowMenuForPlayer( int menuid, int playerid )
 
 int HideMenuForPlayer( int menuid, int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3194,7 +3194,7 @@ int HideMenuForPlayer( int menuid, int playerid )
 
 int IsValidMenu( int menuid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3207,7 +3207,7 @@ int IsValidMenu( int menuid )
 
 int DisableMenu( int menuid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3220,7 +3220,7 @@ int DisableMenu( int menuid )
 
 int DisableMenuRow( int menuid, int row )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3233,7 +3233,7 @@ int DisableMenuRow( int menuid, int row )
 
 int GetPlayerMenu( int playerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3249,7 +3249,7 @@ int GetPlayerMenu( int playerid )
 
 int TextDrawCreate( float x, float y, const char* text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3265,7 +3265,7 @@ int TextDrawCreate( float x, float y, const char* text )
 
 int TextDrawDestroy( int text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3278,7 +3278,7 @@ int TextDrawDestroy( int text )
 
 int TextDrawLetterSize( int text, float x, float y )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3291,7 +3291,7 @@ int TextDrawLetterSize( int text, float x, float y )
 
 int TextDrawTextSize( int text, float x, float y )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3304,7 +3304,7 @@ int TextDrawTextSize( int text, float x, float y )
 
 int TextDrawAlignment( int text, int alignment )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3317,7 +3317,7 @@ int TextDrawAlignment( int text, int alignment )
 
 int TextDrawColor( int text, int color )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3330,7 +3330,7 @@ int TextDrawColor( int text, int color )
 
 int TextDrawUseBox( int text, int use )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3343,7 +3343,7 @@ int TextDrawUseBox( int text, int use )
 
 int TextDrawBoxColor( int text, int color )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3356,7 +3356,7 @@ int TextDrawBoxColor( int text, int color )
 
 int TextDrawSetShadow( int text, int size )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3369,7 +3369,7 @@ int TextDrawSetShadow( int text, int size )
 
 int TextDrawSetOutline( int text, int size )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3382,7 +3382,7 @@ int TextDrawSetOutline( int text, int size )
 
 int TextDrawBackgroundColor( int text, int color )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3395,7 +3395,7 @@ int TextDrawBackgroundColor( int text, int color )
 
 int TextDrawFont( int text, int font )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3408,7 +3408,7 @@ int TextDrawFont( int text, int font )
 
 int TextDrawSetProportional( int text, int set )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3421,7 +3421,7 @@ int TextDrawSetProportional( int text, int set )
 
 int TextDrawSetSelectable(int textid, int set)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3434,7 +3434,7 @@ int TextDrawSetSelectable(int textid, int set)
 
 int TextDrawShowForPlayer( int playerid, int text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3447,7 +3447,7 @@ int TextDrawShowForPlayer( int playerid, int text )
 
 int TextDrawHideForPlayer( int playerid, int text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3460,7 +3460,7 @@ int TextDrawHideForPlayer( int playerid, int text )
 
 int TextDrawShowForAll( int text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3473,7 +3473,7 @@ int TextDrawShowForAll( int text )
 
 int TextDrawHideForAll( int text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3486,7 +3486,7 @@ int TextDrawHideForAll( int text )
 
 int TextDrawSetString( int text, const char* string )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3505,7 +3505,7 @@ int TextDrawSetString( int text, const char* string )
 
 int GangZoneCreate( float minx, float miny, float maxx, float maxy )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -3518,7 +3518,7 @@ int GangZoneCreate( float minx, float miny, float maxx, float maxy )
 
 int GangZoneDestroy( int zone )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3531,7 +3531,7 @@ int GangZoneDestroy( int zone )
 
 int GangZoneShowForPlayer( int playerid, int zone, int color )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3544,7 +3544,7 @@ int GangZoneShowForPlayer( int playerid, int zone, int color )
 
 int GangZoneShowForAll( int zone, int color )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3557,7 +3557,7 @@ int GangZoneShowForAll( int zone, int color )
 
 int GangZoneHideForPlayer( int playerid, int zone )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3570,7 +3570,7 @@ int GangZoneHideForPlayer( int playerid, int zone )
 
 int GangZoneHideForAll( int zone )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3583,7 +3583,7 @@ int GangZoneHideForAll( int zone )
 
 int GangZoneFlashForPlayer( int playerid, int zone, int flashcolor )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3596,7 +3596,7 @@ int GangZoneFlashForPlayer( int playerid, int zone, int flashcolor )
 
 int GangZoneFlashForAll( int zone, int flashcolor )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3609,7 +3609,7 @@ int GangZoneFlashForAll( int zone, int flashcolor )
 
 int GangZoneStopFlashForPlayer( int playerid, int zone )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3622,7 +3622,7 @@ int GangZoneStopFlashForPlayer( int playerid, int zone )
 
 int GangZoneStopFlashForAll( int zone )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3638,7 +3638,7 @@ int GangZoneStopFlashForAll( int zone )
 
 int Create3DTextLabel( const char* text, int color, float x, float y, float z, float DrawDistance, int virtualworld, int testLOS )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -3654,7 +3654,7 @@ int Create3DTextLabel( const char* text, int color, float x, float y, float z, f
 
 int Delete3DTextLabel( int id )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3668,7 +3668,7 @@ int Delete3DTextLabel( int id )
 
 int Attach3DTextLabelToPlayer( int id, int playerid, float OffsetX, float OffsetY, float OffsetZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -3681,7 +3681,7 @@ int Attach3DTextLabelToPlayer( int id, int playerid, float OffsetX, float Offset
 
 int Attach3DTextLabelToVehicle( int id, int vehicleid, float OffsetX, float OffsetY, float OffsetZ )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -3694,7 +3694,7 @@ int Attach3DTextLabelToVehicle( int id, int vehicleid, float OffsetX, float Offs
 
 int Update3DTextLabelText( int id, int color, const char* text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -3713,7 +3713,7 @@ int Update3DTextLabelText( int id, int color, const char* text )
 
 int CreatePlayer3DTextLabel( int playerid, const char* text, int color, float x, float y, float z, float DrawDistance, int attachedplayer, int attachedvehicle, int testLOS )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[11] =
 	{
@@ -3729,7 +3729,7 @@ int CreatePlayer3DTextLabel( int playerid, const char* text, int color, float x,
 
 int DeletePlayer3DTextLabel( int playerid, int id )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3742,7 +3742,7 @@ int DeletePlayer3DTextLabel( int playerid, int id )
 
 int UpdatePlayer3DTextLabelText( int playerid, int id, int color, const char* text )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -3761,7 +3761,7 @@ int UpdatePlayer3DTextLabelText( int playerid, int id, int color, const char* te
 
 int ShowPlayerDialog( int playerid, int dialogid, int style, const char* caption, const char* info, const char* button1, const char* button2 )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[8] =
 	{
@@ -3784,7 +3784,7 @@ int ShowPlayerDialog( int playerid, int dialogid, int style, const char* caption
 
 int CreateVehicle( int vehicletype, float x, float y, float z, float rotation, int color1, int color2, int respawn_delay )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -3797,7 +3797,7 @@ int CreateVehicle( int vehicletype, float x, float y, float z, float rotation, i
 
 int DestroyVehicle( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -3810,7 +3810,7 @@ int DestroyVehicle( int vehicleid )
 
 int IsVehicleStreamedIn( int vehicleid, int forplayerid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3823,7 +3823,7 @@ int IsVehicleStreamedIn( int vehicleid, int forplayerid )
 
 int GetVehiclePos( int vehicleid, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -3846,7 +3846,7 @@ int GetVehiclePos( int vehicleid, float &x, float &y, float &z )
 
 int SetVehiclePos( int vehicleid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -3859,7 +3859,7 @@ int SetVehiclePos( int vehicleid, float x, float y, float z )
 
 int GetVehicleZAngle( int vehicleid, float &z_angle )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *phys;
 
 	cell args[3] =
@@ -3878,7 +3878,7 @@ int GetVehicleZAngle( int vehicleid, float &z_angle )
 
 int GetVehicleRotationQuat( int vehicleid, float &w, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *w_phys, *x_phys, *y_phys, *z_phys;
 
 	cell args[6] =
@@ -3903,7 +3903,7 @@ int GetVehicleRotationQuat( int vehicleid, float &w, float &x, float &y, float &
 
 float GetVehicleDistanceFromPoint( int vehicleid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -3917,7 +3917,7 @@ float GetVehicleDistanceFromPoint( int vehicleid, float x, float y, float z )
 
 int SetVehicleZAngle( int vehicleid, float z_angle )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -3930,7 +3930,7 @@ int SetVehicleZAngle( int vehicleid, float z_angle )
 
 int SetVehicleParamsForPlayer( int vehicleid, int playerid, int objective, int doorslocked )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -3943,7 +3943,7 @@ int SetVehicleParamsForPlayer( int vehicleid, int playerid, int objective, int d
 
 int ManualVehicleEngineAndLights()
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[1] =
 	{
@@ -3955,7 +3955,7 @@ int ManualVehicleEngineAndLights()
 
 int SetVehicleParamsEx( int vehicleid, int engine, int lights, int alarm, int doors, int bonnet, int boot, int objective )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[9] =
 	{
@@ -3968,7 +3968,7 @@ int SetVehicleParamsEx( int vehicleid, int engine, int lights, int alarm, int do
 
 int GetVehicleParamsEx( int vehicleid, int &engine, int &lights, int &alarm, int &doors, int &bonnet, int &boot, int &objective )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *e_phys, *l_phys, *a_phys, *d_phys, *b_phys, *o_phys, *j_phys;
 
 	cell args[9] =
@@ -4000,7 +4000,7 @@ int GetVehicleParamsEx( int vehicleid, int &engine, int &lights, int &alarm, int
 
 int SetVehicleToRespawn( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	
 	cell args[2] =
 	{
@@ -4013,7 +4013,7 @@ int SetVehicleToRespawn( int vehicleid )
 
 int LinkVehicleToInterior( int vehicleid, int interiorid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4026,7 +4026,7 @@ int LinkVehicleToInterior( int vehicleid, int interiorid )
 
 int AddVehicleComponent( int vehicleid, int componentid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4039,7 +4039,7 @@ int AddVehicleComponent( int vehicleid, int componentid )
 
 int RemoveVehicleComponent( int vehicleid, int componentid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4052,7 +4052,7 @@ int RemoveVehicleComponent( int vehicleid, int componentid )
 
 int ChangeVehicleColor( int vehicleid, int color1, int color2 )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[4] =
 	{
@@ -4065,7 +4065,7 @@ int ChangeVehicleColor( int vehicleid, int color1, int color2 )
 
 int ChangeVehiclePaintjob( int vehicleid, int paintjobid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4078,7 +4078,7 @@ int ChangeVehiclePaintjob( int vehicleid, int paintjobid )
 
 int SetVehicleHealth( int vehicleid, float health )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4091,7 +4091,7 @@ int SetVehicleHealth( int vehicleid, float health )
 
 int GetVehicleHealth( int vehicleid, float &health )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *phys;
 
 	cell args[3] =
@@ -4110,7 +4110,7 @@ int GetVehicleHealth( int vehicleid, float &health )
 
 int AttachTrailerToVehicle( int trailerid, int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4123,7 +4123,7 @@ int AttachTrailerToVehicle( int trailerid, int vehicleid )
 
 int DetachTrailerFromVehicle( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -4136,7 +4136,7 @@ int DetachTrailerFromVehicle( int vehicleid )
 
 int IsTrailerAttachedToVehicle( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -4149,7 +4149,7 @@ int IsTrailerAttachedToVehicle( int vehicleid )
 
 int GetVehicleTrailer( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -4162,7 +4162,7 @@ int GetVehicleTrailer( int vehicleid )
 
 int SetVehicleNumberPlate( int vehicleid, const char* numberplate )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4178,7 +4178,7 @@ int SetVehicleNumberPlate( int vehicleid, const char* numberplate )
 
 int GetVehicleModel( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -4191,7 +4191,7 @@ int GetVehicleModel( int vehicleid )
 
 int GetVehicleComponentInSlot( int vehicleid, int slot )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4204,7 +4204,7 @@ int GetVehicleComponentInSlot( int vehicleid, int slot )
 
 int GetVehicleComponentType( int component )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -4217,7 +4217,7 @@ int GetVehicleComponentType( int component )
 
 int RepairVehicle( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
@@ -4230,7 +4230,7 @@ int RepairVehicle( int vehicleid )
 
 int GetVehicleVelocity( int vehicleid, float &x, float &y, float &z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[5] =
@@ -4253,7 +4253,7 @@ int GetVehicleVelocity( int vehicleid, float &x, float &y, float &z )
 
 int SetVehicleVelocity( int vehicleid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -4266,7 +4266,7 @@ int SetVehicleVelocity( int vehicleid, float x, float y, float z )
 
 int SetVehicleAngularVelocity( int vehicleid, float x, float y, float z )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[5] =
 	{
@@ -4279,7 +4279,7 @@ int SetVehicleAngularVelocity( int vehicleid, float x, float y, float z )
 
 int GetVehicleDamageStatus( int vehicleid, int &panels, int &doors, int &lights, int &tires)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *p_phys, *d_phys, *l_phys, *t_phys;
 
 	cell args[6] =
@@ -4304,7 +4304,7 @@ int GetVehicleDamageStatus( int vehicleid, int &panels, int &doors, int &lights,
 
 int UpdateVehicleDamageStatus( int vehicleid, int panels, int doors, int lights, int tires )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[6] =
 	{
@@ -4317,7 +4317,7 @@ int UpdateVehicleDamageStatus( int vehicleid, int panels, int doors, int lights,
 
 int GetVehicleModelInfo(int vehiclemodel, int infotype, float &x, float &y, float &z)
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 	cell *x_phys, *y_phys, *z_phys;
 
 	cell args[6] =
@@ -4343,7 +4343,7 @@ int GetVehicleModelInfo(int vehiclemodel, int infotype, float &x, float &y, floa
 
 int SetVehicleVirtualWorld( int vehicleid, int worldid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[3] =
 	{
@@ -4356,7 +4356,7 @@ int SetVehicleVirtualWorld( int vehicleid, int worldid )
 
 int GetVehicleVirtualWorld( int vehicleid )
 {
-	static amx_native_t func = amx_FindNative(pAMX, __FUNCTION__);
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
 
 	cell args[2] =
 	{
