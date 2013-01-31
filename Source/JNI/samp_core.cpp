@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2012 MK124
+ * Copyright (C) 2011-2013 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ int ReleaseShoebillObject( JNIEnv *env );
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3E by MK124 & JoJLlmAn" );
+	logprintf( "  > ShoebillPlugin Milestone 2 for SA-MP 0.3x by MK124 & JoJLlmAn" );
 
 	char classpath[2048] = {0};
 	if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
