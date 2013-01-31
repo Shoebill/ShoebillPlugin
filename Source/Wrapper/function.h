@@ -1,6 +1,6 @@
 /*  SA-MP Functions
  *
- *  (c) Copyright 2005-2010, SA-MP Team
+ *  (c) Copyright 2005-2012, SA-MP Team
  *
  */
 
@@ -141,6 +141,9 @@ int PlayerTextDrawSetSelectable(int playerid, int textId, int set);
 int PlayerTextDrawShow(int playerid, int textId);
 int PlayerTextDrawHide(int playerid, int textId);
 int PlayerTextDrawSetString(int playerid, int textId, char* string);
+int PlayerTextDrawSetPreviewModel(int playerid, int textId, int modelindex);
+int PlayerTextDrawSetPreviewRot(int playerid, int textId, float fRotX, float fRotY, float fRotZ, float fZoom);
+int PlayerTextDrawSetPreviewVehCol(int playerid, int textId, int color1, int color2);
 
 int SetPlayerChatBubble(int playerid, const char* text, int color, float drawdistance, int expiretime);
 
@@ -242,6 +245,7 @@ int GameModeExit();
 int SetWorldTime(int hour);
 int GetWeaponName(int weaponid, char* weapon, int len);
 int EnableTirePopping(int enable);
+int EnableVehicleFriendlyFire();
 int AllowInteriorWeapons(int allow);
 int SetWeather(int weatherid);
 int SetGravity(float gravity);
@@ -304,6 +308,9 @@ int TextDrawHideForPlayer(int playerid, int text);
 int TextDrawShowForAll(int text);
 int TextDrawHideForAll(int text);
 int TextDrawSetString(int text, const char* string);
+int TextDrawSetPreviewModel(int textid, int modelindex);
+int TextDrawSetPreviewRot(int textid, float fRotX, float fRotY, float fRotZ, float fZoom);
+int TextDrawSetPreviewVehCol(int textid, int color1, int color2);
 
 // Gang Zones
 int GangZoneCreate(float minx, float miny, float maxx, float maxy);

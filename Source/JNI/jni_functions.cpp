@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2012 MK124
+ * Copyright (C) 2011-2013 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1542,6 +1542,39 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDraw
 }
 
 /*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    playerTextDrawSetPreviewModel
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDrawSetPreviewModel
+  (JNIEnv *env, jclass jcls, jint playerid, jint textId, jint modelindex)
+{
+	PlayerTextDrawSetPreviewModel(playerid, textId, modelindex);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    playerTextDrawSetPreviewRot
+ * Signature: (IIFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDrawSetPreviewRot
+  (JNIEnv *env, jclass jcls, jint playerid, jint textId, jfloat fRotX, jfloat fRotY, jfloat fRotZ, jfloat fZoom)
+{
+	PlayerTextDrawSetPreviewRot(playerid, textId, fRotX, fRotY, fRotZ, fZoom);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    playerTextDrawSetPreviewVehCol
+ * Signature: (IIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDrawSetPreviewVehCol
+  (JNIEnv *env, jclass jcls, jint playerid, jint textId, jint color1, jint color2)
+{
+	PlayerTextDrawSetPreviewVehCol(playerid, textId, color1, color2);
+}
+
+/*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    setPlayerChatBubble
  * Signature: (ILjava/lang/String;IFI)V
@@ -2431,6 +2464,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_enableTirePopp
 }
 
 /*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    enableVehicleFriendlyFire
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_enableVehicleFriendlyFire
+  (JNIEnv *env, jclass jcls)
+{
+	EnableVehicleFriendlyFire();
+}
+
+/*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    allowInteriorWeapons
  * Signature: (Z)V
@@ -3097,6 +3141,39 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetStr
 	TextDrawSetString( textid, str );
 
 	env->ReleaseStringUTFChars(string, str);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    textDrawSetPreviewModel
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetPreviewModel
+  (JNIEnv *env, jclass jcls, jint textid, jint modelindex)
+{
+	TextDrawSetPreviewModel(textid, modelindex);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    textDrawSetPreviewRot
+ * Signature: (IFFFF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetPreviewRot
+  (JNIEnv *env, jclass jcls, jint textid, jfloat fRotX, jfloat fRotY, jfloat fRotZ, jfloat fZoom)
+{
+	TextDrawSetPreviewRot(textid, fRotX, fRotY, fRotZ, fZoom);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    textDrawSetPreviewVehCol
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetPreviewVehCol
+  (JNIEnv *env, jclass jcls, jint textid, jint color1, jint color2)
+{
+	TextDrawSetPreviewVehCol(textid, color1, color2);
 }
 
 /*

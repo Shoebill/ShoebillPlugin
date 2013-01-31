@@ -452,6 +452,9 @@ public Shoebill_Oops()
 	PlayerTextDrawShow(0, PlayerText:0);
 	PlayerTextDrawHide(0, PlayerText:0);
 	PlayerTextDrawSetString(0, PlayerText:0, a);
+	PlayerTextDrawSetPreviewModel(0, PlayerText:0, 0);
+	PlayerTextDrawSetPreviewRot(0, PlayerText:0, 0, 0, 0, 0);
+	PlayerTextDrawSetPreviewVehCol(0, PlayerText:0, 0, 0);
 
 	SetPVarInt(0, a, 0);
 	GetPVarInt(0, a);
@@ -567,6 +570,7 @@ public Shoebill_Oops()
 	SetWorldTime(0);
 	GetWeaponName(0, a, 0);
 	EnableTirePopping(0);
+	EnableVehicleFriendlyFire();
 	AllowInteriorWeapons(0);
 	SetWeather(0);
 	SetGravity(0);
@@ -629,6 +633,9 @@ public Shoebill_Oops()
 	TextDrawShowForAll(Text:0);
 	TextDrawHideForAll(Text:0);
 	TextDrawSetString(Text:0, a);
+	TextDrawSetPreviewModel(Text:0, 0);
+	TextDrawSetPreviewRot(Text:0, 0, 0, 0, 0);
+	TextDrawSetPreviewVehCol(Text:0, 0, 0);
 
 	// Gang Zones
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2012 MK124
+ * Copyright (C) 2011-2013 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1696,6 +1696,45 @@ int PlayerTextDrawSetString(int playerid, int textId, char* string)
 	return ret;
 }
 
+int PlayerTextDrawSetPreviewModel(int playerid, int textId, int modelindex)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, modelindex
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawSetPreviewRot(int playerid, int textId, float fRotX, float fRotY, float fRotZ, float fZoom)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[7] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, amx_ftoc(fRotX), amx_ftoc(fRotY), amx_ftoc(fRotZ), amx_ftoc(fZoom)
+	};
+
+	return func(pAMX, args);
+}
+
+int PlayerTextDrawSetPreviewVehCol(int playerid, int textId, int color1, int color2)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[5] =
+	{
+		sizeof(args)- sizeof(cell),
+		playerid, textId, color1, color2
+	};
+
+	return func(pAMX, args);
+}
+
 
 int SetPlayerChatBubble( int playerid, const char* text, int color, float drawdistance, int expiretime )
 {
@@ -2736,6 +2775,18 @@ int EnableTirePopping( int enable )
 	return func(pAMX, args);
 }
 
+int EnableVehicleFriendlyFire()
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[1] =
+	{
+		sizeof(args)- sizeof(cell),
+	};
+
+	return func(pAMX, args);
+}
+
 int AllowInteriorWeapons( int allow )
 {
 	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
@@ -3498,6 +3549,45 @@ int TextDrawSetString( int text, const char* string )
 
 	amx_Release( pAMX, args[2] );
 	return ret;
+}
+
+int TextDrawSetPreviewModel(int textid, int modelindex)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)- sizeof(cell),
+		textid, modelindex
+	};
+
+	return func(pAMX, args);
+}
+
+int TextDrawSetPreviewRot(int textid, float fRotX, float fRotY, float fRotZ, float fZoom)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[6] =
+	{
+		sizeof(args)- sizeof(cell),
+		textid, amx_ftoc(fRotX), amx_ftoc(fRotY), amx_ftoc(fRotZ), amx_ftoc(fZoom)
+	};
+
+	return func(pAMX, args);
+}
+
+int TextDrawSetPreviewVehCol(int textid, int color1, int color2)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[4] =
+	{
+		sizeof(args)- sizeof(cell),
+		textid, color1, color2
+	};
+
+	return func(pAMX, args);
 }
 
 
