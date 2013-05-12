@@ -8,6 +8,8 @@
 // Plugin Callbacks
 bool OnLoadPlugin();
 void OnUnloadPlugin();
+void OnAmxLoad(AMX *amx);
+void OnAmxUnload(AMX *amx);
 void OnProcessTick();
 
 

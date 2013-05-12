@@ -271,5 +271,6 @@
 //----------------------------------------------------------
 // Callbacks & Functions
 
+#include "../../Dependencies/sampplugin/amx/amx.h"
 #include "callback.h"
 #include "function.h"

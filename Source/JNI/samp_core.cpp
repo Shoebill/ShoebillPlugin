@@ -16,6 +16,7 @@
 
 #include <jni.h>
 #include <string.h>
+#include <set>
 
 #include "encoding.h"
 #include "jni_core.h"
@@ -42,7 +43,9 @@ const char LOAD_NATIVE_LIBRARY_METHOD_NAME[] = "loadNativeLibrary";
 const char LOAD_NATIVE_LIBRARY_METHOD_SIGN[] = "()V";
 
 const char CREATE_SHOEBILL_METHOD_NAME[] = "createShoebill";
-const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/lang/Object;)Ljava/lang/Object;";
+const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/lang/Object;[I)Ljava/lang/Object;";
+
+std::set<AMX*> amxHandles;
 
 jclass shoebillLauncherClass = NULL;
 
@@ -96,6 +99,38 @@ void OnUnloadPlugin()
 	if( jni_jvm_destroy(env) >= 0 ) logprintf( "Java VM destroyed." );
 }
 
+void OnAmxLoad(AMX *amx)
+{
+	amxHandles.insert(amx);
+
+	if( !callbackHandlerObject ) return;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxLoad", "(I)V");
+	if( !jmid ) return;
+
+	env->CallVoidMethod(callbackHandlerObject, jmid);
+	jni_jvm_printExceptionStack(env);
+}
+
+void OnAmxUnload(AMX *amx)
+{
+	amxHandles.erase(amx);
+
+	if( !callbackHandlerObject ) return;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxUnload", "(I)V");
+	if( !jmid ) return;
+
+	env->CallVoidMethod(callbackHandlerObject, jmid);
+	jni_jvm_printExceptionStack(env);
+}
+
 int Initialize( JNIEnv *env )
 {
 	shoebillLauncherClass = env->FindClass(LAUNCHER_CLASS_NAME);
@@ -135,7 +170,7 @@ int Uninitialize( JNIEnv *env )
 
 int CreateShoebillObject( JNIEnv *env )
 {
-	jobject files = NULL;
+	jobject context = NULL;
 	static jmethodID resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
 	if( !resolveDependenciesMethodID )
 	{
@@ -143,8 +178,8 @@ int CreateShoebillObject( JNIEnv *env )
 		return -8;
 	}
 
-	files = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
-	if( !files )
+	context = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
+	if( !context )
 	{
 		jni_jvm_printExceptionStack( env );
 		logprintf( "ShoebillPlugin Error: Can't resolve dependencies." );
@@ -154,11 +189,24 @@ int CreateShoebillObject( JNIEnv *env )
 	static jmethodID createShoebillMethodID = env->GetStaticMethodID(shoebillLauncherClass, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN);
 	if( !createShoebillMethodID )
 	{
-		logprintf( "ShoebillPlugin Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN );
+		logprintf( "ShoebillPlugin Error: Can't find launcher method [%s::%s%s], Maybe the launcher library is outdated.", LAUNCHER_CLASS_NAME, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN );
 		return -3;
 	}
 
-	shoebillObject = env->CallStaticObjectMethod(shoebillLauncherClass, createShoebillMethodID, files);
+	jsize size = amxHandles.size();
+	jint* array = new jint[size];
+	{
+		int i = 0;
+		for (std::set<AMX*>::iterator it = amxHandles.begin(); it != amxHandles.end() && i < size; it++, i++)
+		{
+			array[i] = (jint)(*it);
+		}
+	}
+	jintArray amxHandleArray = env->NewIntArray(size);
+	env->SetIntArrayRegion(amxHandleArray, 0, size, array);
+	delete array;
+
+	shoebillObject = env->CallStaticObjectMethod(shoebillLauncherClass, createShoebillMethodID, context, amxHandleArray);
 	if( !shoebillObject )
 	{
 		jni_jvm_printExceptionStack( env );
