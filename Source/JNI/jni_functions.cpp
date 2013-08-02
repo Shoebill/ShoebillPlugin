@@ -3413,7 +3413,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_showPlayerDial
   (JNIEnv *env, jclass jcls, jint playerid, jint dialogid, jint style,
   jstring caption, jstring info, jstring button1, jstring button2)
 {
-	char str_caption[128], str_info[1024], str_button1[32], str_button2[32];
+	char str_caption[64], str_info[2048], str_button1[32], str_button2[32];
 	int len;
 	
 	const jchar* wmsg1 = env->GetStringChars(caption, NULL);
