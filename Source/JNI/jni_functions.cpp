@@ -908,14 +908,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerWeapo
   (JNIEnv *env, jclass jcls, jint playerid, jint slot, jobject weapondata)
 {
 	static jclass cls = env->GetObjectClass(weapondata);
-	static jfieldID fidId = env->GetFieldID(cls, "id", "I");
+	//static jfieldID fidId = env->GetFieldID(cls, "id", "I");
 	static jfieldID fidAmmo = env->GetFieldID(cls, "ammo", "I");
+
+	static jmethodID setWeaponMethodId = env->GetMethodID(cls, "setModel", "(I)V");
 
 	int weaponid, ammo;
 	GetPlayerWeaponData( playerid, slot, weaponid, ammo );
 
-	env->SetIntField( weapondata, fidId, weaponid );
-	env->SetIntField( weapondata, fidAmmo, ammo );
+	//env->SetIntField( weapondata, fidId, weaponid );
+	env->CallVoidMethod(weapondata, setWeaponMethodId, weaponid);
+	env->SetIntField(weapondata, fidAmmo, ammo);
 }
 
 /*

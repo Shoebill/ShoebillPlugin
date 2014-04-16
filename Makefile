@@ -1,5 +1,5 @@
 CC = g++
-CFLAG = -O3 -Wall -ansi -fPIC -fno-strict-aliasing -Wno-write-strings -fshort-wchar
+CFLAG = -m32 -O3 -Wall -ansi -fPIC -fno-strict-aliasing -Wno-write-strings -fshort-wchar
 DFLAG = -DLINUX
 INCDIR = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux \
 	-I/usr/include
