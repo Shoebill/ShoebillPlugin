@@ -1414,6 +1414,40 @@ int RemoveBuildingForPlayer( int playerid, int modelid, float x, float y, float 
 	return func(pAMX, args);
 }
 
+int GetPlayerLastShotVectors(int playerid, float &fOriginX, float &fOriginY, float &fOriginZ, float &fHitPosX, float &fHitPosY, float &fHitPosZ)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+	cell *x_phys, *y_phys, *z_phys;
+	cell *hx_phys, *hy_phys, *hz_phys;
+
+	cell args[8] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid,
+		amx_Allot(pAMX, 1, &x_phys), amx_Allot(pAMX, 1, &y_phys), amx_Allot(pAMX, 1, &z_phys),
+		amx_Allot(pAMX, 1, &hx_phys), amx_Allot(pAMX, 1, &hy_phys), amx_Allot(pAMX, 1, &hz_phys)
+	};
+
+	int ret = func(pAMX, args);
+
+	fOriginX = amx_ctof(x_phys);
+	fOriginY = amx_ctof(y_phys);
+	fOriginZ = amx_ctof(z_phys);
+
+	fHitPosX = amx_ctof(hx_phys);
+	fHitPosY = amx_ctof(hy_phys);
+	fHitPosZ = amx_ctof(hz_phys);
+
+	amx_Release(pAMX, args[7]);
+	amx_Release(pAMX, args[6]);
+	amx_Release(pAMX, args[5]);
+
+	amx_Release(pAMX, args[4]);
+	amx_Release(pAMX, args[3]);
+	amx_Release(pAMX, args[2]);
+	return ret;
+}
+
 int SetPlayerAttachedObject( int playerid, int index, int modelid, int bone, float fOffsetX, float fOffsetY, float fOffsetZ, float frotX, float frotY, float frotZ, float fScaleX, float fScaleY, float fScaleZ, int materialcolor1, int materialcolor2 )
 {
 	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
@@ -2137,6 +2171,34 @@ int GetPlayerCameraMode( int playerid)
 	};
 
 	return func(pAMX, args);
+}
+
+float GetPlayerCameraAspectRatio(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	cell ret = func(pAMX, args);
+	return amx_ctof(ret);
+}
+
+float GetPlayerCameraZoom(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	cell ret = func(pAMX, args);
+	return amx_ctof(ret);
 }
 
 int AttachCameraToObject(int playerid, int objectid)
@@ -3150,6 +3212,143 @@ int GetPlayerVersion(int playerid, char* version, int len)
 
 	amx_GetString( version, str_phys, 0, len );
 	amx_Release( pAMX, args[2] );
+	return ret;
+}
+
+
+// Extended admin network stats
+int GetServerTickRate()
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[1] =
+	{
+		sizeof(args)-sizeof(cell),
+	};
+
+	return func(pAMX, args);
+}
+
+int NetStats_GetConnectedTime(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int NetStats_MessagesReceived(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int NetStats_BytesReceived(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int NetStats_MessagesSent(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int NetStats_BytesSent(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int NetStats_MessagesRecvPerSecond(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+float NetStats_PacketLossPercent(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	cell ret = func(pAMX, args);
+	return amx_ctof(ret);
+}
+
+int NetStats_ConnectionStatus(int playerid)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int NetStats_GetIpPort(int playerid, char* ip_port, int len)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+	cell *phys;
+
+	cell args[4] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid, amx_Allot(pAMX, len, &phys), len
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_GetString(ip_port, phys, 0, len);
+	amx_Release(pAMX, args[2]);
 	return ret;
 }
 

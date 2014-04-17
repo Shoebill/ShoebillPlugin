@@ -801,6 +801,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_removeBuilding
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getPlayerLastShotVectors
+ * Signature: (ILjava/lang/Object;Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerLastShotVectors
+  (JNIEnv *, jclass, jint, jobject, jobject);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
  * Method:    setPlayerAttachedObject
  * Signature: (IIIIFFFFFFFFFII)Z
  */
@@ -1285,6 +1293,22 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCamer
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraMode
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getPlayerCameraAspectRatio
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraAspectRatio
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getPlayerCameraZoom
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraZoom
   (JNIEnv *, jclass, jint);
 
 /*
@@ -1853,6 +1877,86 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNetworkS
  * Signature: (I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerVersion
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerTickRate
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerTickRate
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_GetConnectedTime
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1GetConnectedTime
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_MessagesReceived
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1MessagesReceived
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_BytesReceived
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1BytesReceived
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_MessagesSent
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1MessagesSent
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_BytesSent
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1BytesSent
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_MessagesRecvPerSecond
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1MessagesRecvPerSecond
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_PacketLossPercent
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1PacketLossPercent
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_ConnectionStatus
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1ConnectionStatus
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_GetIpPort
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1GetIpPort
   (JNIEnv *, jclass, jint);
 
 /*

@@ -991,7 +991,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerState
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerIp
   (JNIEnv *env, jclass jcls, jint playerid)
 {
-	char ip[16];
+	char ip[20];
 	GetPlayerIp( playerid, ip, sizeof(ip) );
 
 	return env->NewStringUTF(ip);
@@ -1295,7 +1295,32 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerSurfi
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_removeBuildingForPlayer
   (JNIEnv *env, jclass jcls, jint player, jint modelid, jfloat x, jfloat y, jfloat z, jfloat radius)
 {
-	RemoveBuildingForPlayer( player, modelid, x, y, z, radius );
+	RemoveBuildingForPlayer(player, modelid, x, y, z, radius);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getPlayerLastShotVectors
+ * Signature: (ILjava/lang/Object;Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerLastShotVectors
+(JNIEnv *env, jclass jcls, jint playerid, jobject origin, jobject hitpos)
+{
+	static jclass cls = env->GetObjectClass(origin);
+	static jfieldID fidX = env->GetFieldID(cls, "x", "F");
+	static jfieldID fidY = env->GetFieldID(cls, "y", "F");
+	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
+
+	float x, y, z, hx, hy, hz;
+	GetPlayerLastShotVectors(playerid, x, y, z, hx, hy, hz);
+
+	env->SetFloatField(origin, fidX, x);
+	env->SetFloatField(origin, fidY, y);
+	env->SetFloatField(origin, fidZ, z);
+
+	env->SetFloatField(hitpos, fidX, hx);
+	env->SetFloatField(hitpos, fidY, hy);
+	env->SetFloatField(hitpos, fidZ, hz);
 }
 
 /*
@@ -1907,6 +1932,27 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCamer
   (JNIEnv *env, jclass jcls, jint playerid)
 {
 	return GetPlayerCameraMode(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getPlayerCameraAspectRatio
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraAspectRatio
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerCameraAspectRatio(playerid);
+}
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getPlayerCameraZoom
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraZoom
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return GetPlayerCameraZoom(playerid);
 }
 
 /*
@@ -2803,6 +2849,118 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerVe
 	GetPlayerVersion(playerid, str, sizeof(str));
 
 	return env->NewStringUTF(str);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerTickRate
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerTickRate
+  (JNIEnv *env, jclass jcls)
+{
+	return GetServerTickRate();
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_GetConnectedTime
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1GetConnectedTime
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_GetConnectedTime(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_MessagesReceived
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1MessagesReceived
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_MessagesReceived(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_BytesReceived
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1BytesReceived
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_BytesReceived(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_MessagesSent
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1MessagesSent
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_MessagesSent(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_BytesSent
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1BytesSent
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_BytesSent(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_MessagesRecvPerSecond
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1MessagesRecvPerSecond
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_MessagesRecvPerSecond(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_PacketLossPercent
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1PacketLossPercent
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_PacketLossPercent(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_ConnectionStatus
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1ConnectionStatus
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	return NetStats_ConnectionStatus(playerid);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    netStats_GetIpPort
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1GetIpPort
+  (JNIEnv *env, jclass jcls, jint playerid)
+{
+	char ipPort[24];
+	NetStats_GetIpPort(playerid, ipPort, sizeof(ipPort));
+	return env->NewStringUTF(ipPort);
 }
 
 /*

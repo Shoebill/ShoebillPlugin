@@ -30,7 +30,8 @@ native n_OnEnterExitModShop(playerid, enterexit, interiorid);
 native n_OnVehiclePaintjob(playerid, vehicleid, paintjobid);
 native n_OnVehicleRespray(playerid, vehicleid, color1, color2);
 native n_OnVehicleDamageStatusUpdate(vehicleid, playerid);
-native n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat);
+native n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_x, Float:new_y, Float:new_z);
+
 native n_OnPlayerSelectedMenuRow(playerid, row);
 native n_OnPlayerExitedMenu(playerid);
 native n_OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
@@ -42,8 +43,8 @@ native n_OnPlayerStreamOut(playerid, forplayerid);
 native n_OnVehicleStreamIn(vehicleid, forplayerid);
 native n_OnVehicleStreamOut(vehicleid, forplayerid);
 native n_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
-native n_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
-native n_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid);
+native n_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart);
+native n_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart);
 native n_OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ);
 native n_OnPlayerClickTextDraw(playerid, Text:clickedid);
 native n_OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid);
@@ -51,6 +52,7 @@ native n_OnPlayerClickPlayer(playerid, clickedplayerid, source);
 native n_OnPlayerEditObject( playerid, playerobject, objectid, response, Float:fX, Float:fY, Float:fZ, Float:fRotX, Float:fRotY, Float:fRotZ );
 native n_OnPlayerEditAttachedObject( playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ );
 native n_OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ);
+native n_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
 
 
 forward Shoebill_Oops();
@@ -213,9 +215,9 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 	return n_OnVehicleDamageStatusUpdate(vehicleid, playerid);
 }
 
-public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat)
+public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_x, Float:new_y, Float:new_z)
 {
-	return n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat);
+	return n_OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, new_x, new_y, new_z);
 }
 
 public OnPlayerSelectedMenuRow(playerid, row)
@@ -273,14 +275,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	return n_OnDialogResponse(playerid, dialogid, response, listitem, inputtext);
 }
 
-public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
 {
-	return n_OnPlayerTakeDamage(playerid, issuerid, amount, weaponid);
+	return n_OnPlayerTakeDamage(playerid, issuerid, amount, weaponid, bodypart);
 }
 
-public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid)
+public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
 {
-	return n_OnPlayerGiveDamage(playerid, damagedid, amount, weaponid);
+	return n_OnPlayerGiveDamage(playerid, damagedid, amount, weaponid, bodypart);
 }
 
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
@@ -316,6 +318,11 @@ public OnPlayerEditAttachedObject( playerid, response, index, modelid, boneid, F
 public OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ)
 {
 	return n_OnPlayerSelectObject(playerid, type, objectid, modelid, fX, fY, fZ);
+}
+
+public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+	return n_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }
 
 
@@ -427,7 +434,8 @@ public Shoebill_Oops()
 	GetPlayerSurfingVehicleID(0);
 	GetPlayerSurfingObjectID(0);
 	RemoveBuildingForPlayer(0, 0, 0, 0, 0, 0);
-
+	GetPlayerLastShotVectors(0, f, f, f, f, f, f);
+	
 	// Attached to bone objects
 	SetPlayerAttachedObject(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	RemovePlayerAttachedObject(0, 0);
@@ -501,6 +509,8 @@ public Shoebill_Oops()
 	GetPlayerCameraPos(0, f, f, f);
 	GetPlayerCameraFrontVector(0, f, f, f);
 	GetPlayerCameraMode(0); //0.3c r3
+	GetPlayerCameraAspectRatio(0);
+	GetPlayerCameraZoom(0);
 	AttachCameraToObject(0, 0);
 	AttachCameraToPlayerObject(0, 0);
 	InterpolateCameraPos(0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -600,6 +610,18 @@ public Shoebill_Oops()
 	GetPlayerNetworkStats(0, a, 0);
 	GetNetworkStats(a, 0);
 	GetPlayerVersion(0, a, 0); // Returns the SA-MP client revision as reported by the player
+
+	// Extended admin network stats
+	GetServerTickRate();
+	NetStats_GetConnectedTime(0);
+	NetStats_MessagesReceived(0);
+	NetStats_BytesReceived(0);
+	NetStats_MessagesSent(0);
+	NetStats_BytesSent(0);
+	NetStats_MessagesRecvPerSecond(0);
+	NetStats_PacketLossPercent(0);
+	NetStats_ConnectionStatus(0);
+	NetStats_GetIpPort(0, a, n);
 
 	// Menu
 	CreateMenu(a, 0, 0, 0, 0, 0);

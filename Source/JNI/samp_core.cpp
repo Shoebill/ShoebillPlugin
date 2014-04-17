@@ -751,17 +751,17 @@ int OnVehicleDamageStatusUpdate( int vehicleid, int playerid )
 	return ret;
 }
 
-int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat)
+int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat, float new_x, float new_y, float new_z)
 {
 	if( !callbackHandlerObject ) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onUnoccupiedVehicleUpdate", "(III)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onUnoccupiedVehicleUpdate", "(IIIFFF)I");
 	if( !jmid ) return 0;
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, playerid, passenger_seat);
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, playerid, passenger_seat, new_x, new_y, new_z);
 	jni_jvm_printExceptionStack( env );
 	return ret;
 }
@@ -941,32 +941,32 @@ int OnDialogResponse( int playerid, int dialogid, int response, int listitem, ch
 	return ret;
 }
 
-int OnPlayerTakeDamage(int playerid, int issuerid, float amount, int weaponid)
+int OnPlayerTakeDamage(int playerid, int issuerid, float amount, int weaponid, int bodypart)
 {
 	if( !callbackHandlerObject ) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerTakeDamage", "(IIFI)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerTakeDamage", "(IIFII)I");
 	if( !jmid ) return 0;
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, issuerid, amount, weaponid);
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, issuerid, amount, weaponid, bodypart);
 	jni_jvm_printExceptionStack( env );
 	return ret;
 }
 
-int OnPlayerGiveDamage(int playerid, int damagedid, float amount, int weaponid)
+int OnPlayerGiveDamage(int playerid, int damagedid, float amount, int weaponid, int bodypart)
 {
 	if( !callbackHandlerObject ) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerGiveDamage", "(IIFI)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerGiveDamage", "(IIFII)I");
 	if( !jmid ) return 0;
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, damagedid, amount, weaponid);
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, damagedid, amount, weaponid, bodypart);
 	jni_jvm_printExceptionStack( env );
 	return ret;
 }
@@ -1073,5 +1073,20 @@ int OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, floa
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, type, objectid, modelid, fX, fY, fZ);
 	jni_jvm_printExceptionStack( env );
+	return ret;
+}
+
+int OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float fX, float fY, float fZ)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerWeaponShot", "(IIIIFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, weaponid, hittype, hitid, fX, fY, fZ);
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }

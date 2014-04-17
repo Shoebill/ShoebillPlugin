@@ -116,7 +116,8 @@ int SetPlayerShopName(int playerid, const char* shopname);
 int SetPlayerSkillLevel(int playerid, int skill, int level);
 int GetPlayerSurfingVehicleID(int playerid);
 int GetPlayerSurfingObjectID(int playerid);
-int RemoveBuildingForPlayer( int playerid, int modelid, float x, float y, float z, float radius );
+int RemoveBuildingForPlayer(int playerid, int modelid, float x, float y, float z, float radius);
+int GetPlayerLastShotVectors(int playerid, float &fOriginX, float &fOriginY, float &fOriginZ, float &fHitPosX, float &fHitPosY, float &fHitPosZ);
 
 int SetPlayerAttachedObject(int playerid, int index, int modelid, int bone, float fOffsetX = 0.0, float fOffsetY = 0.0, float fOffsetZ = 0.0, float fRotX = 0.0, float fRotY = 0.0, float fRotZ = 0.0, float fScaleX = 1.0, float fScaleY = 1.0, float fScaleZ = 1.0, int materialcolor1 = 0, int materialcolor2 = 0);
 int RemovePlayerAttachedObject(int playerid, int index);
@@ -180,6 +181,8 @@ int SetCameraBehindPlayer(int playerid);
 int GetPlayerCameraPos(int playerid, float &x, float &y, float &z);
 int GetPlayerCameraFrontVector(int playerid, float &x, float &y, float &z);
 int GetPlayerCameraMode(int playerid); //0.3c r3
+float GetPlayerCameraAspectRatio(int playerid);
+float GetPlayerCameraZoom(int playerid);
 int AttachCameraToObject(int playerid, int objectid);
 int AttachCameraToPlayerObject(int playerid, int playerobjectid);
 int InterpolateCameraPos(int playerid, float FromX, float FromY, float FromZ, float ToX, float ToY, float ToZ, int time, int cut);
@@ -275,6 +278,18 @@ int GetServerVarAsBool(const char* varname);
 int GetPlayerNetworkStats(int playerid, char* retstr, int retstr_size);
 int GetNetworkStats(char* retstr, int retstr_size);
 int GetPlayerVersion(int playerid, char* version, int len); // Returns the SA-MP client revision as reported by the player
+
+// Extended admin network stats
+int GetServerTickRate();
+int NetStats_GetConnectedTime(int playerid);
+int NetStats_MessagesReceived(int playerid);
+int NetStats_BytesReceived(int playerid);
+int NetStats_MessagesSent(int playerid);
+int NetStats_BytesSent(int playerid);
+int NetStats_MessagesRecvPerSecond(int playerid);
+float NetStats_PacketLossPercent(int playerid);
+int NetStats_ConnectionStatus(int playerid);
+int NetStats_GetIpPort(int playerid, char* ip_port, int ip_port_len);
 
 // Menu
 int CreateMenu(const char* title, int columns, float x, float y, float col1width, float col2width = 0.0);
