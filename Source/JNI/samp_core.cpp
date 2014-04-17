@@ -68,7 +68,7 @@ int ReleaseShoebillObject( JNIEnv *env );
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > Shoebill 1.0 NativePlugin for SA-MP 0.3x by MK124 & JoJLlmAn" );
+	logprintf( "  > Shoebill 1.0 NativePlugin for SA-MP 0.3z by MK124 & JoJLlmAn" );
 
 	char classpath[2048] = {0};
 	if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
