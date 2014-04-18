@@ -168,7 +168,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getObjectRot
 	static jfieldID fidZ = env->GetFieldID(cls, "z", "F");
 
 	float rotX, rotY, rotZ;
-	GetObjectPos( objectid, rotX, rotY, rotZ );
+	GetObjectRot(objectid, rotX, rotY, rotZ);
 
 	env->SetFloatField( rotate, fidX, rotX );
 	env->SetFloatField( rotate, fidY, rotY );

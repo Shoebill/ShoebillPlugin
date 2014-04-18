@@ -33,7 +33,7 @@ extern std::map<int, std::string> codepages;
 const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
 const char JVM_OPTION_FILE_PATH[] = "./shoebill/jvm_options.txt";
 
-const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher-0.2.*.jar";
+const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher-1.0*.jar";
 const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/ShoebillLauncher";
 
 const char RESOLVE_DEPENDENCIES_METHOD_NAME[] = "resolveDependencies";
