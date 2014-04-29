@@ -311,6 +311,7 @@ int OnGameModeInit()
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	CreateShoebillObject(env);
+	if (shoebillObject == nullptr) return 0;
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onGameModeInit", "()I");
 	if( !jmid ) return 0;
