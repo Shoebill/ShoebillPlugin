@@ -5,7 +5,7 @@
  */
 
 
-typedef void (*logprintf_t)(const char* format, ...);
+typedef void(*logprintf_t)(const char* format, ...);
 extern logprintf_t logprintf;
 
 
@@ -14,7 +14,7 @@ extern logprintf_t logprintf;
 
 int CreateObject(int modelid, float X, float Y, float Z, float rX, float rY, float rZ, float drawDistance);
 int AttachObjectToVehicle(int objectid, int vehicleid, float OffsetX, float OffsetY, float OffsetZ, float RotX, float RotY, float RotZ);
-int AttachObjectToObject( int objectid, int attachtoid, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, int syncRotation );
+int AttachObjectToObject(int objectid, int attachtoid, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, int syncRotation);
 int AttachObjectToPlayer(int objectid, int playerid, float OffsetX, float OffsetY, float OffsetZ, float rX, float rY, float rZ);
 int SetObjectPos(int objectid, float X, float Y, float Z);
 int GetObjectPos(int objectid, float &X, float &Y, float &Z);
@@ -108,9 +108,9 @@ int GetPlayerWantedLevel(int playerid);
 int SetPlayerFightingStyle(int playerid, int style);
 int GetPlayerFightingStyle(int playerid);
 int SetPlayerVelocity(int playerid, float X, float Y, float Z);
-int GetPlayerVelocity(int playerid, float &X, float &Y, float &Z );
+int GetPlayerVelocity(int playerid, float &X, float &Y, float &Z);
 int PlayCrimeReportForPlayer(int playerid, int suspectid, int crime);
-int PlayAudioStreamForPlayer(int playerid, const char* url, float posX, float posY, float posZ, float distance, int usepos );
+int PlayAudioStreamForPlayer(int playerid, const char* url, float posX, float posY, float posZ, float distance, int usepos);
 int StopAudioStreamForPlayer(int playerid);
 int SetPlayerShopName(int playerid, const char* shopname);
 int SetPlayerSkillLevel(int playerid, int skill, int level);
@@ -175,7 +175,7 @@ int SetPlayerMapIcon(int playerid, int iconid, float x, float y, float z, int ma
 int RemovePlayerMapIcon(int playerid, int iconid);
 
 // Player camera
-int SetPlayerCameraPos(int playerid,float x, float y, float z);
+int SetPlayerCameraPos(int playerid, float x, float y, float z);
 int SetPlayerCameraLookAt(int playerid, float x, float y, float z, int cut = CAMERA_CUT);
 int SetCameraBehindPlayer(int playerid);
 int GetPlayerCameraPos(int playerid, float &x, float &y, float &z);
@@ -259,8 +259,8 @@ int UsePlayerPedAnims();
 int DisableInteriorEnterExits();
 int SetNameTagDrawDistance(float distance);
 int DisableNameTagLOS();
-int LimitGlobalChatRadius( float chat_radius );
-int LimitPlayerMarkerRadius( float marker_radius );
+int LimitGlobalChatRadius(float chat_radius);
+int LimitPlayerMarkerRadius(float marker_radius);
 
 // Npc
 int ConnectNPC(const char* name, const char* script);
@@ -340,19 +340,19 @@ int GangZoneStopFlashForPlayer(int playerid, int zone);
 int GangZoneStopFlashForAll(int zone);
 
 // Global 3D Text Labels
-int Create3DTextLabel(const char* text, int color, float X, float Y, float Z, float DrawDistance, int virtualworld, int testLOS=0);
+int Create3DTextLabel(const char* text, int color, float X, float Y, float Z, float DrawDistance, int virtualworld, int testLOS = 0);
 int Delete3DTextLabel(int id);
 int Attach3DTextLabelToPlayer(int id, int playerid, float OffsetX, float OffsetY, float OffsetZ);
 int Attach3DTextLabelToVehicle(int id, int vehicleid, float OffsetX, float OffsetY, float OffsetZ);
 int Update3DTextLabelText(int id, int color, const char* text);
 
 // Per-player 3D Text Labels
-int CreatePlayer3DTextLabel(int playerid, const char* text, int color, float X, float Y, float Z, float DrawDistance, int attachedplayer=INVALID_PLAYER_ID, int attachedvehicle=INVALID_VEHICLE_ID, int testLOS=0);
+int CreatePlayer3DTextLabel(int playerid, const char* text, int color, float X, float Y, float Z, float DrawDistance, int attachedplayer = INVALID_PLAYER_ID, int attachedvehicle = INVALID_VEHICLE_ID, int testLOS = 0);
 int DeletePlayer3DTextLabel(int playerid, int id);
 int UpdatePlayer3DTextLabelText(int playerid, int id, int color, const char* text);
 
 // Player GUI Dialog
-int ShowPlayerDialog( int playerid, int dialogid, int style, const char* caption, const char* info, const char* button1, const char* button2 );
+int ShowPlayerDialog(int playerid, int dialogid, int style, const char* caption, const char* info, const char* button1, const char* button2);
 
 
 //----------------------------------------------------------
@@ -392,7 +392,7 @@ int GetVehicleVelocity(int vehicleid, float& X, float& Y, float& Z);
 int SetVehicleVelocity(int vehicleid, float X, float Y, float Z);
 int SetVehicleAngularVelocity(int vehicleid, float X, float Y, float Z);
 int GetVehicleDamageStatus(int vehicleid, int &panels, int &doors, int &lights, int &tires);
-int UpdateVehicleDamageStatus(int vehicleid, int panels, int doors, int lights,int tires);
+int UpdateVehicleDamageStatus(int vehicleid, int panels, int doors, int lights, int tires);
 
 int GetVehicleModelInfo(int vehiclemodel, int infotype, float &X, float &Y, float &Z);
 

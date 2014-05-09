@@ -36,46 +36,46 @@
 JavaVM *jvm = NULL;
 
 
-int jni_jvm_create( JNIEnv** env, const char* clspath, const char* jvmOptionPath )
+int jni_jvm_create(JNIEnv** env, const char* clspath, const char* jvmOptionPath)
 {
-	if( jvm != NULL ) return -1;
+	if (jvm != NULL) return -1;
 
 	char clspathOpt[2048] = "-Djava.class.path=";
-	strcat( clspathOpt, clspath );
+	strcat(clspathOpt, clspath);
 
 	std::vector<char*> optionStrings;
-	std::ifstream optionStream( jvmOptionPath, std::ifstream::in );
-	if( optionStream.is_open() )
+	std::ifstream optionStream(jvmOptionPath, std::ifstream::in);
+	if (optionStream.is_open())
 	{
-		optionStrings.reserve( 20 );
-		while( optionStream.good() )
+		optionStrings.reserve(20);
+		while (optionStream.good())
 		{
 			char* option = new char[128];
-			optionStream.getline( option, 128 );
-			char* p = option + strlen(option)-1;
+			optionStream.getline(option, 128);
+			char* p = option + strlen(option) - 1;
 			if (p >= option && *p == '\r') *p = 0;
 			if (strlen(option) < 1) continue;
-			optionStrings.push_back( option );
+			optionStrings.push_back(option);
 		}
 		optionStream.close();
 	}
 
-	JavaVMOption* options = new JavaVMOption[optionStrings.size()+2];
+	JavaVMOption* options = new JavaVMOption[optionStrings.size() + 2];
 	options[0].optionString = clspathOpt;
 	options[1].optionString = "-Djava.library.path=./plugins";
-	for(unsigned int i=0;i<optionStrings.size();i++)
+	for (unsigned int i = 0; i < optionStrings.size(); i++)
 	{
-		options[i+2].optionString = optionStrings[i];
+		options[i + 2].optionString = optionStrings[i];
 	}
 
 	JavaVMInitArgs vm_args;
 	vm_args.version = JNI_VERSION_1_6;
 	vm_args.options = options;
-	vm_args.nOptions = optionStrings.size()+2;
+	vm_args.nOptions = optionStrings.size() + 2;
 	vm_args.ignoreUnrecognized = JNI_FALSE;
 
 	jint res = JNI_CreateJavaVM(&jvm, (void**)env, &vm_args);
-	for(unsigned int i=0;i<optionStrings.size();i++)
+	for (unsigned int i = 0; i < optionStrings.size(); i++)
 	{
 		delete[] optionStrings.at(i);
 	}
@@ -86,43 +86,43 @@ int jni_jvm_create( JNIEnv** env, const char* clspath, const char* jvmOptionPath
 	return 0;
 }
 
-int jni_jvm_printExceptionStack( JNIEnv *env )
+int jni_jvm_printExceptionStack(JNIEnv *env)
 {
-	if( !env->ExceptionCheck() ) return 1;
+	if (!env->ExceptionCheck()) return 1;
 
 	jthrowable throwable = env->ExceptionOccurred();
 	jclass throwableCls = env->GetObjectClass(throwable);
 	jmethodID printStackTraceId = env->GetMethodID(throwableCls, "printStackTrace", "()V");
-	if( !printStackTraceId ) return -4;
+	if (!printStackTraceId) return -4;
 
-	env->CallVoidMethod( throwable, printStackTraceId );
+	env->CallVoidMethod(throwable, printStackTraceId);
 	env->ExceptionClear();
 
 	return 0;
 }
 
-int jni_jvm_constructObject( JNIEnv *env, jclass jcls, jobject *pjobj )
+int jni_jvm_constructObject(JNIEnv *env, jclass jcls, jobject *pjobj)
 {
-	if( !jvm ) return -1;
+	if (!jvm) return -1;
 
 	jmethodID jmid = env->GetMethodID(jcls, "<init>", "()V");
-	if( !jmid ) return -2;
+	if (!jmid) return -2;
 
-	*pjobj = env->NewObject( jcls, jmid );
-	if( !*pjobj )
+	*pjobj = env->NewObject(jcls, jmid);
+	if (!*pjobj)
 	{
-		jni_jvm_printExceptionStack( env );
+		jni_jvm_printExceptionStack(env);
 		return -3;
 	}
 
 	return 0;
 }
 
-int jni_jvm_destroy( JNIEnv *env )
+int jni_jvm_destroy(JNIEnv *env)
 {
-	if( !jvm ) return -1;
+	if (!jvm) return -1;
 
-	if ( env->ExceptionOccurred() ) env->ExceptionDescribe();
+	if (env->ExceptionOccurred()) env->ExceptionDescribe();
 	jvm->DestroyJavaVM();
 
 	env = NULL;
@@ -137,23 +137,23 @@ int findAndGenerateClassPath(const char* searchPath, char* classPath)
 {
 	char basepath[512];
 
-	strcpy( basepath, searchPath );
+	strcpy(basepath, searchPath);
 	char *lastPos = strrchr(basepath, '/');
-	if (lastPos) *(lastPos+1) = 0;
+	if (lastPos) *(lastPos + 1) = 0;
 
 	_finddata_t finddata;
 	int hfind = _findfirst(searchPath, &finddata);
-	if( hfind < 0 ) return -1;
+	if (hfind < 0) return -1;
 
-	do 
+	do
 	{
-		strcat( classPath, basepath );
-		strcat( classPath, finddata.name );
-		strcat( classPath, ";" );
-	} while ( !_findnext(hfind, &finddata) );
-	_findclose( hfind );
+		strcat(classPath, basepath);
+		strcat(classPath, finddata.name);
+		strcat(classPath, ";");
+	} while (!_findnext(hfind, &finddata));
+	_findclose(hfind);
 
-	classPath[ strlen(classPath)-1 ] = 0;
+	classPath[strlen(classPath) - 1] = 0;
 	return 0;
 }
 

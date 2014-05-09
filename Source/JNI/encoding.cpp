@@ -20,33 +20,33 @@
 #if defined(WIN32)
 #include <Windows.h>
 
-int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen )
+int mbs2wcs(unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen)
 {
-	if( srclen<0 ) srclen = strlen(src);
+	if (srclen < 0) srclen = strlen(src);
 
-	int ret = MultiByteToWideChar(codepage, MB_COMPOSITE, src, srclen, (LPWSTR)dst, dstlen-1);
+	int ret = MultiByteToWideChar(codepage, MB_COMPOSITE, src, srclen, (LPWSTR)dst, dstlen - 1);
 	dst[ret] = 0;
 	return ret;
 }
 
-int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char* dst, int dstlen, bool* usedDefChar )
+int wcs2mbs(unsigned int codepage, const unsigned short* src, int srclen, char* dst, int dstlen, bool* usedDefChar)
 {
-	if( srclen<0 ) srclen = wcslen((LPCWSTR)src);
+	if (srclen < 0) srclen = wcslen((LPCWSTR)src);
 
 	BOOL usedDefaultChar = FALSE;
-	int ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, (LPCWSTR)src, srclen, dst, dstlen-1, "?", &usedDefaultChar);
-	
-	if( usedDefaultChar && (codepage == 950 || codepage == 932) )	// BIG5(TW) or SHIFT-JIS(JP)
-	{
-		wchar_t* convsrc = new wchar_t[srclen+1];
-		int rett = LCMapStringW( 0x804, LCMAP_TRADITIONAL_CHINESE, (LPCWSTR)src, srclen, convsrc, srclen+1 ) ;
+	int ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, (LPCWSTR)src, srclen, dst, dstlen - 1, "?", &usedDefaultChar);
 
-		ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, convsrc, rett, dst, dstlen-1, "?", &usedDefaultChar);
+	if (usedDefaultChar && (codepage == 950 || codepage == 932))	// BIG5(TW) or SHIFT-JIS(JP)
+	{
+		wchar_t* convsrc = new wchar_t[srclen + 1];
+		int rett = LCMapStringW(0x804, LCMAP_TRADITIONAL_CHINESE, (LPCWSTR)src, srclen, convsrc, srclen + 1);
+
+		ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, convsrc, rett, dst, dstlen - 1, "?", &usedDefaultChar);
 		delete[] convsrc;
 	}
 
 	dst[ret] = 0;
-	if(usedDefChar) *usedDefChar = usedDefaultChar!=FALSE;
+	if (usedDefChar) *usedDefChar = usedDefaultChar != FALSE;
 	return ret;
 }
 
@@ -63,7 +63,7 @@ std::map<unsigned int, std::string> codepageCaches;
 int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen )
 {
 	if( srclen == -1 ) srclen = strlen(src);
-	
+
 	size_t inbytesleft = srclen, outbytesleft = (dstlen-1)*sizeof(unsigned short);
 	char *in = (char*)src, *out = (char*)dst;
 
@@ -98,7 +98,7 @@ int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short*
 int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char* dst, int dstlen, bool* usedDefChar )
 {
 	if( srclen == -1 ) srclen = wcslen((wchar_t*)src);
-	
+
 	size_t inbytesleft = srclen*sizeof(unsigned short), outbytesleft = dstlen-1;
 	char *in = (char*)src, *out = (char*)dst;
 

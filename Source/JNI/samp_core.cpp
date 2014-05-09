@@ -56,37 +56,37 @@ jclass callbackHandlerClass = NULL;
 jobject callbackHandlerObject = NULL;
 
 int serverCodepage = 1252;
-int playerCodepage[MAX_PLAYERS] = {0};
+int playerCodepage[MAX_PLAYERS] = { 0 };
 
 
-int Initialize( JNIEnv *env );
-int Uninitialize( JNIEnv *env );
+int Initialize(JNIEnv *env);
+int Uninitialize(JNIEnv *env);
 
-int CreateShoebillObject( JNIEnv *env );
-int ReleaseShoebillObject( JNIEnv *env );
+int CreateShoebillObject(JNIEnv *env);
+int ReleaseShoebillObject(JNIEnv *env);
 
 
 bool OnLoadPlugin()
 {
-	logprintf( "  > Shoebill 1.0 NativePlugin for SA-MP 0.3z by MK124 & JoJLlmAn" );
+	logprintf("  > Shoebill 1.0 NativePlugin for SA-MP 0.3z by MK124 & JoJLlmAn");
 
-	char classpath[2048] = {0};
+	char classpath[2048] = { 0 };
 	if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
 	{
-		logprintf( "  > Error: Can't find launcher library." );
+		logprintf("  > Error: Can't find launcher library.");
 		return false;
 	}
 
 	JNIEnv *env;
-	if( jni_jvm_create(&env, classpath, JVM_OPTION_FILE_PATH) < 0 )
+	if (jni_jvm_create(&env, classpath, JVM_OPTION_FILE_PATH) < 0)
 	{
-		logprintf( "  > Error: Can't create Java VM." );
+		logprintf("  > Error: Can't create Java VM.");
 		return false;
 	}
 
-	logprintf( "  > Java VM has been created." );
+	logprintf("  > Java VM has been created.");
 
-	int ret = Initialize( env );
+	int ret = Initialize(env);
 	return ret >= 0;
 }
 
@@ -95,21 +95,21 @@ void OnUnloadPlugin()
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	Uninitialize( env );
-	if( jni_jvm_destroy(env) >= 0 ) logprintf( "Java VM destroyed." );
+	Uninitialize(env);
+	if (jni_jvm_destroy(env) >= 0) logprintf("Java VM destroyed.");
 }
 
 void OnAmxLoad(AMX *amx)
 {
 	amxHandles.insert(amx);
 
-	if( !callbackHandlerObject ) return;
+	if (!callbackHandlerObject) return;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxLoad", "(I)V");
-	if( !jmid ) return;
+	if (!jmid) return;
 
 	env->CallVoidMethod(callbackHandlerObject, jmid);
 	jni_jvm_printExceptionStack(env);
@@ -119,77 +119,77 @@ void OnAmxUnload(AMX *amx)
 {
 	amxHandles.erase(amx);
 
-	if( !callbackHandlerObject ) return;
+	if (!callbackHandlerObject) return;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxUnload", "(I)V");
-	if( !jmid ) return;
+	if (!jmid) return;
 
 	env->CallVoidMethod(callbackHandlerObject, jmid);
 	jni_jvm_printExceptionStack(env);
 }
 
-int Initialize( JNIEnv *env )
+int Initialize(JNIEnv *env)
 {
 	shoebillLauncherClass = env->FindClass(LAUNCHER_CLASS_NAME);
-	if( !shoebillLauncherClass )
+	if (!shoebillLauncherClass)
 	{
-		logprintf( "  > Error: Can't find launcher class [%s].", LAUNCHER_CLASS_NAME );
+		logprintf("  > Error: Can't find launcher class [%s].", LAUNCHER_CLASS_NAME);
 		return -1;
 	}
 
 	jobject files = NULL;
 	static jmethodID loadNativeLibraryMethodID = env->GetStaticMethodID(shoebillLauncherClass, LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN);
-	if( !loadNativeLibraryMethodID )
+	if (!loadNativeLibraryMethodID)
 	{
-		logprintf( "  > Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN );
+		logprintf("  > Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN);
 		return -6;
 	}
 
 	env->CallStaticVoidMethod(shoebillLauncherClass, loadNativeLibraryMethodID);
-	if( env->ExceptionCheck() )
+	if (env->ExceptionCheck())
 	{
-		jni_jvm_printExceptionStack( env );
-		logprintf( "  > Error: Can't load Shoebill JNI library." );
+		jni_jvm_printExceptionStack(env);
+		logprintf("  > Error: Can't load Shoebill JNI library.");
 		return -7;
 	}
 
-	shoebillLauncherClass = (jclass)( env->NewGlobalRef(shoebillLauncherClass) );
+	shoebillLauncherClass = (jclass)(env->NewGlobalRef(shoebillLauncherClass));
 	return 0;
 }
 
-int Uninitialize( JNIEnv *env )
+int Uninitialize(JNIEnv *env)
 {
-	if (shoebillLauncherClass) env->DeleteGlobalRef( shoebillLauncherClass );
+	if (shoebillLauncherClass) env->DeleteGlobalRef(shoebillLauncherClass);
 	shoebillLauncherClass = NULL;
 
 	return 0;
 }
 
-int CreateShoebillObject( JNIEnv *env )
+int CreateShoebillObject(JNIEnv *env)
 {
 	jobject context = NULL;
 	static jmethodID resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
-	if( !resolveDependenciesMethodID )
+	if (!resolveDependenciesMethodID)
 	{
-		logprintf( "ShoebillPlugin Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN );
+		logprintf("ShoebillPlugin Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
 		return -8;
 	}
 
 	context = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
-	if( !context )
+	if (!context)
 	{
-		jni_jvm_printExceptionStack( env );
-		logprintf( "ShoebillPlugin Error: Can't resolve dependencies." );
+		jni_jvm_printExceptionStack(env);
+		logprintf("ShoebillPlugin Error: Can't resolve dependencies.");
 		return -2;
 	}
 
 	static jmethodID createShoebillMethodID = env->GetStaticMethodID(shoebillLauncherClass, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN);
-	if( !createShoebillMethodID )
+	if (!createShoebillMethodID)
 	{
-		logprintf( "ShoebillPlugin Error: Can't find launcher method [%s::%s%s], Maybe the launcher library is outdated.", LAUNCHER_CLASS_NAME, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN );
+		logprintf("ShoebillPlugin Error: Can't find launcher method [%s::%s%s], Maybe the launcher library is outdated.", LAUNCHER_CLASS_NAME, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN);
 		return -3;
 	}
 
@@ -207,17 +207,17 @@ int CreateShoebillObject( JNIEnv *env )
 	delete array;
 
 	shoebillObject = env->CallStaticObjectMethod(shoebillLauncherClass, createShoebillMethodID, context, amxHandleArray);
-	if( !shoebillObject )
+	if (!shoebillObject)
 	{
-		jni_jvm_printExceptionStack( env );
-		logprintf( "ShoebillPlugin Error: Can't create shoebill object." );
+		jni_jvm_printExceptionStack(env);
+		logprintf("ShoebillPlugin Error: Can't create shoebill object.");
 		return -4;
 	}
 
 	shoebillClass = env->GetObjectClass(shoebillObject);
-	if( !shoebillClass )
+	if (!shoebillClass)
 	{
-		logprintf( "ShoebillPlugin Error: Can't get shoebill class." );
+		logprintf("ShoebillPlugin Error: Can't get shoebill class.");
 		return -5;
 	}
 
@@ -252,40 +252,40 @@ int CreateShoebillObject( JNIEnv *env )
 #endif
 
 	static jmethodID getCallbackHandlerMethodID = env->GetMethodID(shoebillClass, "getCallbackHandler", "()Lnet/gtaun/shoebill/samp/SampCallbackHandler;");
-	if( !getCallbackHandlerMethodID )
+	if (!getCallbackHandlerMethodID)
 	{
-		logprintf( "ShoebillPlugin Error: Can't find method getCallbackHandler()." );
+		logprintf("ShoebillPlugin Error: Can't find method getCallbackHandler().");
 		return 1;
 	}
 
 	callbackHandlerObject = env->CallObjectMethod(shoebillObject, getCallbackHandlerMethodID);
-	if( callbackHandlerObject == NULL )
+	if (callbackHandlerObject == NULL)
 	{
-		logprintf( "ShoebillPlugin Error: Can't find main EventHandler." );
+		logprintf("ShoebillPlugin Error: Can't find main EventHandler.");
 		return 1;
 	}
 
 	shoebillObject = env->NewGlobalRef(shoebillObject);
-	shoebillClass = (jclass)( env->NewGlobalRef(shoebillClass) );
+	shoebillClass = (jclass)(env->NewGlobalRef(shoebillClass));
 	callbackHandlerObject = env->NewGlobalRef(callbackHandlerObject);
-	callbackHandlerClass = (jclass)( env->NewGlobalRef(env->GetObjectClass(callbackHandlerObject)) );
+	callbackHandlerClass = (jclass)(env->NewGlobalRef(env->GetObjectClass(callbackHandlerObject)));
 
-	logprintf( "  > Shoebill has been initialized." );
+	logprintf("  > Shoebill has been initialized.");
 	return 0;
 }
 
-int ReleaseShoebillObject( JNIEnv *env )
+int ReleaseShoebillObject(JNIEnv *env)
 {
-	if (shoebillObject) env->DeleteGlobalRef( shoebillObject );
+	if (shoebillObject) env->DeleteGlobalRef(shoebillObject);
 	shoebillObject = NULL;
 
-	if (shoebillClass) env->DeleteGlobalRef( shoebillClass );
+	if (shoebillClass) env->DeleteGlobalRef(shoebillClass);
 	shoebillClass = NULL;
 
-	if (callbackHandlerObject) env->DeleteGlobalRef( callbackHandlerObject );
+	if (callbackHandlerObject) env->DeleteGlobalRef(callbackHandlerObject);
 	callbackHandlerObject = NULL;
 
-	if (callbackHandlerClass) env->DeleteGlobalRef( callbackHandlerClass );
+	if (callbackHandlerClass) env->DeleteGlobalRef(callbackHandlerClass);
 	callbackHandlerClass = NULL;
 
 	return 0;
@@ -293,16 +293,16 @@ int ReleaseShoebillObject( JNIEnv *env )
 
 void OnProcessTick()
 {
-	if( !callbackHandlerObject ) return;
+	if (!callbackHandlerObject) return;
 
 	JNIEnv *env = NULL;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onProcessTick", "()V");
-	if( !jmid ) return;
+	if (!jmid) return;
 
 	env->CallVoidMethod(callbackHandlerObject, jmid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 }
 
 int OnGameModeInit()
@@ -314,25 +314,25 @@ int OnGameModeInit()
 	if (shoebillObject == nullptr) return 0;
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onGameModeInit", "()I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnGameModeExit()
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onGameModeExit", "()I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 
 	ReleaseShoebillObject(env);
 	return ret;
@@ -348,24 +348,24 @@ int OnFilterScriptExit()
 	return 0;
 }
 
-int OnPlayerConnect( int playerid )
+int OnPlayerConnect(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerConnect", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerDisconnect( int playerid, int reason )
+int OnPlayerDisconnect(int playerid, int reason)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	playerCodepage[playerid] = 0;
 
@@ -373,707 +373,707 @@ int OnPlayerDisconnect( int playerid, int reason )
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerDisconnect", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, reason);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerSpawn( int playerid )
+int OnPlayerSpawn(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerSpawn", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerDeath( int playerid, int killerid, int reason )
+int OnPlayerDeath(int playerid, int killerid, int reason)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerDeath", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, killerid, reason);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehicleSpawn( int vehicleid )
+int OnVehicleSpawn(int vehicleid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleSpawn", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehicleDeath( int vehicleid, int killerid )
+int OnVehicleDeath(int vehicleid, int killerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleDeath", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, killerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerText( int playerid, char* text )
+int OnPlayerText(int playerid, char* text)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerText", "(ILjava/lang/String;)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(getPlayerCodepage(playerid), text, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getPlayerCodepage(playerid), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerCommandText( int playerid, char* cmdtext )
+int OnPlayerCommandText(int playerid, char* cmdtext)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerCommandText", "(ILjava/lang/String;)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(getPlayerCodepage(playerid), cmdtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getPlayerCodepage(playerid), cmdtext, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerRequestClass( int playerid, int classid )
+int OnPlayerRequestClass(int playerid, int classid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerRequestClass", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, classid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerEnterVehicle( int playerid, int vehicleid, int ispassenger )
+int OnPlayerEnterVehicle(int playerid, int vehicleid, int ispassenger)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterVehicle", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, ispassenger);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerExitVehicle( int playerid, int vehicleid )
+int OnPlayerExitVehicle(int playerid, int vehicleid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerExitVehicle", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerStateChange( int playerid, int newstate, int oldstate )
+int OnPlayerStateChange(int playerid, int newstate, int oldstate)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerStateChange", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, newstate, oldstate);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerEnterCheckpoint( int playerid )
+int OnPlayerEnterCheckpoint(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterCheckpoint", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerLeaveCheckpoint( int playerid )
+int OnPlayerLeaveCheckpoint(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerLeaveCheckpoint", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerEnterRaceCheckpoint( int playerid )
+int OnPlayerEnterRaceCheckpoint(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterRaceCheckpoint", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerLeaveRaceCheckpoint( int playerid )
+int OnPlayerLeaveRaceCheckpoint(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerLeaveRaceCheckpoint", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnRconCommand( char* cmd )
+int OnRconCommand(char* cmd)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRconCommand", "(Ljava/lang/String;)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(getServerCodepage(), cmd, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getServerCodepage(), cmd, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, str);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerRequestSpawn( int playerid )
+int OnPlayerRequestSpawn(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerRequestSpawn", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnObjectMoved( int objectid )
+int OnObjectMoved(int objectid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onObjectMoved", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, objectid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerObjectMoved( int playerid, int objectid )
+int OnPlayerObjectMoved(int playerid, int objectid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerObjectMoved", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, objectid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerPickUpPickup( int playerid, int pickupid )
+int OnPlayerPickUpPickup(int playerid, int pickupid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerPickUpPickup", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, pickupid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehicleMod( int playerid, int vehicleid, int componentid )
+int OnVehicleMod(int playerid, int vehicleid, int componentid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleMod", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, componentid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnEnterExitModShop( int playerid, int enterexit, int interiorid )
+int OnEnterExitModShop(int playerid, int enterexit, int interiorid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onEnterExitModShop", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, enterexit, interiorid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehiclePaintjob( int playerid, int vehicleid, int paintjobid )
+int OnVehiclePaintjob(int playerid, int vehicleid, int paintjobid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehiclePaintjob", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, paintjobid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehicleRespray( int playerid, int vehicleid, int color1, int color2 )
+int OnVehicleRespray(int playerid, int vehicleid, int color1, int color2)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleRespray", "(IIII)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, color1, color2);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehicleDamageStatusUpdate( int vehicleid, int playerid )
+int OnVehicleDamageStatusUpdate(int vehicleid, int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleDamageStatusUpdate", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat, float new_x, float new_y, float new_z)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onUnoccupiedVehicleUpdate", "(IIIFFF)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, playerid, passenger_seat, new_x, new_y, new_z);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerSelectedMenuRow( int playerid, int row )
+int OnPlayerSelectedMenuRow(int playerid, int row)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerSelectedMenuRow", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, row);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerExitedMenu( int playerid )
+int OnPlayerExitedMenu(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerExitedMenu", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerInteriorChange( int playerid, int newinteriorid, int oldinteriorid )
+int OnPlayerInteriorChange(int playerid, int newinteriorid, int oldinteriorid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerInteriorChange", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, newinteriorid, oldinteriorid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerKeyStateChange( int playerid, int newkeys, int oldkeys )
+int OnPlayerKeyStateChange(int playerid, int newkeys, int oldkeys)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerKeyStateChange", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, newkeys, oldkeys);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnRconLoginAttempt( char* ip, char* password, int success )
+int OnRconLoginAttempt(char* ip, char* password, int success)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRconLoginAttempt", "(Ljava/lang/String;Ljava/lang/String;I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jstring iptext = env->NewStringUTF(ip);
 
 	jchar wtext[1024];
-	int len = mbs2wcs(getServerCodepage(), password, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getServerCodepage(), password, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 	jstring str = env->NewString(wtext, len);
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, iptext, str, success);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerUpdate( int playerid )
+int OnPlayerUpdate(int playerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerUpdate", "(I)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerStreamIn( int playerid, int forplayerid )
+int OnPlayerStreamIn(int playerid, int forplayerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerStreamIn", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, forplayerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerStreamOut( int playerid, int forplayerid )
+int OnPlayerStreamOut(int playerid, int forplayerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerStreamOut", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, forplayerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehicleStreamIn( int vehicleid, int forplayerid )
+int OnVehicleStreamIn(int vehicleid, int forplayerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleStreamIn", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, forplayerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnVehicleStreamOut( int vehicleid, int forplayerid )
+int OnVehicleStreamOut(int vehicleid, int forplayerid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleStreamOut", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, forplayerid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnDialogResponse( int playerid, int dialogid, int response, int listitem, char *inputtext )
+int OnDialogResponse(int playerid, int dialogid, int response, int listitem, char *inputtext)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onDialogResponse", "(IIIILjava/lang/String;)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jchar wtext[1024];
-	int len = mbs2wcs(getPlayerCodepage(playerid), inputtext, -1, wtext, sizeof(wtext)/sizeof(wtext[0]));
+	int len = mbs2wcs(getPlayerCodepage(playerid), inputtext, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, dialogid, response, listitem, str);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerTakeDamage(int playerid, int issuerid, float amount, int weaponid, int bodypart)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerTakeDamage", "(IIFII)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, issuerid, amount, weaponid, bodypart);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerGiveDamage(int playerid, int damagedid, float amount, int weaponid, int bodypart)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerGiveDamage", "(IIFII)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, damagedid, amount, weaponid, bodypart);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerClickMap(int playerid, float x, float y, float z)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickMap", "(IFFF)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, x, y, z);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerClickTextDraw(int playerid, int clickedid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickTextDraw", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, clickedid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerClickPlayerTextDraw(int playerid, int playertextid)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickPlayerTextDraw", "(II)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, playertextid);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-int OnPlayerClickPlayer( int playerid, int clickedplayerid, int source )
+int OnPlayerClickPlayer(int playerid, int clickedplayerid, int source)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickPlayer", "(III)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, clickedplayerid, source);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerEditObject(int playerid, int playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEditObject", "(IIIIFFFFFF)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerEditAttachedObject(int playerid, int response, int index, int modelid, int boneid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ, float fScaleX, float fScaleY, float fScaleZ)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEditAttachedObject", "(IIIIIFFFFFFFFF)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
 int OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float fX, float fY, float fZ)
 {
-	if( !callbackHandlerObject ) return 0;
+	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerSelectObject", "(IIIIFFF)I");
-	if( !jmid ) return 0;
+	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, type, objectid, modelid, fX, fY, fZ);
-	jni_jvm_printExceptionStack( env );
+	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 

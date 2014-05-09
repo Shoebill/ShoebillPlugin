@@ -49,7 +49,7 @@ int OnPlayerSelectedMenuRow(int playerid, int row);
 int OnPlayerExitedMenu(int playerid);
 int OnPlayerInteriorChange(int playerid, int newinteriorid, int oldinteriorid);
 int OnPlayerKeyStateChange(int playerid, int newkeys, int oldkeys);
-int OnRconLoginAttempt( char* ip, char* password, int success );
+int OnRconLoginAttempt(char* ip, char* password, int success);
 int OnPlayerUpdate(int playerid);
 int OnPlayerStreamIn(int playerid, int forplayerid);
 int OnPlayerStreamOut(int playerid, int forplayerid);

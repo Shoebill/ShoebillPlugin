@@ -31,7 +31,7 @@ inline int getPlayerCodepage(int playerid)
 	extern int playerCodepage[];
 	extern int serverCodepage;
 	int ret = playerCodepage[playerid];
-	if(ret == 0) ret = serverCodepage;
+	if (ret == 0) ret = serverCodepage;
 	return ret;
 }
 

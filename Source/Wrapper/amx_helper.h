@@ -25,45 +25,45 @@ extern void *pAMXFunctions;
 extern AMX_NATIVE_INFO CallbackNatives[];
 
 
-inline AMX_NATIVE amx_FindNative( AMX *amx, const char *func )
+inline AMX_NATIVE amx_FindNative(AMX *amx, const char *func)
 {
-	if( !amx ) return NULL;
+	if (!amx) return NULL;
 
 	int index;
-	amx_FindNative( amx, func, &index);
-	if( index == 0x7FFFFFFF ) return NULL;
+	amx_FindNative(amx, func, &index);
+	if (index == 0x7FFFFFFF) return NULL;
 
 	AMX_HEADER *hdr = (AMX_HEADER*)amx->base;
-	AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB*)( (char*)(hdr)+ hdr->natives + hdr->defsize*index );
+	AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB*)((char*)(hdr)+hdr->natives + hdr->defsize*index);
 
 	return (AMX_NATIVE)funcstub->address;
 }
 
-inline cell amx_Allot( AMX *amx, int len, cell **phys )
+inline cell amx_Allot(AMX *amx, int len, cell **phys)
 {
 	cell amx_str;
-	amx_Allot( amx, len, &amx_str, phys );
+	amx_Allot(amx, len, &amx_str, phys);
 
 	return amx_str;
 }
 
-inline char* amx_GetString( AMX *amx, const cell str, char *dest, int size )
+inline char* amx_GetString(AMX *amx, const cell str, char *dest, int size)
 {
 	cell *phys;
 
-	amx_GetAddr( amx, str, &phys );
-	amx_GetString( dest, phys, 0, size );
+	amx_GetAddr(amx, str, &phys);
+	amx_GetString(dest, phys, 0, size);
 
 	return dest;
 }
 
-inline cell amx_NewString( AMX *amx, const char* str, int len=-1 )
+inline cell amx_NewString(AMX *amx, const char* str, int len = -1)
 {
 	cell amx_str, *amx_str_phys;
-	if( len<0 ) len = strlen(str) + 1;
+	if (len < 0) len = strlen(str) + 1;
 
-	amx_Allot( amx, len, &amx_str, &amx_str_phys );
-	amx_SetString( amx_str_phys, str, 0, 0, len );
+	amx_Allot(amx, len, &amx_str, &amx_str_phys);
+	amx_SetString(amx_str_phys, str, 0, 0, len);
 
 	return amx_str;
 }

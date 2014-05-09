@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen );
-int wcs2mbs( unsigned int codepage, const unsigned short* src, int srclen, char* dst, int dstlen, bool* usedDefChar=0 );
+int mbs2wcs(unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen);
+int wcs2mbs(unsigned int codepage, const unsigned short* src, int srclen, char* dst, int dstlen, bool* usedDefChar = 0);
