@@ -66,3 +66,4 @@ int OnPlayerEditObject(int playerid, int playerobject, int objectid, int respons
 int OnPlayerEditAttachedObject(int playerid, int response, int index, int modelid, int boneid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ, float fScaleX, float fScaleY, float fScaleZ);
 int OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float fX, float fY, float fZ);
 int OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float fX, float fY, float fZ);
+int OnIncomingConnection(int playerid, char* ip_address, int port);

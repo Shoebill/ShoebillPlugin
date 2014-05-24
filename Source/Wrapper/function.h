@@ -215,6 +215,9 @@ int StopRecordingPlayerData(int playerid);
 int SelectTextDraw(int playerid, int hovercolor); // enables the mouse so the player can select a textdraw
 int CancelSelectTextDraw(int playerid);	// cancel textdraw selection with the mouse
 
+// Explosion
+int CreateExplosionForPlayer(int playerid, float X, float Y, float Z, int type, float Radius);
+
 
 //----------------------------------------------------------
 // a_samp.inc
@@ -225,6 +228,7 @@ int SendClientMessageToAll(int color, const char* message);
 int SendPlayerMessageToPlayer(int playerid, int senderid, const char* message);
 int SendPlayerMessageToAll(int senderid, const char* message);
 int SendDeathMessage(int killer, int killee, int weapon);
+int SendDeathMessageToPlayer(int playerid, int killer, int killee, int weapon);
 int GameTextForAll(const char* string, int time, int style);
 int GameTextForPlayer(int playerid, const char* string, int time, int style);
 int SetTimer(int timerIndex, int interval, int repeating);
@@ -278,6 +282,8 @@ int GetServerVarAsBool(const char* varname);
 int GetPlayerNetworkStats(int playerid, char* retstr, int retstr_size);
 int GetNetworkStats(char* retstr, int retstr_size);
 int GetPlayerVersion(int playerid, char* version, int len); // Returns the SA-MP client revision as reported by the player
+int BlockIpAddress(const char* ip_address, int timems);
+int UnBlockIpAddress(const char* ip_address);
 
 // Extended admin network stats
 int GetServerTickRate();

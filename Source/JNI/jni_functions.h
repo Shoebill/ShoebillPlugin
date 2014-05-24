@@ -1473,6 +1473,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_cancelSelectTe
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    createExplosionForPlayer
+ * Signature: (IFFFIF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createExplosionForPlayer
+  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jint, jfloat);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
  * Method:    sendClientMessage
  * Signature: (IILjava/lang/String;)V
  */
@@ -1510,6 +1518,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendPlayerMess
  */
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendDeathMessage
   (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    sendDeathMessageToPlayer
+ * Signature: (IIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendDeathMessageToPlayer
+  (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
@@ -1958,6 +1974,22 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1Conn
  */
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1GetIpPort
   (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    blockIpAddress
+ * Signature: (Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_blockIpAddress
+  (JNIEnv *, jclass, jstring, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    unBlockIpAddress
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unBlockIpAddress
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction

@@ -2180,6 +2180,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_cancelSelectTe
 }
 
 /*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    createExplosionForPlayer
+ * Signature: (IFFFIF)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createExplosionForPlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jfloat x, jfloat y, jfloat z, jint type, jfloat radius)
+{
+	CreateExplosionForPlayer(playerid, x, y, z, type, radius);
+}
+
+/*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    sendClientMessage
  * Signature: (IILjava/lang/String;)V
@@ -2260,6 +2271,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendDeathMessa
   (JNIEnv *env, jclass jcls, jint killerid, jint victimid, jint reason)
 {
 	SendDeathMessage( killerid, victimid, reason );
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    sendDeathMessageToPlayer
+ * Signature: (IIII)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendDeathMessageToPlayer
+  (JNIEnv *env, jclass jcls, jint playerid, jint killer, jint killee, jint weapon)
+{
+	SendDeathMessageToPlayer(playerid, killer, killee, weapon);
 }
 
 /*
@@ -2961,6 +2983,31 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_netStats_1G
 	char ipPort[24];
 	NetStats_GetIpPort(playerid, ipPort, sizeof(ipPort));
 	return env->NewStringUTF(ipPort);
+}
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    blockIpAddress
+ * Signature: (Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_blockIpAddress
+  (JNIEnv *env, jclass jcls, jstring ip, jint timeMs)
+{
+	const char* ip_str = env->GetStringUTFChars(ip, NULL);
+	BlockIpAddress(ip_str, timeMs);
+	env->ReleaseStringUTFChars(ip, ip_str);
+}
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    unBlockIpAddress
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unBlockIpAddress
+  (JNIEnv *env, jclass jcls, jstring ip)
+{
+	const char* ip_str = env->GetStringUTFChars(ip, NULL);
+	UnBlockIpAddress(ip_str);
+	env->ReleaseStringUTFChars(ip, ip_str);
 }
 
 /*

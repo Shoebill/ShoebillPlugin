@@ -2479,6 +2479,19 @@ int CancelSelectTextDraw(int playerid)
 	return func(pAMX, args);
 }
 
+int CreateExplosionForPlayer(int playerid, float X, float Y, float Z, int type, float Radius)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[7] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid, amx_ftoc(X), amx_ftoc(Y), amx_ftoc(Z), type, amx_ftoc(Radius)
+	};
+
+	return func(pAMX, args);
+}
+
 
 //----------------------------------------------------------
 // a_samp.inc
@@ -2557,6 +2570,19 @@ int SendDeathMessage(int killer, int victim, int weapon)
 	{
 		sizeof(args)-sizeof(cell),
 		killer, victim, weapon
+	};
+
+	return func(pAMX, args);
+}
+
+int SendDeathMessageToPlayer(int playerid, int killer, int victim, int weapon)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[5] =
+	{
+		sizeof(args)-sizeof(cell),
+		playerid, killer, victim, weapon
 	};
 
 	return func(pAMX, args);
@@ -3212,6 +3238,38 @@ int GetPlayerVersion(int playerid, char* version, int len)
 
 	amx_GetString(version, str_phys, 0, len);
 	amx_Release(pAMX, args[2]);
+	return ret;
+}
+
+int BlockIpAddress(const char* ip_address, int timems)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[3] =
+	{
+		sizeof(args)-sizeof(cell),
+		amx_NewString(pAMX, ip_address), timems
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[1]);
+	return ret;
+}
+
+int UnBlockIpAddress(const char* ip_address)
+{
+	static AMX_NATIVE func = amx_FindNative(pAMX, __FUNCTION__);
+
+	cell args[2] =
+	{
+		sizeof(args)-sizeof(cell),
+		amx_NewString(pAMX, ip_address)
+	};
+
+	int ret = func(pAMX, args);
+
+	amx_Release(pAMX, args[1]);
 	return ret;
 }
 

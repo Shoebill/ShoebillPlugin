@@ -53,6 +53,7 @@ native n_OnPlayerEditObject( playerid, playerobject, objectid, response, Float:f
 native n_OnPlayerEditAttachedObject( playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ );
 native n_OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ);
 native n_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
+native n_OnIncomingConnection(playerid, ip_address[], port);
 
 
 forward Shoebill_Oops();
@@ -325,6 +326,10 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 	return n_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }
 
+public OnIncomingConnection(playerid, ip_address[], port)
+{
+	return n_OnIncomingConnection(playerid, ip_address, port);
+}
 
 public Shoebill_Oops()
 {
@@ -541,6 +546,9 @@ public Shoebill_Oops()
 	
 	SelectTextDraw(0, 0); 		// enables the mouse so the player can select a textdraw
 	CancelSelectTextDraw(0);	// cancel textdraw selection with the mouse
+	
+	// Explosion
+	CreateExplosionForPlayer(0, 0, 0, 0, 0, 0);
 
 // a_samp.inc
 
@@ -553,6 +561,7 @@ public Shoebill_Oops()
 	SendPlayerMessageToPlayer(0, 0, a);
 	SendPlayerMessageToAll(0, a);
 	SendDeathMessage(0, 0, 0);
+	SendDeathMessageToPlayer(0, 0, 0, 0);
 	GameTextForAll(a, 0, 0);
 	GameTextForPlayer(0, a, 0, 0);
 	SetTimer(a, 0, 0);
@@ -610,6 +619,8 @@ public Shoebill_Oops()
 	GetPlayerNetworkStats(0, a, 0);
 	GetNetworkStats(a, 0);
 	GetPlayerVersion(0, a, 0); // Returns the SA-MP client revision as reported by the player
+	BlockIpAddress(a, 0);
+	UnBlockIpAddress(a);
 
 	// Extended admin network stats
 	GetServerTickRate();

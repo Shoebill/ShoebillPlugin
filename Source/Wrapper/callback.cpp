@@ -294,6 +294,13 @@ static cell AMX_NATIVE_CALL n_OnPlayerWeaponShot(AMX* amx, cell* params)
 	return OnPlayerWeaponShot(params[1], params[2], params[3], params[4], amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]));
 }
 
+static cell AMX_NATIVE_CALL n_OnIncomingConnection(AMX* amx, cell* params)
+{
+	char str[24];
+	amx_GetString(amx, params[2], str, sizeof(str));
+	return OnIncomingConnection(params[1], str, params[3]);
+}
+
 
 AMX_NATIVE_INFO CallbackNatives[] =
 {
@@ -349,5 +356,6 @@ AMX_NATIVE_INFO CallbackNatives[] =
 	{ "n_OnPlayerEditAttachedObject", n_OnPlayerEditAttachedObject },
 	{ "n_OnPlayerSelectObject", n_OnPlayerSelectObject },
 	{ "n_OnPlayerWeaponShot", n_OnPlayerWeaponShot },
+	{ "n_OnIncomingConnection", n_OnIncomingConnection },
 	{ 0, 0 }
 };
