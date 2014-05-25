@@ -1099,7 +1099,7 @@ int OnIncomingConnection(int playerid, char* ip_address, int port)
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerWeaponShot", "(ILjava/lang/String;I)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onIncomingConnection", "(ILjava/lang/String;I)I");
 	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, env->NewStringUTF(ip_address), port);
