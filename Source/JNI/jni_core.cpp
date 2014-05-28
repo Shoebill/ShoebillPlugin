@@ -69,7 +69,7 @@ int jni_jvm_create(JNIEnv** env, const char* clspath, const char* jvmOptionPath)
 	}
 
 	JavaVMInitArgs vm_args;
-	vm_args.version = JNI_VERSION_1_6;
+	vm_args.version = JNI_VERSION_1_8;
 	vm_args.options = options;
 	vm_args.nOptions = optionStrings.size() + 2;
 	vm_args.ignoreUnrecognized = JNI_FALSE;
