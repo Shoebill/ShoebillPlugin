@@ -111,7 +111,7 @@ void OnAmxLoad(AMX *amx)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxLoad", "(I)V");
 	if (!jmid) return;
 
-	env->CallVoidMethod(callbackHandlerObject, jmid);
+	env->CallVoidMethod(callbackHandlerObject, jmid, amx);
 	jni_jvm_printExceptionStack(env);
 }
 
@@ -127,7 +127,7 @@ void OnAmxUnload(AMX *amx)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxUnload", "(I)V");
 	if (!jmid) return;
 
-	env->CallVoidMethod(callbackHandlerObject, jmid);
+	env->CallVoidMethod(callbackHandlerObject, jmid, amx);
 	jni_jvm_printExceptionStack(env);
 }
 
