@@ -68,7 +68,7 @@ int ReleaseShoebillObject(JNIEnv *env);
 
 bool OnLoadPlugin()
 {
-	logprintf("  > Shoebill 1.0 NativePlugin for SA-MP 0.3z R2-2 by MK124 & JoJLlmAn");
+	logprintf("  > Shoebill 1.1 NativePlugin for SA-MP 0.3z R2-2 by MK124 & JoJLlmAn");
 
 	char classpath[2048] = { 0 };
 	if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
@@ -86,6 +86,7 @@ bool OnLoadPlugin()
 
 	logprintf("  > Java VM has been created.");
 
+	jvm->AttachCurrentThread((void**)&env, NULL);
 	int ret = Initialize(env);
 	return ret >= 0;
 }

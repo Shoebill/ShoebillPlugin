@@ -9,6 +9,9 @@ typedef void(*logprintf_t)(const char* format, ...);
 extern logprintf_t logprintf;
 
 
+// Custom functions
+int CallNative(const char* func, const char* paramTypes, ...);
+
 //----------------------------------------------------------
 // a_objects.inc
 
