@@ -8,10 +8,10 @@
 *.o
 /Dependencies/sampplugin/Release
 /Dependencies/sampplugin/Debug
-/Source/JNI/Debug
-/Source/JNI/Release
+/Source/Shoebill/Debug
+/Source/Shoebill/Release
 /Source/Wrapper/Release
 /Source/Wrapper/Debug
 /Server
 *.sdf
-/*.opensdf
+*.opensdf

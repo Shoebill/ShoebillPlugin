@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{53FD1E62-CB2C-4977-9054-7065C0D2989E}</ProjectGuid>
-    <RootNamespace>JNI</RootNamespace>
+    <RootNamespace>Shoebill</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,7 +88,7 @@
     </ClCompile>
     <Link>
       <OutputFile>$(SolutionDir)\Binary\Shoebill.dll</OutputFile>
-      <ModuleDefinitionFile>../Wrapper/exports.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>$(SolutionDir)\exports.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

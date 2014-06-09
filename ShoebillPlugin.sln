@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Wrapper", "Source\Wrapper\W
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sampplugin", "Dependencies\sampplugin\sampplugin.vcxproj", "{04D00F92-1756-4F0C-B78C-2B3A4B7EBA50}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JNI", "Source\JNI\JNI.vcxproj", "{53FD1E62-CB2C-4977-9054-7065C0D2989E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shoebill", "Source\Shoebill\Shoebill.vcxproj", "{53FD1E62-CB2C-4977-9054-7065C0D2989E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

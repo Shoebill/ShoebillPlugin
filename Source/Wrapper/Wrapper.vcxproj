@@ -99,9 +99,6 @@
     <ClInclude Include="function.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="exports.def" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Dependencies\sampplugin\sampplugin.vcxproj">
       <Project>{04d00f92-1756-4f0c-b78c-2b3a4b7eba50}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

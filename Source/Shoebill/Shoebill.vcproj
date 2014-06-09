@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="JNI"
+	Name="Shoebill"
 	ProjectGUID="{53FD1E62-CB2C-4977-9054-7065C0D2989E}"
-	RootNamespace="JNI"
+	RootNamespace="Shoebill"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
