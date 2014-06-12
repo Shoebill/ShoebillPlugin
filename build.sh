@@ -1,4 +1,4 @@
-cmake
+cmake .
 make clean
 make
-cp libShoebill.so Release/libShoebill.so
+cp libShoebill.so Binary/Shoebill
