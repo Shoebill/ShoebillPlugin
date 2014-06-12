@@ -30,7 +30,7 @@
 #include <fstream>
 #include <vector>
 
-#include "jni_core.h"
+#include "JniUtils.h"
 
 
 JavaVM *jvm = NULL;
@@ -169,7 +169,7 @@ int findAndGenerateClassPath(const char* searchPath, char* classPath)
 	if (files < 1) return -1;
 
 	char **p = globdata.gl_pathv;
-	for (int i=0; i<files; i++)
+	for (size_t i=0; i<files; i++)
 	{
 		strcat( classPath, *p );
 		strcat( classPath, ":" );

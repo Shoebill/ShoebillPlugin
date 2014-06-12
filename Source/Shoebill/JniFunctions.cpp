@@ -16,11 +16,10 @@
 
 #include <string.h>
 
-#include "jni_functions.h"
-#include "samp_core.h"
-#include "encoding.h"
-#include "../Wrapper/a_samp.h"
-
+#include "JniFunctions.h"
+#include "ShoebillMain.h"
+#include "EncodingUtils.h"
+#include "samp.h"
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction

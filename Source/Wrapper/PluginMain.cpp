@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011 MK124
+ * Copyright (C) 2011-2014 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,13 @@
  */
 
 #include "amx_helper.h"
-#include "callback.h"
-#include "a_samp.h"
-
+#include "Callbacks.h"
+#include "samp.h"
 
 const char SHOEBILL_PUBLIC_MARKER[] = "Shoebill_Oops";
 
 AMX *pAMX = NULL;
 logprintf_t logprintf = NULL;
-
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 {

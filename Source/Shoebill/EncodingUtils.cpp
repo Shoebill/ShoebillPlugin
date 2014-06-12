@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "encoding.h"
+#include "EncodingUtils.h"
 
 
 #if defined(WIN32)

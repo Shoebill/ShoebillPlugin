@@ -78,7 +78,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\Wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\sampplugin;$(SolutionDir)\Source\Wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -97,16 +97,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="encoding.cpp" />
-    <ClCompile Include="jni_core.cpp" />
-    <ClCompile Include="jni_functions.cpp" />
-    <ClCompile Include="samp_core.cpp" />
+    <ClCompile Include="EncodingUtils.cpp" />
+    <ClCompile Include="JniUtils.cpp" />
+    <ClCompile Include="JniFunctions.cpp" />
+    <ClCompile Include="ShoebillMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="encoding.h" />
-    <ClInclude Include="jni_core.h" />
-    <ClInclude Include="jni_functions.h" />
-    <ClInclude Include="samp_core.h" />
+    <ClInclude Include="EncodingUtils.h" />
+    <ClInclude Include="JniUtils.h" />
+    <ClInclude Include="JniFunctions.h" />
+    <ClInclude Include="ShoebillMain.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wrapper\Wrapper.vcxproj">

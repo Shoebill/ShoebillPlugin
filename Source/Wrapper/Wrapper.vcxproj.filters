@@ -11,27 +11,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="callback.cpp">
+    <ClCompile Include="SimpleInlineHook.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="core.cpp">
+    <ClCompile Include="Functions.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="function.cpp">
+    <ClCompile Include="Callbacks.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="a_samp.h">
+    <ClInclude Include="SimpleAsm.hpp">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleInlineHook.hpp">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="samp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Callbacks.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="amx_helper.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="callback.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="function.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2013 MK124
+ * Copyright (C) 2011-2014 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 #include "amx_helper.h"
-#include "a_samp.h"
+#include "samp.h"
 
 #include <cstdarg>
 #include <map>
@@ -51,8 +51,11 @@ int CallNative(const char* name, const char* types, ...)
 		break;
 
 	case 'f':
-		cells.push_back(amx_ftoc(va_arg(list, float)));
-		break;
+		{
+			const auto& f = va_arg(list, double);
+			cells.push_back(amx_ftoc(f));
+			break;
+		}
 
 	case 's': {
 		cell str = amx_NewString(pAMX, va_arg(list, const char*));

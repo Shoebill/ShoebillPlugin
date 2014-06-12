@@ -18,10 +18,10 @@
 #include <string.h>
 #include <set>
 
-#include "encoding.h"
-#include "jni_core.h"
-#include "samp_core.h"
-#include "../Wrapper/a_samp.h"
+#include "EncodingUtils.h"
+#include "JniUtils.h"
+#include "ShoebillMain.h"
+#include "samp.h"
 
 #if defined(LINUX)
 #include "linux.h"
@@ -140,8 +140,7 @@ int Initialize(JNIEnv *env)
 		logprintf("  > Error: Can't find launcher class [%s].", LAUNCHER_CLASS_NAME);
 		return -1;
 	}
-
-	jobject files = NULL;
+	
 	static jmethodID loadNativeLibraryMethodID = env->GetStaticMethodID(shoebillLauncherClass, LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN);
 	if (!loadNativeLibraryMethodID)
 	{

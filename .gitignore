@@ -6,6 +6,9 @@
 *.suo
 *.user
 *.o
+*.a
+*.so
+*.log
 /Dependencies/sampplugin/Release
 /Dependencies/sampplugin/Debug
 /Source/Shoebill/Debug
@@ -15,3 +18,8 @@
 /Server
 *.sdf
 *.opensdf
+Makefile
+CMakeFiles
+cmake_install.cmake
+CMakeCache.txt
+CMakeLists.txt

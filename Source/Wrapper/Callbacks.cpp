@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011 MK124
+ * Copyright (C) 2011-2014 MK124
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 
 #include "amx_helper.h"
-#include "a_samp.h"
-
+#include "samp.h"
 
 static cell AMX_NATIVE_CALL n_OnGameModeInit(AMX* amx, cell* params)
 {

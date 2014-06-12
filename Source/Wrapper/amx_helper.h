@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "../../Dependencies/sampplugin/amx/amx.h"
-#include "../../Dependencies/sampplugin/plugincommon.h"
+#include "amx/amx.h"
+#include "plugincommon.h"
 
 #include <string.h>
 

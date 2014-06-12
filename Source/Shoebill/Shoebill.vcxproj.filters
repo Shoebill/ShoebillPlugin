@@ -15,30 +15,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="encoding.cpp">
+    <ClCompile Include="JniFunctions.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="jni_core.cpp">
+    <ClCompile Include="JniUtils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="jni_functions.cpp">
+    <ClCompile Include="EncodingUtils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="samp_core.cpp">
+    <ClCompile Include="ShoebillMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="encoding.h">
+    <ClInclude Include="JniUtils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="jni_core.h">
+    <ClInclude Include="JniFunctions.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="jni_functions.h">
+    <ClInclude Include="EncodingUtils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="samp_core.h">
+    <ClInclude Include="ShoebillMain.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
