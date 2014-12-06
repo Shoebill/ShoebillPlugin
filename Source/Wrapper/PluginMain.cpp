@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#include "amx_helper.h"
+#include "SimpleInlineHook.hpp"
+
+#include "AmxHelper.h"
 #include "Callbacks.h"
 #include "samp.h"
 
-const char SHOEBILL_PUBLIC_MARKER[] = "Shoebill_Oops";
-
-AMX *pAMX = NULL;
-logprintf_t logprintf = NULL;
+#include "PluginBase.h"
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 {
@@ -30,9 +29,7 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 {
-	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
-	logprintf = (logprintf_t)ppData[PLUGIN_DATA_LOGPRINTF];
-
+	pluginInit(ppData);
 	return OnLoadPlugin();
 }
 
@@ -43,31 +40,11 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 {
-	if (pAMX == NULL)
-	{
-		int index;
-		amx_FindPublic(amx, SHOEBILL_PUBLIC_MARKER, &index);
-		if (index != 0x7FFFFFFF)
-		{
-			pAMX = amx;
-			amx_Register(amx, CallbackNatives, -1);
-
-			logprintf("ShoebillPlugin: AMX registered.");
-		}
-	}
-
-	OnAmxLoad(amx);
 	return AMX_ERR_NONE;
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX *amx)
 {
-	OnAmxUnload(amx);
-	if (pAMX != amx) return AMX_ERR_NONE;
-
-	pAMX = NULL;
-
-	logprintf("ShoebillPlugin: AMX unregistered.");
 	return AMX_ERR_NONE;
 }
 

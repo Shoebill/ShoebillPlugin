@@ -89,13 +89,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Callbacks.cpp" />
+    <ClCompile Include="PluginBase.cpp" />
     <ClCompile Include="PluginMain.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="SimpleInlineHook.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AmxInstanceManager.hpp" />
+    <ClInclude Include="NativeFunctionManager.hpp" />
+    <ClInclude Include="PluginBase.h" />
     <ClInclude Include="samp.h" />
-    <ClInclude Include="amx_helper.h" />
+    <ClInclude Include="AmxHelper.h" />
     <ClInclude Include="Callbacks.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="SimpleAsm.hpp" />

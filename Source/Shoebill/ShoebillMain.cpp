@@ -18,10 +18,13 @@
 #include <string.h>
 #include <set>
 
+#include "AmxHelper.h"
+#include "samp.h"
+
 #include "EncodingUtils.h"
 #include "JniUtils.h"
+
 #include "ShoebillMain.h"
-#include "samp.h"
 
 #if defined(LINUX)
 #include "linux.h"
