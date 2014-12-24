@@ -14,7 +14,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+#ifndef __FUNCTIONS_H__
+#define __FUNCTIONS_H__
 // Custom functions
 int CallNative(const char* func, const char* paramTypes, ...);
 
@@ -414,3 +415,4 @@ int GetVehicleModelInfo(int vehiclemodel, int infotype, float &X, float &Y, floa
 // Virtual Worlds
 int SetVehicleVirtualWorld(int vehicleid, int worldid);
 int GetVehicleVirtualWorld(int vehicleid);
+#endif

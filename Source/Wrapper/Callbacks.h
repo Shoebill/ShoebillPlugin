@@ -14,6 +14,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+#ifndef __CALLBACKS_H__
+#define __CALLBACKS_H__
+#include <map>
+#include "samp.h"
+#include "SimpleInlineHook.hpp"
 
 // Plugin Callbacks
 bool OnLoadPlugin();
@@ -53,7 +58,7 @@ int OnEnterExitModShop(int playerid, int enterexit, int interiorid);
 int OnVehiclePaintjob(int playerid, int vehicleid, int paintjobid);
 int OnVehicleRespray(int playerid, int vehicleid, int color1, int color2);
 int OnVehicleDamageStatusUpdate(int vehicleid, int playerid);
-int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat, float new_x, float new_y, float new_z);
+int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat, float new_x, float new_y, float new_z, float vel_x, float vel_y, float vel_z);
 int OnPlayerSelectedMenuRow(int playerid, int row);
 int OnPlayerExitedMenu(int playerid);
 int OnPlayerInteriorChange(int playerid, int newinteriorid, int oldinteriorid);
@@ -76,3 +81,87 @@ int OnPlayerEditAttachedObject(int playerid, int response, int index, int modeli
 int OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float fX, float fY, float fZ);
 int OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float fX, float fY, float fZ);
 int OnIncomingConnection(int playerid, char* ip_address, int port);
+int OnTrailerUpdate(int playerid, int vehicleid);
+int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid, int color1, int color2, int respawn_delay);
+int OnAmxDestroyVehicle(int vehicleid);
+int OnAmxSampObjectCreated(int objectId, int modelid, float x, float y, float z, float rX, float rY, float rZ, int worldid, int interiorid, float render_distance);
+int OnAmxSampObjectDestroyed(int objectId);
+int OnAmxAttachObjectToVehicle(int objectId, int vehicleId, float x, float y, float z, float rX, float rY, float rZ);
+int OnAmxAttachObjectToPlayer(int objectId, int playerId, float x, float y, float z, float rX, float rY, float rZ);
+int OnAmxAttachObjectToObject(int objectId, int other_object_Id, float x, float y, float z, float rX, float rY, float rZ);
+int OnAmxCreatePlayerObject(int playerid, int modelid, float x, float y, float z, float rX, float rY, float rZ, float drawdistance, int worldid, int interiorid, int returnedValue);
+int OnAmxDestroyPlayerObject(int playerid, int objectid);
+int OnAmxSetPlayerAttachedObject(int playerid, int index, int modelid, int bone, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ, int materialcolor1, int materialcolor2);
+int OnAmxRemovePlayerAttachedObject(int playerid, int index);
+int OnAmxDestroyPickup(int pickupid);
+int OnAmxCreatePickup(int model, int type, float posX, float posY, float posZ, int virtualworld, int id);
+int OnAmxAddStaticPickup(int model, int type, float posX, float posY, float posZ, int virtualworld);
+
+int OnAmxCreateLabel(char* text, int color, float posX, float posY, float posZ, float drawDistance, int virtualworld, int testLOS, int id);
+int OnAmxDeleteLabel(int id);
+int OnAmxAttachLabelToPlayer(int id, int playerid, float offsetX, float offsetY, float offsetZ);
+int OnAmxAttachLabelToVehicle(int id, int vehicleid, float offsetX, float offsetY, float offsetZ);
+int OnAmxUpdateLabel(int id, int color, char* text);
+
+int OnAmxCreatePlayerLabel(int playerid, char* text, int color, float posX, float posY, float posZ, float drawDistance, int attachedPlayer, int attachedVehicle, int testLOS, int id);
+int OnAmxDeletePlayerLabel(int playerid, int id);
+int OnAmxUpdatePlayerLabel(int playerid, int id, int color, char* text);
+
+int OnAmxCreateMenu(char* title, int columns, float x, float y, float col1Width, float col2Width, int id);
+int OnAmxDestroyMenu(int id);
+int OnAmxSetMenuColumnHeader(int id, int column, char* text);
+
+int OnAmxGangZoneCreate(float minX, float minY, float maxX, float maxY, int id);
+int OnAmxGangZoneDestroy(int id);
+int OnAmxGangZoneShowForPlayer(int playerid, int zone, int color);
+int OnAmxGangZoneShowForAll(int zone, int color);
+int OnAmxGangZoneHideForPlayer(int playerid, int zone);
+int OnAmxGangZoneHideForAll(int zone);
+int OnAmxGangZoneFlashForPlayer(int playerid, int zone, int flashColor);
+int OnAmxGangZoneFlashForAll(int zone, int flashColor);
+int OnAmxGangZoneStopFlashForPlayer(int playerid, int zone);
+int OnAmxGangZoneStopFlashForAll(int zone);
+
+int OnAmxSetSkillLevel(int playerid, int skill, int level);
+
+int OnAmxSetPlayerMapIcon(int playerid, int iconid, float x, float y, float z, int markertype, int color, int style);
+int OnAmxRemovePlayerMapIcon(int playerid, int iconid);
+
+int OnAmxShowPlayerDialog(int playerid, int dialogid, int style, char* caption, char* info, char* button1, char* button2);
+int OnAmxSetPlayerWorldBounds(int playerid, float minX, float minY, float maxX, float maxY);
+int OnAmxSetPlayerWeather(int playerid, int weatherid);
+int OnAmxSetPlayerCheckpoint(int playerid, float x, float y, float z, float size);
+int OnAmxDisablePlayerCheckpoint(int playerid);
+int OnAmxSetPlayerRaceCheckpoint(int playerid, int type, float x, float y, float z, float nextX, float nextY, float nextZ, float size);
+int OnAmxDisablePlayerRaceCheckpoint(int playerid);
+int OnAmxTogglePlayerSpectating(int playerid, int toggle);
+int OnAmxPlayerSpectatePlayer(int playerid, int target, int mode);
+int OnAmxPlayerSpectateVehicle(int playerid, int target, int mode);
+int OnAmxEnableStuntBonusForPlayer(int playerid, int toggle);
+int OnAmxStartRecording(int playerid, int type, char* recordName);
+int OnAmxStopRecording(int playerid);
+int OnAmxToggleControllabel(int playerid, int toggle);
+
+int OnAmxTextDrawCreate(float x, float y, char* text, int id);
+int OnAmxTextDrawDestroy(int id);
+int OnAmxTextDrawSetString(int id, char* text);
+int OnAmxTextDrawShowForPlayer(int playerid, int id);
+int OnAmxTextDrawHideForPlayer(int playerid, int id);
+int OnAmxTextDrawShowForAll(int id);
+int OnAmxTextDrawHideForAll(int id);
+
+int OnAmxCreatePlayerTextDraw(int playerid, float x, float y, char* text, int id);
+int OnAmxPlayerTextDrawDestroy(int playerid, int id);
+int OnAmxPlayerTextDrawSetString(int playerid, int id, char* text);
+int OnAmxPlayerTextDrawShow(int playerid, int id);
+int OnAmxPlayerTextDrawHide(int playerid, int id);
+
+int OnAmxAddVehicleComponent(int vehicleid, int componentid);
+int OnAmxLinkVehicleToInterior(int vehicleid, int interiorid);
+int OnAmxChangeVehicleColor(int vehicleid, int color1, int color2);
+int RestartShoebill();
+
+cell invokeCallback(AMX*, std::string, cell*);
+void overridePointer(AMX*, const AMX_NATIVE_INFO *, int);
+int StartShoebill();
+#endif

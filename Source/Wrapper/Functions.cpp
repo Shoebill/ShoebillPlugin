@@ -22,60 +22,7 @@
 #include "samp.h"
 
 #include "AmxInstanceManager.hpp"
-#include "NativeFunctionManager.hpp"
-
-std::map<std::string, AMX_NATIVE> _natives;
-
-// Custom functions
-int CallNative(const char* name, const char* types, ...)
-{
-	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
-	AMX_NATIVE func;
-
-	auto it = _natives.find(name);
-	if (it == _natives.end())
-	{
-		func = NativeFunctionManager::get().findFunction(name);
-		if (func == nullptr) return 0;
-		_natives[name] = func;
-	}
-	else func = _natives[name];
-
-	// XXX
-	int params = strlen(types);
-	std::vector<cell> cells(params+1), stringCell;
-	cells.push_back(params);
-
-	va_list list;
-	va_start(list, types);
-	for (int i = 0; i < params; i++) switch (types[i])
-	{
-	case 'i':
-		cells.push_back(va_arg(list, int));
-		break;
-
-	case 'f': {
-		const auto& f = va_arg(list, double);
-		cells.push_back(amx_ftoc(f));
-		break;
-		}
-
-	case 's': {
-		cell str = amx_NewString(pAMX, va_arg(list, const char*));
-		cells.push_back(str);
-		stringCell.push_back(str);
-		break;
-		}
-
-	default:
-		break;
-	}
-	va_end(list);
-
-	int ret = func(pAMX, &cells[0]);
-	for (auto c : stringCell) amx_Release(pAMX, c);
-	return ret;
-}
+#include "NativeFunctionManager.h"
 
 //----------------------------------------------------------
 // a_object.inc

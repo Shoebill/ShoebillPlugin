@@ -19,8 +19,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -66,10 +66,10 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\sampplugin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -89,6 +89,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Callbacks.cpp" />
+    <ClCompile Include="NativeFunctionManager.cpp" />
     <ClCompile Include="PluginBase.cpp" />
     <ClCompile Include="PluginMain.cpp" />
     <ClCompile Include="Functions.cpp" />
@@ -96,7 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AmxInstanceManager.hpp" />
-    <ClInclude Include="NativeFunctionManager.hpp" />
+    <ClInclude Include="NativeFunctionManager.h" />
     <ClInclude Include="PluginBase.h" />
     <ClInclude Include="samp.h" />
     <ClInclude Include="AmxHelper.h" />

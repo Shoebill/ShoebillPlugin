@@ -13,11 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
 #include "SimpleInlineHook.hpp"
 
 #if defined(WIN32)
-
 #include <windows.h>
 
 void SimpleInlineHook::removePageProtect(void* address, size_t size)
@@ -25,7 +23,6 @@ void SimpleInlineHook::removePageProtect(void* address, size_t size)
 	DWORD oldState;
 	VirtualProtect(address, size, PAGE_EXECUTE_READWRITE, &oldState);
 }
-
 #else
 
 #include <sys/mman.h>

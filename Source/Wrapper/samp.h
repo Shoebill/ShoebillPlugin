@@ -17,6 +17,8 @@
 
 //----------------------------------------------------------
 // a_samp.inc defines 
+#ifndef __ASAMP__
+#define __ASAMP__
 
 // Limits and internal constants
 #define MAX_PLAYER_NAME							(24)
@@ -283,3 +285,4 @@
 #include "amx/amx.h"
 #include "Callbacks.h"
 #include "Functions.h"
+#endif

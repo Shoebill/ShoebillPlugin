@@ -16,41 +16,33 @@
 
 #include <unordered_map>
 
+#include "AmxHelper.h"
 #include "amx/amx.h"
+#include "Callbacks.h"
+
+struct hookedNative {
+	AMX_NATIVE originalFunc;
+	std::shared_ptr<SimpleInlineHook>* hook;
+	std::string funcName;
+};
 
 class NativeFunctionManager
 {
 public:
-	static NativeFunctionManager& get()
-	{
-		static NativeFunctionManager instance;
-		return instance;
-	}
 
-	NativeFunctionManager()
-	{
+	static NativeFunctionManager& get();
 
-	}
+	NativeFunctionManager();
+	~NativeFunctionManager();
 
-	~NativeFunctionManager()
-	{
-
-	}
-
-	void registerFunction(std::string name, AMX_NATIVE functionAddr)
-	{
-		functions[name] = functionAddr;
-	}
-
-	AMX_NATIVE findFunction(std::string name)
-	{
-		auto it = functions.find(name);
-		return it != functions.end() ? it->second : nullptr;
-	}
+	void registerFunction(AMX* amx, std::string name, AMX_NATIVE functionAddr, int number);
+	std::map<std::string, hookedNative*> getNatives();
+	AMX_NATIVE findFunction(std::string name);
+	void overridePointer(AMX* amx, AMX_NATIVE function, const char *name);
+	void clearFunctions();
 
 private:
 	std::unordered_map<std::string, AMX_NATIVE> functions;
-
 	NativeFunctionManager(const NativeFunctionManager&) = delete;
 	NativeFunctionManager& operator= (const NativeFunctionManager&) = delete;
 };

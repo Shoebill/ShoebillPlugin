@@ -17,6 +17,7 @@
 #include <unordered_set>
 
 #include "amx/amx.h"
+#include "Callbacks.h"
 
 class AmxInstanceManager
 {
@@ -39,7 +40,9 @@ public:
 
 	void registerAmx(AMX *amx)
 	{
-		amxInstances.insert(amx);
+		if (!isVaild(amx)) {
+			amxInstances.insert(amx);
+		}
 	}
 
 	void unregisterAmx(AMX *amx)

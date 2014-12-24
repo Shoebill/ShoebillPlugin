@@ -6,16 +6,17 @@
     <ClCompile Include="PluginBase.cpp" />
     <ClCompile Include="PluginMain.cpp" />
     <ClCompile Include="SimpleInlineHook.cpp" />
+    <ClCompile Include="NativeFunctionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SimpleInlineHook.hpp" />
     <ClInclude Include="Callbacks.h" />
     <ClInclude Include="Functions.h" />
-    <ClInclude Include="NativeFunctionManager.hpp" />
     <ClInclude Include="PluginBase.h" />
     <ClInclude Include="samp.h" />
-    <ClInclude Include="SimpleAsm.hpp" />
     <ClInclude Include="AmxInstanceManager.hpp" />
     <ClInclude Include="AmxHelper.h" />
+    <ClInclude Include="SimpleAsm.hpp" />
+    <ClInclude Include="SimpleInlineHook.hpp" />
+    <ClInclude Include="NativeFunctionManager.h" />
   </ItemGroup>
 </Project>

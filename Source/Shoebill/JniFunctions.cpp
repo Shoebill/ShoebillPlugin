@@ -3654,7 +3654,8 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_showPlayerDial
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createVehicle
   (JNIEnv *env, jclass jcls, jint model, jfloat x, jfloat y, jfloat z, jfloat rotation, jint color1, jint color2, jint respawnDelay)
 {
-	return CreateVehicle(model, x, y, z, rotation, color1, color2, respawnDelay);
+	int ret = CreateVehicle(model, x, y, z, rotation, color1, color2, respawnDelay);
+	return ret;
 }
 
 /*
@@ -4134,4 +4135,146 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleVirt
   (JNIEnv *env, jclass jcls, jint vehicleid)
 {
 	return GetVehicleVirtualWorld(vehicleid);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPublic
+(JNIEnv *env, jclass, jint pAmx, jstring name)
+{
+	AMX* amx = (AMX*)pAmx;
+	int index;
+	const char *functionName = env->GetStringUTFChars(name, false);
+	amx_FindPublic(amx, functionName, &index);
+	return index;
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
+(JNIEnv *env, jclass, jint pAmx, jstring name)
+{
+	AMX* amx = (AMX*)pAmx;
+	int index;
+	const char *functionName = env->GetStringUTFChars(name, false);
+	amx_FindNative(amx, functionName, &index);
+	return index;
+}
+
+cell AMX_NATIVE_CALL registeredPublicCalled(AMX* amx, cell* params)
+{
+	return 1;
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerPublic
+(JNIEnv *env, jclass, jint pAmx, jstring name, jobject call)
+{
+	AMX* amx = (AMX*)pAmx;
+	const char *functionName = env->GetStringUTFChars(name, false);
+	const AMX_NATIVE_INFO *info = new AMX_NATIVE_INFO { functionName, registeredPublicCalled };
+	return amx_Register(amx, info, -1);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerNative
+(JNIEnv *env, jclass, jint pAmx, jstring name, jobject call)
+{
+	AMX* amx = (AMX*)pAmx;
+	const char *functionName = env->GetStringUTFChars(name, false);
+	const AMX_NATIVE_INFO *info = new AMX_NATIVE_INFO{ functionName, registeredPublicCalled };
+	return amx_Register(amx, info, -1);
+}
+
+JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction
+(JNIEnv *env, jclass gObject, jint pAmx, jint index, jobjectArray args)
+{
+	AMX* amx = (AMX*)pAmx;
+	cell retval;
+	int arrayLength = env->GetArrayLength(args);
+	amx->paramcount = 0;
+	cell* params = (cell*)malloc((arrayLength+1) * sizeof(cell));
+	params[0] = arrayLength * sizeof(cell);
+	for (int i = (arrayLength-1); i >= 0; i--)
+	{
+		jobject object = env->GetObjectArrayElement(args, i);
+		jclass objectclass = env->GetObjectClass(object);
+		jmethodID mid = env->GetMethodID(objectclass, "toString", "()Ljava/lang/String;");
+		if (mid)
+		{
+			jstring str = (jstring)env->CallObjectMethod(objectclass, mid);
+			const char* classname = env->GetStringUTFChars(str, false);
+			if (!strcmp(classname, "class java.lang.String"))
+			{
+				jstring string = (jstring)object;
+				const char *content = env->GetStringUTFChars(string, false);
+				amx_PushString(amx, &params[i + 1], NULL, content, 0, 0);
+			}
+			else if (!strcmp(classname, "class java.lang.Integer"))
+			{
+				jmethodID ajf = env->GetMethodID(objectclass, "intValue", "()I");
+				jint integer = env->CallIntMethod(object, ajf);
+				params[i + 1] = integer;
+			}
+			else if (!strcmp(classname, "class java.lang.Float"))
+			{
+				jmethodID bjf = env->GetMethodID(objectclass, "floatValue", "()F");
+				jfloat ffloat = env->CallFloatMethod(object, bjf);
+				params[i + 1] = amx_ftoc(ffloat);
+			}
+		} 
+	}
+	amx_Callback(amx, index, &retval, params);
+	free(params);
+	jclass cls = env->FindClass("java/lang/Integer");
+	jmethodID methodID = env->GetMethodID(cls, "<init>", "(I)V");
+	return env->NewObject(cls, methodID, retval);
+}
+
+JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
+(JNIEnv *env, jclass, jint pAmx, jint idx, jobjectArray args)
+{	
+	AMX* amx = (AMX*)pAmx;
+	cell retval;
+	std::vector<cell> stringCells;
+	int arrayLength = env->GetArrayLength(args);
+	amx->paramcount = 0;
+	for (int i = (arrayLength-1); i >= 0; i--)
+	{
+		jobject object = env->GetObjectArrayElement(args, i);
+		jclass objectclass = env->GetObjectClass(object);
+		jmethodID mid = env->GetMethodID(objectclass, "toString", "()Ljava/lang/String;");
+		if (mid)
+		{
+			jstring str = (jstring)env->CallObjectMethod(objectclass, mid);
+			const char* classname = env->GetStringUTFChars(str, false);
+			if (!strcmp(classname, "class java.lang.String"))
+			{
+				jstring string = (jstring)object;
+				const char *content = env->GetStringUTFChars(string, false);
+				cell strCell;
+				amx_PushString(amx, &strCell, NULL, content, 0, 0);
+				stringCells.push_back(strCell);
+			}
+			else if (!strcmp(classname, "class java.lang.Integer"))
+			{
+				jmethodID ajf = env->GetMethodID(objectclass, "intValue", "()I");
+				jint integer = env->CallIntMethod(object, ajf);
+				amx_Push(amx, static_cast<cell>(integer));
+			}
+			else if (!strcmp(classname, "class java.lang.Float"))
+			{
+				jmethodID bjf = env->GetMethodID(objectclass, "floatValue", "()F");
+				jfloat ffloat = env->CallFloatMethod(object, bjf);
+				amx_Push(amx, amx_ftoc(ffloat));
+			}
+		}
+	}
+	amx_Exec(amx, &retval, idx);
+	for (auto it : stringCells) {
+		amx_Release(amx, it);
+	}
+	jclass cls = env->FindClass("java/lang/Integer");
+	jmethodID methodID = env->GetMethodID(cls, "<init>", "(I)V");
+	return env->NewObject(cls, methodID, retval);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_restartShoebill
+(JNIEnv *, jclass)
+{
+	RestartShoebill();
 }

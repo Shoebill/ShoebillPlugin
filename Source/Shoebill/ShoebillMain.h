@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifndef __SHOEBILL_MAIN__
+#define __SHOEBILL_MAIN__
 inline int getServerCodepage()
 {
 	extern int serverCodepage;
@@ -40,3 +41,4 @@ inline void setPlayerCodepage(int playerid, int codepage)
 	extern int playerCodepage[];
 	playerCodepage[playerid] = codepage;
 }
+#endif

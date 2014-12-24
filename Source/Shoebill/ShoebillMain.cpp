@@ -17,9 +17,10 @@
 #include <jni.h>
 #include <string.h>
 #include <set>
-
+#include "AmxInstanceManager.hpp"
 #include "AmxHelper.h"
 #include "samp.h"
+#include "NativeFunctionManager.h"
 
 #include "EncodingUtils.h"
 #include "JniUtils.h"
@@ -36,7 +37,7 @@ extern std::map<int, std::string> codepages;
 const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
 const char JVM_OPTION_FILE_PATH[] = "./shoebill/jvm_options.txt";
 
-const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher-1.0*.jar";
+const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher-1.1*.jar";
 const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/ShoebillLauncher";
 
 const char RESOLVE_DEPENDENCIES_METHOD_NAME[] = "resolveDependencies";
@@ -67,11 +68,25 @@ int Uninitialize(JNIEnv *env);
 
 int CreateShoebillObject(JNIEnv *env);
 int ReleaseShoebillObject(JNIEnv *env);
+bool initialized = false;
 
+
+void OnShoebillLoad()
+{
+	if (!callbackHandlerObject) return;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onShoebillLoad", "()V");
+	if (!jmid) return;
+	env->CallVoidMethod(callbackHandlerObject, jmid);
+	jni_jvm_printExceptionStack(env);
+}
 
 bool OnLoadPlugin()
 {
-	logprintf("  > Shoebill 1.1 NativePlugin for SA-MP 0.3z R2-2 by MK124 & JoJLlmAn");
+	logprintf("  > Shoebill 1.1 NativePlugin for SA-MP 0.3z R2-4 by MK124, JoJLlmAn & 123marvin123");
 
 	char classpath[2048] = { 0 };
 	if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
@@ -79,7 +94,6 @@ bool OnLoadPlugin()
 		logprintf("  > Error: Can't find launcher library.");
 		return false;
 	}
-
 	JNIEnv *env;
 	if (jni_jvm_create(&env, classpath, JVM_OPTION_FILE_PATH) < 0)
 	{
@@ -96,16 +110,26 @@ bool OnLoadPlugin()
 
 void OnUnloadPlugin()
 {
+	if (!callbackHandlerObject) return;
+
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onShoebillUnload", "()V");
+	if (!jmid) return;
+
+	env->CallVoidMethod(callbackHandlerObject, jmid);
+	jni_jvm_printExceptionStack(env);
 	Uninitialize(env);
-	if (jni_jvm_destroy(env) >= 0) logprintf("Java VM destroyed.");
+	if (jni_jvm_destroy(env) >= 0) {
+		logprintf("Java VM destroyed.");
+	}
 }
 
 void OnAmxLoad(AMX *amx)
 {
 	amxHandles.insert(amx);
+	AmxInstanceManager::get().registerAmx(amx);
 
 	if (!callbackHandlerObject) return;
 
@@ -122,7 +146,7 @@ void OnAmxLoad(AMX *amx)
 void OnAmxUnload(AMX *amx)
 {
 	amxHandles.erase(amx);
-
+	AmxInstanceManager::get().unregisterAmx(amx);
 	if (!callbackHandlerObject) return;
 
 	JNIEnv *env;
@@ -133,6 +157,15 @@ void OnAmxUnload(AMX *amx)
 
 	env->CallVoidMethod(callbackHandlerObject, jmid, amx);
 	jni_jvm_printExceptionStack(env);
+}
+
+
+int StartShoebill()
+{
+	if (initialized) return 0;
+	JNIEnv *env = NULL;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+	return CreateShoebillObject(env);
 }
 
 int Initialize(JNIEnv *env)
@@ -158,16 +191,19 @@ int Initialize(JNIEnv *env)
 		logprintf("  > Error: Can't load Shoebill JNI library.");
 		return -7;
 	}
-
 	shoebillLauncherClass = (jclass)(env->NewGlobalRef(shoebillLauncherClass));
+	jvm->AttachCurrentThread((void**)&env, NULL);
+	StartShoebill();
+	initialized = true;
 	return 0;
 }
 
 int Uninitialize(JNIEnv *env)
 {
+	ReleaseShoebillObject(env);
 	if (shoebillLauncherClass) env->DeleteGlobalRef(shoebillLauncherClass);
 	shoebillLauncherClass = NULL;
-
+	initialized = false;
 	return 0;
 }
 
@@ -272,6 +308,8 @@ int CreateShoebillObject(JNIEnv *env)
 	shoebillClass = (jclass)(env->NewGlobalRef(shoebillClass));
 	callbackHandlerObject = env->NewGlobalRef(callbackHandlerObject);
 	callbackHandlerClass = (jclass)(env->NewGlobalRef(env->GetObjectClass(callbackHandlerObject)));
+	initialized = true;
+	OnShoebillLoad();
 
 	logprintf("  > Shoebill has been initialized.");
 	return 0;
@@ -310,11 +348,10 @@ void OnProcessTick()
 
 int OnGameModeInit()
 {
+	if (!callbackHandlerObject) return 0;
+
 	JNIEnv *env = NULL;
 	jvm->AttachCurrentThread((void**)&env, NULL);
-
-	CreateShoebillObject(env);
-	if (shoebillObject == nullptr) return 0;
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onGameModeInit", "()I");
 	if (!jmid) return 0;
@@ -336,8 +373,6 @@ int OnGameModeExit()
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid);
 	jni_jvm_printExceptionStack(env);
-
-	ReleaseShoebillObject(env);
 	return ret;
 }
 
@@ -478,6 +513,7 @@ int OnPlayerCommandText(int playerid, char* cmdtext)
 	jstring str = env->NewString(wtext, len);
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str);
 	jni_jvm_printExceptionStack(env);
+	
 	return ret;
 }
 
@@ -755,17 +791,17 @@ int OnVehicleDamageStatusUpdate(int vehicleid, int playerid)
 	return ret;
 }
 
-int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat, float new_x, float new_y, float new_z)
+int OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat, float new_x, float new_y, float new_z, float vel_x, float vel_y, float vel_z)
 {
 	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onUnoccupiedVehicleUpdate", "(IIIFFF)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onUnoccupiedVehicleUpdate", "(IIIFFFFFF)I");
 	if (!jmid) return 0;
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, playerid, passenger_seat, new_x, new_y, new_z);
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, playerid, passenger_seat, new_x, new_y, new_z, vel_x, vel_y, vel_z);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
@@ -1087,7 +1123,7 @@ int OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerWeaponShot", "(IIIIFFF)I");
+		static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerWeaponShot", "(IIIIFFF)I");
 	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, weaponid, hittype, hitid, fX, fY, fZ);
@@ -1108,4 +1144,1101 @@ int OnIncomingConnection(int playerid, char* ip_address, int port)
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, env->NewStringUTF(ip_address), port);
 	jni_jvm_printExceptionStack(env);
 	return ret;
+}
+
+int OnTrailerUpdate(int playerid, int vehicleid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onTrailerUpdate", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid, int color1, int color2, int respawn_delay) 
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxVehicleCreated", "(IIFFFFIIIII)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, modelid, x, y, z, angle, interiorid, worldid, color1, color2, respawn_delay);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDestroyVehicle(int vehicleid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDestroyVehicle", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSampObjectCreated(int objectId, int modelid, float x, float y, float z, float rX, float rY, float rZ, int worldid, int interiorid, float render_distance)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSampObjectCreated", "(IIFFFFFFIIF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, objectId, modelid, x, y, z, rX, rY, rZ, worldid, interiorid, render_distance);
+	jni_jvm_printExceptionStack(env);
+
+	return ret;
+}
+
+int OnAmxSampObjectDestroyed(int objectId)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSampObjectDestroyed", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, objectId);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxAttachObjectToVehicle(int objectId, int vehicleId, float x, float y, float z, float rX, float rY, float rZ)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxAttachObjectToVehicle", "(IIFFFFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, objectId, vehicleId, x, y, z, rX, rY, rZ);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxAttachObjectToPlayer(int objectId, int playerId, float x, float y, float z, float rX, float rY, float rZ)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxAttachObjectToPlayer", "(IIFFFFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, objectId, playerId, x, y, z, rX, rY, rZ);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxAttachObjectToObject(int objectId, int other_object_Id, float x, float y, float z, float rX, float rY, float rZ)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxAttachObjectToObject", "(IIFFFFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, objectId, other_object_Id, x, y, z, rX, rY, rZ);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxCreatePlayerObject(int playerid, int modelid, float x, float y, float z, float rX, float rY, float rZ, float drawdistance, int worldid, int interiorid, int returnedValue)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+	
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxCreatePlayerObject", "(IIFFFFFFIIFI)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, modelid, x, y, z, rX, rY, rZ, drawdistance, worldid, interiorid, returnedValue);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDestroyPlayerObject(int playerid, int objectid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDestroyPlayerObject", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, objectid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSetPlayerAttachedObject(int playerid, int index, int modelid, int bone, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ, int materialcolor1, int materialcolor2) 
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetPlayerAttachedObject", "(IIIIFFFFFFFFFII)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, index, modelid, bone, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, materialcolor1, materialcolor2);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxRemovePlayerAttachedObject(int playerid, int index)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxRemovePlayerAttachedObject", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, index);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDestroyPickup(int pickupid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDestroyPickup", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, pickupid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxCreatePickup(int model, int type, float posX, float posY, float posZ, int virtualworld, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxCreatePickup", "(IIFFFII)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, model, type, posX, posY, posZ, virtualworld, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxAddStaticPickup(int model, int type, float posX, float posY, float posZ, int virtualworld)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxAddStaticPickup", "(IIFFFI)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, model, type, posX, posY, posZ, virtualworld);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxCreateLabel(char* text, int color, float posX, float posY, float posZ, float drawDistance, int virtualworld, int testLOS, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxCreateLabel", "(Ljava/lang/String;IFFFFIII)I");
+	if (!jmid) return 0;
+
+	jchar wtext[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+
+	jstring str = env->NewString(wtext, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, str, color, posX, posY, posZ, drawDistance, virtualworld, testLOS, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDeleteLabel(int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDeleteLabel", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxAttachLabelToPlayer(int id, int playerid, float offsetX, float offsetY, float offsetZ)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxAttachLabelToPlayer", "(IIFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id, playerid, offsetX, offsetY, offsetZ);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxAttachLabelToVehicle(int id, int vehicleid, float offsetX, float offsetY, float offsetZ)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxAttachLabelToVehicle", "(IIFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id, vehicleid, offsetX, offsetY, offsetZ);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxUpdateLabel(int id, int color, char* text)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxUpdateLabel", "(IILjava/lang/String;)I");
+	if (!jmid) return 0;
+
+	jchar wtext[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+
+	jstring str = env->NewString(wtext, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id, color, str);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxCreatePlayerLabel(int playerid, char* text, int color, float posX, float posY, float posZ, float drawDistance, int attachedPlayer, int attachedVehicle, int testLOS, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxCreatePlayerLabel", "(ILjava/lang/String;IFFFFIIII)I");
+	if (!jmid) return 0;
+
+	jchar wtext[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+
+	jstring str = env->NewString(wtext, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, str, color, posX, posY, posZ, drawDistance, attachedPlayer, attachedVehicle, testLOS, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDeletePlayerLabel(int playerid, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDeletePlayerLabel", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxUpdatePlayerLabel(int playerid, int id, int color, char* text)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxUpdatePlayerLabel", "(IIILjava/lang/String;)I");
+	if (!jmid) return 0;
+
+	jchar wtext[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+
+	jstring str = env->NewString(wtext, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id, color, str);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxCreateMenu(char* title, int columns, float x, float y, float col1Width, float col2Width, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxCreateMenu", "(Ljava/lang/String;IFFFFI)I");
+	if (!jmid) return 0;
+
+	jchar wtext[32];
+	int len = mbs2wcs(getServerCodepage(), title, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+
+	jstring str = env->NewString(wtext, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, str, columns, x, y, col1Width, col2Width, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSetMenuColumnHeader(int id, int column, char* text)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetMenuColumnHeader", "(IILjava/lang/String;)I");
+	if (!jmid) return 0;
+
+	jchar wtext[32];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+
+	jstring str = env->NewString(wtext, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id, column, str);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDestroyMenu(int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDestroyMenu", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneCreate(float minX, float minY, float maxX, float maxY, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneCreate", "(FFFFI)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, minX, minY, maxX, maxY, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneDestroy(int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneDestroy", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneShowForPlayer(int playerid, int zone, int color)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneShowForPlayer", "(III)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, zone, color);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneShowForAll(int zone, int color)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneShowForAll", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, zone, color);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneHideForPlayer(int playerid, int zone)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneHideForPlayer", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, zone);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneHideForAll(int zone)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneHideForAll", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, zone);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneFlashForPlayer(int playerid, int zone, int flashColor)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneFlashForPlayer", "(III)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, zone, flashColor);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneFlashForAll(int zone, int flashColor)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneFlashForAll", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, zone, flashColor);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneStopFlashForPlayer(int playerid, int zone)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneStopFlashForPlayer", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, zone);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxGangZoneStopFlashForAll(int zone)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxGangZoneStopFlashForAll", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, zone);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSetSkillLevel(int playerid, int skill, int level)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetSkillLevel", "(III)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, skill, level);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSetPlayerMapIcon(int playerid, int iconid, float x, float y, float z, int markertype, int color, int style)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetPlayerMapIcon", "(IIFFFIII)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, iconid, x, y, z, markertype, color, style);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+ 
+int OnAmxRemovePlayerMapIcon(int playerid, int iconid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxRemovePlayerMapIcon", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, iconid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxShowPlayerDialog(int playerid, int dialogid, int style, char* caption, char* info, char* button1, char* button2)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxShowPlayerDialog", "(IIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I");
+	if (!jmid) return 0;
+
+	jchar wCaption[32];
+	int len = mbs2wcs(getServerCodepage(), caption, -1, wCaption, sizeof(wCaption) / sizeof(wCaption[0]));
+	jstring jCaption = env->NewString(wCaption, len);
+
+	jchar wInfo[1024];
+	int len2 = mbs2wcs(getServerCodepage(), info, -1, wInfo, sizeof(wInfo) / sizeof(wInfo[0]));
+	jstring jInfo = env->NewString(wInfo, len2);
+
+	jchar wButton1[32];
+	int len3 = mbs2wcs(getServerCodepage(), button1, -1, wButton1, sizeof(wButton1) / sizeof(wButton1[0]));
+	jstring jButton1 = env->NewString(wButton1, len3);
+
+	jchar wButton2[32];
+	int len4 = mbs2wcs(getServerCodepage(), button2, -1, wButton2, sizeof(wButton2) / sizeof(wButton2[0]));
+	jstring jButton2 = env->NewString(wButton2, len4);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, dialogid, style, jCaption, jInfo, jButton1, jButton2);
+	return ret;
+}
+
+int OnAmxSetPlayerWorldBounds(int playerid, float minX, float minY, float maxX, float maxY)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetPlayerWorldBounds", "(IFFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, minX, minY, maxX, maxY);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSetPlayerWeather(int playerid, int weatherid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetPlayerWeather", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, weatherid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSetPlayerCheckpoint(int playerid, float x, float y, float z, float size)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetPlayerCheckpoint", "(IFFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, x, y, z, size);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDisablePlayerCheckpoint(int playerid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDisablePlayerCheckpoint", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxSetPlayerRaceCheckpoint(int playerid, int type, float x, float y, float z, float nextX, float nextY, float nextZ, float size)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxSetPlayerRaceCheckpoint", "(IIFFFFFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, type, x, y, z, nextX, nextY, nextZ, size);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDisablePlayerRaceCheckpoint(int playerid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDisablePlayerRaceCheckpoint", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTogglePlayerSpectating(int playerid, int toggle)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTogglePlayerSpectating", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, toggle);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxPlayerSpectatePlayer(int playerid, int target, int mode)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxPlayerSpectatePlayer", "(III)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, target, mode);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxPlayerSpectateVehicle(int playerid, int target, int mode)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxPlayerSpectateVehicle", "(III)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, target, mode);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxEnableStuntBonusForPlayer(int playerid, int toggle)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxEnableStuntBonusForPlayer", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, toggle);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxStartRecording(int playerid, int type, char* recordName)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxStartRecording", "(IILjava/lang/String;)I");
+	if (!jmid) return 0;
+
+	jchar wstring[128];
+	int len = mbs2wcs(getServerCodepage(), recordName, -1, wstring, sizeof(wstring) / sizeof(wstring[0]));
+	jstring str = env->NewString(wstring, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, type, str);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxStopRecording(int playerid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxStopRecording", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxToggleControllabel(int playerid, int toggle)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxToggleControllable", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, toggle);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTextDrawCreate(float x, float y, char* text, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTextDrawCreate", "(FFLjava/lang/String;I)I");
+	if (!jmid) return 0;
+
+	jchar wstring[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wstring, sizeof(wstring) / sizeof(wstring[0]));
+	jstring str = env->NewString(wstring, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, x, y, str, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTextDrawDestroy(int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTextDrawDestroy", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTextDrawSetString(int id, char* text)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTextDrawSetString", "(ILjava/lang/String;)I");
+	if (!jmid) return 0;
+
+	jchar wstring[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wstring, sizeof(wstring) / sizeof(wstring[0]));
+	jstring str = env->NewString(wstring, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id, str);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTextDrawShowForPlayer(int playerid, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTextDrawShowForPlayer", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTextDrawHideForPlayer(int playerid, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTextDrawHideForPlayer", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTextDrawShowForAll(int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTextDrawShowForAll", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxTextDrawHideForAll(int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxTextDrawHideForAll", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxCreatePlayerTextDraw(int playerid, float x, float y, char* text, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxCreatePlayerTextDraw", "(IFFLjava/lang/String;I)I");
+	if (!jmid) return 0;
+
+	jchar wstring[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wstring, sizeof(wstring) / sizeof(wstring[0]));
+	jstring str = env->NewString(wstring, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, x, y, str, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxPlayerTextDrawDestroy(int playerid, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxPlayerTextDrawDestroy", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxPlayerTextDrawSetString(int playerid, int id, char* text)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxPlayerTextDrawSetString", "(IILjava/lang/String;)I");
+	if (!jmid) return 0;
+
+	jchar wstring[1024];
+	int len = mbs2wcs(getServerCodepage(), text, -1, wstring, sizeof(wstring) / sizeof(wstring[0]));
+	jstring str = env->NewString(wstring, len);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id, str);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxPlayerTextDrawShow(int playerid, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxPlayerTextDrawShow", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxPlayerTextDrawHide(int playerid, int id)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxPlayerTextDrawHide", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, id);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxAddVehicleComponent(int vehicleid, int componentid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxAddVehicleComponent", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, componentid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxLinkVehicleToInterior(int vehicleid, int interiorid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxLinkVehicleToInterior", "(II)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, interiorid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxChangeVehicleColor(int vehicleid, int color1, int color2)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxChangeVehicleColor", "(III)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, color1, color2);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int RestartShoebill()
+{
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+	if (!env) return 0;
+	AmxInstanceManager::get().markMainAmx(nullptr);
+	Uninitialize(env);
+	Initialize(env);
+	return 1;
 }

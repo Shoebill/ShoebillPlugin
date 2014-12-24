@@ -13,9 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+#ifndef __SIMPLEASM_H__
+#define __SIMPLEASM_H__
 #include <vector>
-#include <cstring>
 
 class SimpleAsm
 {
@@ -56,3 +56,4 @@ private:
 	SimpleAsm(const SimpleAsm&) = delete;
 	SimpleAsm& operator= (const SimpleAsm&) = delete;
 };
+#endif

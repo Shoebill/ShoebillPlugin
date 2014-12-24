@@ -13,7 +13,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+#ifndef _SIMPLEINLINEHOOK_H__
+#define _SIMPLEINLINEHOOK_H__
 #include <memory>
 
 #include "SimpleAsm.hpp"
@@ -62,3 +63,4 @@ private:
 	SimpleInlineHook(const SimpleInlineHook&) = delete;
 	SimpleInlineHook& operator= (const SimpleInlineHook&) = delete;
 };
+#endif

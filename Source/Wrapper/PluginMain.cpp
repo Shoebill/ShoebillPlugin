@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "SimpleInlineHook.hpp"
-
 #include "AmxHelper.h"
 #include "Callbacks.h"
 #include "samp.h"
@@ -40,11 +37,13 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 {
+	OnAmxLoad(amx);
 	return AMX_ERR_NONE;
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX *amx)
 {
+	OnAmxUnload(amx);
 	return AMX_ERR_NONE;
 }
 
