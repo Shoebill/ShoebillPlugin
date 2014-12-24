@@ -4144,6 +4144,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPublic
 	int index;
 	const char *functionName = env->GetStringUTFChars(name, false);
 	amx_FindPublic(amx, functionName, &index);
+	env->ReleaseStringUTFChars(name, functionName);
 	return index;
 }
 
@@ -4154,6 +4155,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 	int index;
 	const char *functionName = env->GetStringUTFChars(name, false);
 	amx_FindNative(amx, functionName, &index);
+	env->ReleaseStringUTFChars(name, functionName);
 	return index;
 }
 
@@ -4168,7 +4170,9 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerPublic
 	AMX* amx = (AMX*)pAmx;
 	const char *functionName = env->GetStringUTFChars(name, false);
 	const AMX_NATIVE_INFO *info = new AMX_NATIVE_INFO { functionName, registeredPublicCalled };
-	return amx_Register(amx, info, -1);
+	int ret = amx_Register(amx, info, -1);
+	env->ReleaseStringUTFChars(name, functionName);
+	return ret;
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerNative
@@ -4177,7 +4181,9 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerNative
 	AMX* amx = (AMX*)pAmx;
 	const char *functionName = env->GetStringUTFChars(name, false);
 	const AMX_NATIVE_INFO *info = new AMX_NATIVE_INFO{ functionName, registeredPublicCalled };
-	return amx_Register(amx, info, -1);
+	int ret = amx_Register(amx, info, -1);
+	env->ReleaseStringUTFChars(name, functionName);
+	return ret;
 }
 
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction
@@ -4188,6 +4194,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 	int arrayLength = env->GetArrayLength(args);
 	amx->paramcount = 0;
 	cell* params = (cell*)malloc((arrayLength+1) * sizeof(cell));
+	std::vector<cell> stringCells;
 	params[0] = arrayLength * sizeof(cell);
 	for (int i = (arrayLength-1); i >= 0; i--)
 	{
@@ -4202,7 +4209,11 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 			{
 				jstring string = (jstring)object;
 				const char *content = env->GetStringUTFChars(string, false);
-				amx_PushString(amx, &params[i + 1], NULL, content, 0, 0);
+				cell strCel;
+				amx_PushString(amx, &strCel, NULL, content, 0, 0);
+				params[i + 1] = strCel;
+				stringCells.push_back(strCel);
+				env->ReleaseStringUTFChars(string, content);
 			}
 			else if (!strcmp(classname, "class java.lang.Integer"))
 			{
@@ -4216,10 +4227,12 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 				jfloat ffloat = env->CallFloatMethod(object, bjf);
 				params[i + 1] = amx_ftoc(ffloat);
 			}
+			env->ReleaseStringUTFChars(str, classname);
 		} 
 	}
 	amx_Callback(amx, index, &retval, params);
 	free(params);
+	for (auto str : stringCells) amx_Release(amx, str);
 	jclass cls = env->FindClass("java/lang/Integer");
 	jmethodID methodID = env->GetMethodID(cls, "<init>", "(I)V");
 	return env->NewObject(cls, methodID, retval);
@@ -4249,6 +4262,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 				cell strCell;
 				amx_PushString(amx, &strCell, NULL, content, 0, 0);
 				stringCells.push_back(strCell);
+				env->ReleaseStringUTFChars(string, content);
 			}
 			else if (!strcmp(classname, "class java.lang.Integer"))
 			{
@@ -4262,12 +4276,11 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 				jfloat ffloat = env->CallFloatMethod(object, bjf);
 				amx_Push(amx, amx_ftoc(ffloat));
 			}
+			env->ReleaseStringUTFChars(str, classname);
 		}
 	}
 	amx_Exec(amx, &retval, idx);
-	for (auto it : stringCells) {
-		amx_Release(amx, it);
-	}
+	for (auto it : stringCells) amx_Release(amx, it);
 	jclass cls = env->FindClass("java/lang/Integer");
 	jmethodID methodID = env->GetMethodID(cls, "<init>", "(I)V");
 	return env->NewObject(cls, methodID, retval);

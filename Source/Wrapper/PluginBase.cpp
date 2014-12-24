@@ -17,7 +17,7 @@ SimpleInlineHook _amx_FindPublic_hook;
 
 std::map<int, std::string> callbackMap;
 
-cell *amx_param_get_start(AMX *amx) { //sampgdk
+cell *amx_param_get_start(AMX *amx) {
 	unsigned char *data = amx->data != NULL
 		? amx->data
 		: amx->base + ((AMX_HEADER *)amx->base)->dat;
