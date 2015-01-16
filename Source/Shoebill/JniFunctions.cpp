@@ -2400,7 +2400,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addPlayerClass
  * Signature: (IIFFFFIIIIII)I
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addPlayerClassEx
-  (JNIEnv *env, jclass jcls, int teamid, jint modelid, jfloat spawn_x, jfloat spawn_y, jfloat spawn_z,
+  (JNIEnv *env, jclass jcls, jint teamid, jint modelid, jfloat spawn_x, jfloat spawn_y, jfloat spawn_z,
   jfloat z_angle, jint weapon1, jint weapon1_ammo, jint weapon2, jint weapon2_ammo, jint weapon3, jint weapon3_ammo)
 {
 	return AddPlayerClassEx( teamid, modelid, spawn_x, spawn_y, spawn_z, z_angle, 
