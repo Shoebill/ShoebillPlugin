@@ -571,13 +571,12 @@ int SpawnPlayer(int playerid)
 
 	cell args[2] =
 	{
-		sizeof(args)-sizeof(cell),
+		sizeof(args) - sizeof(cell),
 		playerid
 	};
 
 	return func(pAMX, args);
 }
-
 
 // Player info
 
@@ -2060,10 +2059,12 @@ int GetAnimationName(int index, char* animlib, int len1, char* animname, int len
 
 	int ret = func(pAMX, args);
 
-	amx_GetString(animlib, phys1, 0, len1);
-	amx_GetString(animname, phys2, 0, len2);
-	amx_Release(pAMX, args[4]);
-	amx_Release(pAMX, args[2]);
+	if (ret == 1) {
+		amx_GetString(animlib, phys1, 0, len1);
+		amx_GetString(animname, phys2, 0, len2);
+		amx_Release(pAMX, args[4]);
+		amx_Release(pAMX, args[2]);
+	}
 	return ret;
 }
 

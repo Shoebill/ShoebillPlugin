@@ -549,6 +549,21 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_spawnPlayer
 }
 
 /*
+* Class:     net_gtaun_shoebill_SampNativeFunction
+* Method:    getAnimationName
+* Signature: (I)[Ljava/lang/String;
+*/
+JNIEXPORT jobjectArray JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getAnimationName(JNIEnv *env, jclass, jint animationIndex)
+{
+	char animLib[32] = "None", animName[32] = "None";
+	GetAnimationName(animationIndex, animLib, 32, animName, 32);
+	jobjectArray objectArray = (jobjectArray)env->NewObjectArray(2, env->FindClass("java/lang/String"), env->NewStringUTF(""));
+	env->SetObjectArrayElement(objectArray, 0, env->NewStringUTF(animLib));
+	env->SetObjectArrayElement(objectArray, 1, env->NewStringUTF(animName));
+	return objectArray;
+}
+
+/*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    setPlayerPos
  * Signature: (IFFF)V

@@ -4,7 +4,7 @@
 
 #include "AmxInstanceManager.hpp"
 #include "NativeFunctionManager.h"
-#include "amx\amx.h"
+#include "amx/amx.h"
 
 logprintf_t logprintf = NULL;
 

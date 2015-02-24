@@ -387,6 +387,14 @@ extern "C" {
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    getAnimationName
+	* Signature: (I)[Ljava/lang/String;
+	*/
+	JNIEXPORT jobjectArray JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getAnimationName
+		(JNIEnv *, jclass, jint);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
 	* Method:    setPlayerPos
 	* Signature: (IFFF)V
 	*/
