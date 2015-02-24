@@ -17,6 +17,7 @@
 #ifndef __CALLBACKS_H__
 #define __CALLBACKS_H__
 #include <map>
+#include <iostream>
 #include "samp.h"
 
 // Plugin Callbacks

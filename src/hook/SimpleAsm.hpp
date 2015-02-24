@@ -16,6 +16,7 @@
 #ifndef __SIMPLEASM_H__
 #define __SIMPLEASM_H__
 
+#include <stdint.h>
 #include <vector>
 #include <cstring>
 
