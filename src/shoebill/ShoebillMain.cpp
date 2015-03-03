@@ -2254,7 +2254,6 @@ int* callHookedCallback(AMX *amx, std::string name, cell* params)
 			return nullptr;
 		}
 		jclass objectClass = env->FindClass("java/lang/Object");
-		jclass stringClass = env->FindClass("java/lang/String");
 		jclass integerClass = env->FindClass("java/lang/Integer");
 		jclass floatClass = env->FindClass("java/lang/Float");
 		jmethodID integerMethodID = env->GetMethodID(integerClass, "<init>", "(I)V");
@@ -2287,7 +2286,7 @@ int* callHookedCallback(AMX *amx, std::string name, cell* params)
 		jintArray event = (jintArray)env->CallObjectMethod(callbackHandlerObject, jmid, env->NewString(wtext, len), objectArray);
 		jni_jvm_printExceptionStack(env);
 		jint* values = env->GetIntArrayElements(event, false);
-		int* returnObject = new int[] { values[0], values[1] };
+		int* returnObject = new int [2] { values[0], values[1] };
 		env->ReleaseIntArrayElements(event, values, 0);
 		return returnObject;
 	}

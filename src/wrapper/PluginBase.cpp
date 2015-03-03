@@ -79,6 +79,7 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 			}
 		}
 		delete[] params;
+		delete[] hook;
 
 		if (do_clean) {
 			amx->paramcount = 0;
