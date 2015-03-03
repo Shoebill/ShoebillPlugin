@@ -396,3 +396,30 @@ bool shouldCancelCallback(std::string callbackName, cell returnValue) {
 	}
 	return false;
 }
+
+std::map<std::string, std::string> shoebillHookedCallbacks;
+
+std::map<std::string, std::string>::iterator getIterator(std::string name)
+{
+	return shoebillHookedCallbacks.find(name);
+}
+
+std::map<std::string, std::string>::const_iterator getEnd()
+{
+	return shoebillHookedCallbacks.end();
+}
+
+bool hookCallback(std::string name, std::string types)
+{
+	shoebillHookedCallbacks[name] = types;
+	return true;
+}
+
+bool unhookCallback(std::string name)
+{
+	auto it = shoebillHookedCallbacks.find(name);
+	if (it == shoebillHookedCallbacks.end())
+		return false;
+	shoebillHookedCallbacks.erase(name);
+	return true;
+}

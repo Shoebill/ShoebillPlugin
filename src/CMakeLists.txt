@@ -39,7 +39,8 @@ set(SHOEBILL_SOURCES shoebill/EncodingUtils.cpp shoebill/EncodingUtils.h shoebil
                      shoebill/linux.cpp shoebill/linux.h shoebill/ShoebillMain.cpp shoebill/ShoebillMain.h
                      wrapper/AmxHelper.h wrapper/AmxInstanceManager.hpp wrapper/Callbacks.cpp wrapper/Callbacks.h wrapper/exports.def wrapper/Functions.cpp
                      wrapper/Functions.h wrapper/NativeFunctionManager.cpp wrapper/NativeFunctionManager.h wrapper/PluginBase.cpp wrapper/PluginBase.h
-                     wrapper/PluginMain.cpp wrapper/samp.h wrapper/HookManager.h wrapper/HookManager.cpp)
+                     wrapper/PluginMain.cpp wrapper/samp.h wrapper/HookManager.h wrapper/HookManager.cpp wrapper/FakeAmx.cpp wrapper/FakeAmx.h wrapper/CallbackManager.cpp
+					 wrapper/CallbackManager.h)
 
 add_subdirectory(sampplugin)
 add_subdirectory(hook)

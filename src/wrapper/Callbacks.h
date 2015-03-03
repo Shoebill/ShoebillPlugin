@@ -19,6 +19,7 @@
 #include <map>
 #include <iostream>
 #include "samp.h"
+#include <jni.h>
 
 // Plugin Callbacks
 bool OnLoadPlugin();
@@ -165,4 +166,11 @@ cell invokeCallback(AMX*, std::string, cell*);
 void overridePointer(AMX*, const AMX_NATIVE_INFO *, int);
 int StartShoebill();
 bool shouldCancelCallback(std::string, cell);
+
+bool hookCallback(std::string name, std::string types);
+bool unhookCallback(std::string name);
+std::map<std::string, std::string>::iterator getIterator(std::string name);
+std::map<std::string, std::string>::const_iterator getEnd();
+
+int* callHookedCallback(AMX *amx, std::string name, cell* params);
 #endif

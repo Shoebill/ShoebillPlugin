@@ -24,6 +24,7 @@ typedef void(*logprintf_t)(const char* format, ...);
 typedef int AMXAPI(*amx_Exec_t)(AMX *amx, cell *retval, int index);
 typedef int AMXAPI(*amx_Register_t)(AMX *amx, const AMX_NATIVE_INFO *nativelist, int number);
 typedef int AMXAPI(*amx_FindPublic_t)(AMX *amx, const char *name, int *retval);
+typedef int AMXAPI(*amx_Callback_t)(AMX* amx, cell index, cell* result, cell* params);
 
 extern void *pAMXFunctions;
 extern AMX_NATIVE_INFO CallbackNatives[];

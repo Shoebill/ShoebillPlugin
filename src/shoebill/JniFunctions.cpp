@@ -4329,3 +4329,33 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerHookAr
 	HookManager::get().registerHookParameters(std::string(funcName), params);
 	env->ReleaseStringUTFChars(functionName, funcName);
 }
+
+/*
+* Class:     net_gtaun_shoebill_SampNativeFunction
+* Method:    hookCallback
+* Signature: (Ljava/lang/String;Ljava/lang/String)
+*/
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallback
+(JNIEnv *env, jclass, jstring name, jstring types) 
+{
+	const char* callbackName = env->GetStringUTFChars(name, false);
+	const char* callbackTypes = env->GetStringUTFChars(types, false);
+	bool success = hookCallback(std::string(callbackName), std::string(callbackTypes));
+	env->ReleaseStringUTFChars(name, callbackName);
+	env->ReleaseStringUTFChars(types, callbackTypes);
+	return success;
+}
+
+/*
+* Class:     net_gtaun_shoebill_SampNativeFunction
+* Method:    unhookCallback
+* Signature: (Ljava/lang/String;)Z
+*/
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unhookCallback
+(JNIEnv *env, jclass, jstring name)
+{
+	const char* callbackName = env->GetStringUTFChars(name, false);
+	bool success = unhookCallback(std::string(callbackName));
+	env->ReleaseStringUTFChars(name, callbackName);
+	return success;
+}

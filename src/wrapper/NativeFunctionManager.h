@@ -50,10 +50,19 @@ public:
 	void hookFunction(AMX* amx, AMX_NATIVE function, const char *name);
 	void clearFunctions();
 
+	void setCurrentFunctionName(std::string name) {
+		currentFunctionName = name;
+	}
+
+	std::string getCurrentFunctionName() {
+		return currentFunctionName;
+	}
+
 private:
 	std::unordered_map<std::string, AMX_NATIVE> functions;
 	std::unordered_map<int, std::string> functionNames;
 	NativeFunctionManager(const NativeFunctionManager&) = delete;
 	NativeFunctionManager& operator= (const NativeFunctionManager&) = delete;
+	std::string currentFunctionName;
 };
 #endif

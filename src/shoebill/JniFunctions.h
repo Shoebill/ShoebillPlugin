@@ -91,11 +91,19 @@ extern "C" {
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    registerHookArguments
-	* Signature: (Ljava/lang/String;[Ljava/lang/Class;)V
+	* Method:    hookCallback
+	* Signature: (Ljava/lang/String;[Ljava/lang/Class;)Z
 	*/
-	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerHookArguments
-		(JNIEnv *, jclass, jstring, jboolean, jobjectArray);
+	JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallback
+		(JNIEnv *, jclass, jstring, jstring);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    unhookCallback
+	* Signature: (Ljava/lang/String;)Z
+	*/
+	JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unhookCallback
+		(JNIEnv *, jclass, jstring);
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction

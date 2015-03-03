@@ -25,6 +25,7 @@
 #include "JniUtils.h"
 
 #include "ShoebillMain.h"
+#include <Callbacks.h>
 
 #if defined(LINUX)
 #include "linux.h"
@@ -2237,4 +2238,58 @@ int RestartShoebill()
 	Uninitialize(env);
 	Initialize(env);
 	return 1;
+}
+
+int* callHookedCallback(AMX *amx, std::string name, cell* params)
+{
+	auto it = getIterator(name);
+	if (it != getEnd()) {
+		JNIEnv *env;
+		jvm->AttachCurrentThread((void**)&env, NULL);
+		if (!env) return 0;
+		std::string types = it->second;
+		int count = params[0] / sizeof(cell);
+		if (count != types.length()) {
+			logprintf("%s did not equal count! Correct: %i wrong: %i", name.c_str(), count, types.length());
+			return nullptr;
+		}
+		jclass objectClass = env->FindClass("java/lang/Object");
+		jclass stringClass = env->FindClass("java/lang/String");
+		jclass integerClass = env->FindClass("java/lang/Integer");
+		jclass floatClass = env->FindClass("java/lang/Float");
+		jmethodID integerMethodID = env->GetMethodID(integerClass, "<init>", "(I)V");
+		jmethodID floatMethodID = env->GetMethodID(floatClass, "<init>", "(F)V");
+		jobjectArray objectArray = (jobjectArray)env->NewObjectArray(count, objectClass, 0);
+		for (std::string::size_type i = 0; i < types.size(); ++i)
+		{
+			char paramType = types[i];
+			if (paramType == 's') {
+				char text[1024];
+				amx_GetString(amx, params[i + 1], text, sizeof(text));
+				jchar wtext[1024];
+				int len = mbs2wcs(getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+				env->SetObjectArrayElement(objectArray, i, env->NewString(wtext, len));
+			}
+			else if (paramType == 'i') {
+				env->SetObjectArrayElement(objectArray, i, env->NewObject(integerClass, integerMethodID, params[i + 1]));
+			}
+			else if (paramType == 'f') {
+				float value = amx_ctof(params[i + 1]);
+				env->SetObjectArrayElement(objectArray, i, env->NewObject(floatClass, floatMethodID, value));
+			}
+		}
+
+		jchar wtext[256];
+		int len = mbs2wcs(getServerCodepage(), name.c_str(), -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+
+		static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onHookCall", "(Ljava/lang/String;[Ljava/lang/Object;)[I");
+		if (!jmid) return 0;
+		jintArray event = (jintArray)env->CallObjectMethod(callbackHandlerObject, jmid, env->NewString(wtext, len), objectArray);
+		jni_jvm_printExceptionStack(env);
+		jint* values = env->GetIntArrayElements(event, false);
+		int* returnObject = new int[] { values[0], values[1] };
+		env->ReleaseIntArrayElements(event, values, 0);
+		return returnObject;
+	}
+	else return nullptr;
 }
