@@ -5,7 +5,6 @@
 #include "AmxInstanceManager.hpp"
 #include "NativeFunctionManager.h"
 #include "amx/amx.h"
-#include "CallbackManager.h"
 #include "ShoebillMain.h"
 
 logprintf_t logprintf = NULL;
@@ -127,7 +126,6 @@ int AMXAPI amx_FindPublic_hooked(AMX *amx, const char *name, int *index)
 			}
 			*index = SHOEBILL_OFFSET - shoebill_callbacks.size();
 			shoebill_callbacks[*index] = std::string(name);
-			logprintf("Register %s with idx %i", name, *index);
 			return AMX_ERR_NONE;
 		}
 	}
