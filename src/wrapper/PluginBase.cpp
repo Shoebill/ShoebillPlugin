@@ -37,7 +37,7 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 			invokeCallback(amx, "OnGameModeInit", NULL);
 		}
 	}
-	if (AmxInstanceManager::get().getMainAmx() == amx)
+	if (AmxInstanceManager::get().getMainAmx() == amx && index != AMX_EXEC_CONT)
 	{
 		std::string callbackName = std::string();
 
@@ -50,17 +50,17 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 			callbackName = shoebill_callbacks[index];
 		}
 
-		cell reset_stk = amx->reset_stk;
+		bool do_clean = false;
+
 		cell paramcount = amx->paramcount;
+		cell reset_stk = amx->reset_stk;
 		amx->reset_stk = amx->stk;
 		amx->paramcount = 0;
-		bool do_clean = false;
 
 		cell* address = amx_param_get_start(amx);
 		cell* params = new cell[1 + paramcount];
 		params[0] = sizeof(cell) * paramcount;
 		memcpy(&params[1], address, params[0]);
-		amx->error = AMX_ERR_NONE;
 		
 		int *hook = callHookedCallback(amx, callbackName, params);
 		if (hook) {
@@ -78,23 +78,22 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 				do_clean = true;
 			}
 		}
+
 		delete[] params;
 		delete[] hook;
 
-		if (do_clean) {
-			amx->paramcount = 0;
+		if (do_clean || index <= SHOEBILL_OFFSET) {
 			amx->stk += paramcount * sizeof(cell);
+			amx->paramcount = 0;
+			amx->error = AMX_ERR_NONE;
 			return AMX_ERR_NONE;
 		}
-		else {
-			amx->reset_stk = reset_stk;
-			amx->paramcount = paramcount;
-		}
+		amx->reset_stk = reset_stk;
+		amx->paramcount = paramcount;
 	}
 	_amx_Exec_hook.unhook();
 	int ret = _amx_Exec(amx, retval, index);
 	_amx_Exec_hook.hook();
-	amx->paramcount = 0;
 	return ret;
 }
 
