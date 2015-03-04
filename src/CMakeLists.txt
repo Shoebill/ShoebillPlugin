@@ -2,6 +2,7 @@ include(AmxConfig)
 include(Plugin)
 
 find_package(JNI REQUIRED)
+
 if(UNIX)
     find_package(Iconv REQUIRED)
 endif()

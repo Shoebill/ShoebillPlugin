@@ -3,6 +3,8 @@ project(ShoebillPlugin)
 option(SHOEBILL_USE_STATIC_RUNTIME "Use static C++ runtime" OFF)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+set(CMAKE_SYSTEM_PROCESSOR "i386")
+
 # Enable project folders in Visual Studio 2010+ (and possibly other IDEs).
 if(NOT (MSVC_IDE AND MSVC_VERSION LESS 1600))
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
