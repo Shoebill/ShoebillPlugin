@@ -304,6 +304,26 @@ static cell AMX_NATIVE_CALL n_OnTrailerUpdate(AMX *amx, cell* params)
 	return OnTrailerUpdate(params[1], params[2]);
 }
 
+static cell AMX_NATIVE_CALL n_OnActorStreamIn(AMX* amx, cell* params)
+{
+	return OnActorStreamIn(params[1], params[2]);
+}
+
+static cell AMX_NATIVE_CALL n_OnActorStreamOut(AMX* amx, cell* params)
+{
+	return OnActorStreamOut(params[1], params[2]);
+}
+
+static cell AMX_NATIVE_CALL n_OnPlayerGiveDamageActor(AMX* amx, cell* params)
+{
+	return OnPlayerGiveDamageActor(params[1], params[2], params[3], params[4], params[5]);
+}
+
+static cell AMX_NATIVE_CALL n_OnVehicleSirenStateChange(AMX* amx, cell* params)
+{
+	return OnVehicleSirenStateChange(params[1], params[2], params[3]);
+}
+
 cell invokeCallback(AMX *amx, std::string name, cell *params) {
 	static std::map<std::string, AMX_NATIVE> callbackMap = {
 		{ "OnGameModeInit", n_OnGameModeInit },
@@ -359,7 +379,11 @@ cell invokeCallback(AMX *amx, std::string name, cell *params) {
 		{ "OnPlayerSelectObject", n_OnPlayerSelectObject },
 		{ "OnPlayerWeaponShot", n_OnPlayerWeaponShot },
 		{ "OnIncomingConnection", n_OnIncomingConnection },
-		{ "OnTrailerUpdate", n_OnTrailerUpdate }
+		{ "OnTrailerUpdate", n_OnTrailerUpdate },
+		{ "OnActorStreamIn", n_OnActorStreamIn },
+		{ "OnActorStreamOut", n_OnActorStreamOut },
+		{ "OnPlayerGiveDamageActor", n_OnPlayerGiveDamageActor },
+		{ "OnVehicleSirenStateChange", n_OnVehicleSirenStateChange }
 	};
 	auto it = callbackMap.find(name);
 	if (it != callbackMap.end()) {

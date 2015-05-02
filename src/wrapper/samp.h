@@ -40,12 +40,16 @@
 #define INVALID_TEXT_DRAW						(0xFFFF)
 #define INVALID_GANG_ZONE						(-1)
 #define INVALID_3DTEXT_ID						(0xFFFF)
+#define INVALID_ACTOR_ID						(0xFFFF)
+#define MAX_ACTORS								(1000)
 
 // Player GUI Dialog
-#define DIALOG_STYLE_MSGBOX		0
-#define DIALOG_STYLE_INPUT		1
-#define DIALOG_STYLE_LIST		2
-#define DIALOG_STYLE_PASSWORD	3
+#define DIALOG_STYLE_MSGBOX				0
+#define DIALOG_STYLE_INPUT				1
+#define DIALOG_STYLE_LIST				2
+#define DIALOG_STYLE_PASSWORD			3
+#define DIALOG_STYLE_TABLIST			4
+#define DIALOG_STYLE_TABLIST_HEADERS	5
 
 // States
 #define PLAYER_STATE_NONE						(0)

@@ -16,7 +16,6 @@
 
 #include <cstdarg>
 #include <map>
-#include <vector>
 
 #include "AmxHelper.h"
 #include "samp.h"
@@ -57,8 +56,8 @@ int AttachObjectToVehicle(int objectid, int vehicleid, float OffsetX, float Offs
 
 int AttachObjectToObject(int objectid, int attachtoid, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, int syncRotation)
 {
-	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
-	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
 
 	cell args[10] =
 	{
@@ -5034,13 +5033,573 @@ int SetVehicleVirtualWorld(int vehicleid, int worldid)
 
 int GetVehicleVirtualWorld(int vehicleid)
 {
-	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
-	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
 
 	cell args[2] =
 	{
 		sizeof(args)-sizeof(cell),
 		vehicleid
+	};
+
+	return func(pAMX, args);
+}
+
+int ApplyActorAnimation(int actorid, const char* animlib, const char* animname, float fDelta, int loop, int lockX, int lockY, int freeze, int time)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+	auto animLibStr = amx_NewString(pAMX, animlib, strlen(animlib));
+	auto animNameStr = amx_NewString(pAMX, animname, strlen(animname));
+	cell args[10] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid,
+		animLibStr,
+		animNameStr,
+		amx_ftoc(fDelta),
+		loop,
+		lockX,
+		lockY, 
+		freeze, 
+		time
+	};
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, animLibStr);
+	amx_Release(pAMX, animNameStr);
+	return ret;
+}
+
+int CreateActor(int modelid, float x, float y, float z, float rotation)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[6] =
+	{
+		sizeof(args) - sizeof(cell),
+		modelid, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), 
+		amx_ftoc(rotation)
+	};
+
+	return func(pAMX, args);
+}
+
+int ClearActorAnimations(int actorid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid
+	};
+
+	return func(pAMX, args);
+}
+
+int DestroyActor(int actorid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid
+	};
+
+	return func(pAMX, args);
+}
+
+int DisableRemoteVehicleCollisions(int playerid, int disable)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid,
+		disable
+	};
+
+	return func(pAMX, args);
+}
+
+int EnablePlayerCameraTarget(int playerid, int enable)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid,
+		enable
+	};
+
+	return func(pAMX, args);
+}
+
+int GetActorFacingAngle(int actorid, float& angle)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+	cell *phys;
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, amx_Allot(pAMX, 1, &phys)
+	};
+	auto ret = func(pAMX, args);
+	angle = *reinterpret_cast<float*>(phys);
+	amx_Release(pAMX, args[2]);
+	return ret;
+}
+
+int GetActorHealth(int actorid, float& health)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+	cell *phys;
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, amx_Allot(pAMX, 1, &phys)
+	};
+	auto ret = func(pAMX, args);
+	health = *reinterpret_cast<float*>(phys);
+	amx_Release(pAMX, args[2]);
+	return ret;
+}
+
+int GetActorPoolSize()
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[1] =
+	{
+		sizeof(args) - sizeof(cell)
+	};
+
+	return func(pAMX, args);
+}
+
+int GetActorPos(int actorid, float& X, float& Y, float& Z)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+	cell *phys_x, *phys_y, *phys_z;
+
+	cell args[5] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, amx_Allot(pAMX, 1, &phys_x),
+		amx_Allot(pAMX, 1, &phys_y), amx_Allot(pAMX, 1, &phys_z)
+	};
+	auto ret = func(pAMX, args);
+	X = *reinterpret_cast<float*>(phys_x);
+	Y = *reinterpret_cast<float*>(phys_y);
+	Y = *reinterpret_cast<float*>(phys_z);
+	amx_Release(pAMX, args[2]);
+	amx_Release(pAMX, args[3]);
+	amx_Release(pAMX, args[4]);
+	return ret;
+}
+
+int GetActorVirtualWorld(int actorid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid
+	};
+
+	return func(pAMX, args);
+}
+
+int GetObjectModel(int objectId)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		objectId
+	};
+
+	return func(pAMX, args);
+}
+
+int GetPlayerCameraTargetActor(int playerid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int GetPlayerCameraTargetObject(int playerid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int GetPlayerCameraTargetPlayer(int playerid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int GetPlayerCameraTargetVehicle(int playerid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int GetPlayerObjectModel(int playerid, int objectId)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid, objectId
+	};
+
+	return func(pAMX, args);
+}
+
+int GetPlayerTargetActor(int playerid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int GetVehicleParamsCarDoors(int vehicleid, int& driver, int& passenger, int& backleft, int& backright)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+	cell* phys_driver, *phys_passenger, *phys_backleft, *phys_backright;
+
+	cell args[6] =
+	{
+		sizeof(args) - sizeof(cell),
+		vehicleid, amx_Allot(pAMX, 1, &phys_driver),
+		amx_Allot(pAMX, 1, &phys_passenger), amx_Allot(pAMX, 1, &phys_backleft),
+		amx_Allot(pAMX, 1, &phys_backright)
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[2]);
+	amx_Release(pAMX, args[3]);
+	amx_Release(pAMX, args[4]);
+	amx_Release(pAMX, args[5]);
+	return ret;
+}
+
+int GetVehicleParamsCarWindows(int vehicleid, int& driver, int& passenger, int& backleft, int& backright)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+	cell* phys_driver, *phys_passenger, *phys_backleft, *phys_backright;
+
+	cell args[6] =
+	{
+		sizeof(args) - sizeof(cell),
+		vehicleid, amx_Allot(pAMX, 1, &phys_driver),
+		amx_Allot(pAMX, 1, &phys_passenger), amx_Allot(pAMX, 1, &phys_backleft),
+		amx_Allot(pAMX, 1, &phys_backright)
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[2]);
+	amx_Release(pAMX, args[3]);
+	amx_Release(pAMX, args[4]);
+	amx_Release(pAMX, args[5]);
+	return ret;
+}
+
+int GetVehicleParamsSirenState(int vehicleid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		vehicleid
+	};
+
+	return func(pAMX, args);
+}
+
+int GetVehiclePoolSize()
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[1] =
+	{
+		sizeof(args) - sizeof(cell)
+	};
+
+	return func(pAMX, args);
+}
+
+int IsActorInvulnerable(int actorid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid
+	};
+
+	return func(pAMX, args);
+}
+
+int IsActorStreamedIn(int actorid, int playerid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, playerid
+	};
+
+	return func(pAMX, args);
+}
+
+int IsValidActor(int actorid)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid
+	};
+
+	return func(pAMX, args);
+}
+
+int SetActorFacingAngle(int actorid, float angle)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	auto floatAngle = amx_ftoc(angle);
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, floatAngle
+	};
+
+	return func(pAMX, args);
+}
+
+int SetActorHealth(int actorid, float health)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	auto floatHealth = amx_ftoc(health);
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, floatHealth
+	};
+
+	return func(pAMX, args);
+}
+
+int SetActorInvulnerable(int actorid, int invulnerable)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, invulnerable
+	};
+
+	return func(pAMX, args);
+}
+
+int SetActorPos(int actorid, float X, float Y, float Z)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	auto floatX = amx_ftoc(X), floatY = amx_ftoc(Y), floatZ = amx_ftoc(Z);
+
+
+	cell args[5] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, floatX, floatY, floatZ
+	};
+
+	return func(pAMX, args);
+}
+
+int SetActorVirtualWorld(int actorid, int virtualworld)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		actorid, virtualworld
+	};
+
+	return func(pAMX, args);
+}
+
+int SetObjectNoCameraCol(int objectId)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		objectId
+	};
+
+	return func(pAMX, args);
+}
+
+int SetObjectsDefaultCameraCol(int disable)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		disable
+	};
+
+	return func(pAMX, args);
+}
+
+int SetPlayerObjectNoCameraCol(int playerid, int objectId)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		playerid, objectId
+	};
+
+	return func(pAMX, args);
+}
+
+int SetVehicleParamsCarDoors(int vehicleid, int driver, int passenger, int backleft, int backright)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[6] =
+	{
+		sizeof(args) - sizeof(cell),
+		vehicleid,
+		driver,
+		passenger,
+		backleft,
+		backright
+	};
+
+	return func(pAMX, args);
+}
+
+int SetVehicleParamsCarWindows(int vehicleid, int driver, int passenger, int backleft, int backright)
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[6] =
+	{
+		sizeof(args) - sizeof(cell),
+		vehicleid,
+		driver,
+		passenger,
+		backleft,
+		backright
+	};
+
+	return func(pAMX, args);
+}
+
+int GetPlayerPoolSize()
+{
+	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[1] =
+	{
+		sizeof(args) - sizeof(cell)
 	};
 
 	return func(pAMX, args);

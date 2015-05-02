@@ -84,7 +84,7 @@ void OnShoebillLoad()
 
 bool OnLoadPlugin()
 {
-	logprintf("  > Shoebill 1.1 NativePlugin for SA-MP 0.3z R2-4 by MK124, JoJLlmAn & 123marvin123");
+	logprintf("  > Shoebill 1.1 NativePlugin for SA-MP 0.3.7 by MK124, JoJLlmAn & 123marvin123");
 
 	char classpath[2048] = { 0 };
 	if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
@@ -1154,6 +1154,62 @@ int OnTrailerUpdate(int playerid, int vehicleid)
 	if (!jmid) return 0;
 
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnActorStreamIn(int actorid, int forplayerid)
+{
+	if (!callbackHandlerObject) return 0;
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onActorStreamIn", "(II)I");
+	if (!jmid) return 0;
+
+	int ret = env->CallIntMethod(callbackHandlerObject, jmid, actorid, forplayerid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnActorStreamOut(int actorid, int forplayerid)
+{
+	if (!callbackHandlerObject) return 0;
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onActorStreamOut", "(II)I");
+	if (!jmid) return 0;
+
+	int ret = env->CallIntMethod(callbackHandlerObject, jmid, actorid, forplayerid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnPlayerGiveDamageActor(int playerid, int damaged_actor, int amount, int weapon, int bodypart)
+{
+	if (!callbackHandlerObject) return 0;
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerGiveDamageActor", "(IIIII)I");
+	if (!jmid) return 0;
+
+	int ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, damaged_actor, amount, weapon, bodypart);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnVehicleSirenStateChange(int playerid, int vehicleid, int newstate)
+{
+	if (!callbackHandlerObject) return 0;
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleSirenStateChange", "(III)I");
+	if (!jmid) return 0;
+
+	int ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, newstate);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }

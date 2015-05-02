@@ -4414,8 +4414,234 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallba
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unhookCallback
 (JNIEnv *env, jclass, jstring name)
 {
-	const char* callbackName = env->GetStringUTFChars(name, false);
-	bool success = unhookCallback(std::string(callbackName));
+	auto callbackName = env->GetStringUTFChars(name, false);
+	auto success = unhookCallback(std::string(callbackName));
 	env->ReleaseStringUTFChars(name, callbackName);
 	return success;
+}
+
+JNIEXPORT jint JNICALL
+	Java_net_gtaun_shoebill_SampNativeFunction_applyActorAnimation(JNIEnv* env, jclass, jint actor, jstring animLib, jstring animName,
+	jfloat fDelta, jint loop, jint lockX, jint lockY, jint freeze, jint time)
+{
+	auto animLibStr = env->GetStringUTFChars(animLib, false);
+	auto animNameStr = env->GetStringUTFChars(animName, false);
+	auto ret = ApplyActorAnimation(actor, animLibStr, animNameStr, fDelta, loop, lockX, lockY, freeze, time);
+	env->ReleaseStringUTFChars(animLib, animLibStr);
+	env->ReleaseStringUTFChars(animName, animNameStr);
+	return ret;
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_clearActorAnimations(JNIEnv* env, jclass, jint actor)
+{
+	return ClearActorAnimations(actor);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_destroyActor(JNIEnv*, jclass, jint actor)
+{
+	return DestroyActor(actor);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_disableRemoteVehicleCollisions(JNIEnv*, jclass, jint playerid, jint disable)
+{
+	DisableRemoteVehicleCollisions(playerid, disable);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_enablePlayerCameraTarget(JNIEnv*, jclass, jint playerid, jint enable)
+{
+	return EnablePlayerCameraTarget(playerid, enable);
+}
+
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorFacingAngle(JNIEnv*, jclass, jint actor)
+{
+	float angle;
+	GetActorFacingAngle(actor, angle);
+	return angle;
+}
+
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorHealth(JNIEnv*, jclass, jint actor)
+{
+	float health;
+	GetActorHealth(actor, health);
+	return health;
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorPoolSize(JNIEnv*, jclass)
+{
+	return GetActorPoolSize();
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorPos(JNIEnv* env, jclass, jint actor, jobject vector3d)
+{
+	static auto cls = env->GetObjectClass(vector3d);
+	static auto fidX = env->GetFieldID(cls, "x", "F");
+	static auto fidY = env->GetFieldID(cls, "y", "F");
+	static auto fidZ = env->GetFieldID(cls, "z", "F");
+
+	float x, y, z;
+	GetActorPos(actor, x, y, z);
+
+	env->SetFloatField(vector3d, fidX, x);
+	env->SetFloatField(vector3d, fidY, y);
+	env->SetFloatField(vector3d, fidZ, z);
+	return 1;
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorVirtualWorld(JNIEnv*, jclass, jint actor)
+{
+	return GetActorVirtualWorld(actor);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getObjectModel(JNIEnv*, jclass, jint objectId)
+{
+	return GetObjectModel(objectId);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraTargetActor(JNIEnv*, jclass, jint player)
+{
+	return GetPlayerCameraTargetActor(player);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraTargetObject(JNIEnv*, jclass, jint player)
+{
+	return GetPlayerCameraTargetObject(player);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraTargetPlayer(JNIEnv*, jclass, jint player)
+{
+	return GetPlayerCameraTargetPlayer(player);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCameraTargetVehicle(JNIEnv*, jclass, jint player)
+{
+	return GetPlayerCameraTargetVehicle(player);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerObjectModel(JNIEnv*, jclass, jint player, jint objectid)
+{
+	return GetPlayerObjectModel(player, objectid);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerTargetActor(JNIEnv*, jclass, jint player)
+{
+	return GetPlayerTargetActor(player);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleParamsCarDoors(JNIEnv* env, jclass, jint vehicle, jobject vehicleParams)
+{
+	static auto cls = env->GetObjectClass(vehicleParams);
+	static auto fidDriver = env->GetFieldID(cls, "driver", "I");
+	static auto fidPassenger = env->GetFieldID(cls, "passenger", "I");
+	static auto fidBackLeft = env->GetFieldID(cls, "backLeft", "I");
+	static auto fidBackRight = env->GetFieldID(cls, "backRight", "I");
+
+	int driver, passenger, backleft, backright;
+	GetVehicleParamsCarDoors(vehicle, driver, passenger, backleft, backright);
+
+	env->SetIntField(vehicleParams, fidDriver, driver);
+	env->SetIntField(vehicleParams, fidPassenger, passenger);
+	env->SetIntField(vehicleParams, fidBackLeft, backleft);
+	env->SetIntField(vehicleParams, fidBackRight, backright);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleParamsCarWindows(JNIEnv* env, jclass, jint vehicle, jobject vehicleParams)
+{
+	static auto cls = env->GetObjectClass(vehicleParams);
+	static auto fidDriver = env->GetFieldID(cls, "driver", "I");
+	static auto fidPassenger = env->GetFieldID(cls, "passenger", "I");
+	static auto fidBackLeft = env->GetFieldID(cls, "backLeft", "I");
+	static auto fidBackRight = env->GetFieldID(cls, "backRight", "I");
+
+	int driver, passenger, backleft, backright;
+	GetVehicleParamsCarWindows(vehicle, driver, passenger, backleft, backright);
+
+	env->SetIntField(vehicleParams, fidDriver, driver);
+	env->SetIntField(vehicleParams, fidPassenger, passenger);
+	env->SetIntField(vehicleParams, fidBackLeft, backleft);
+	env->SetIntField(vehicleParams, fidBackRight, backright);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleParamsSirenState(JNIEnv*, jclass, jint vehicle)
+{
+	return GetVehicleParamsSirenState(vehicle);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehiclePoolSize(JNIEnv*, jclass)
+{
+	return GetVehiclePoolSize();
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isActorInvulnerable(JNIEnv*, jclass, jint actor)
+{
+	return IsActorInvulnerable(actor);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isActorStreamedIn(JNIEnv*, jclass, jint actor, jint player)
+{
+	return IsActorStreamedIn(actor, player);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isValidActor(JNIEnv*, jclass, jint actor)
+{
+	return IsValidActor(actor);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setActorFacingAngle(JNIEnv*, jclass, jint actor, jfloat angle)
+{
+	return SetActorFacingAngle(actor, angle);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setActorHealth(JNIEnv*, jclass, jint actor, jfloat health)
+{
+	return SetActorHealth(actor, health);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setActorInvulnerable(JNIEnv*, jclass, jint actor, jboolean invulnerable)
+{
+	return SetActorInvulnerable(actor, invulnerable);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setActorPos(JNIEnv*, jclass, jint actor, jfloat x, jfloat y, jfloat z)
+{
+	return SetActorPos(actor, x, y, z);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setActorVirtualWorld(JNIEnv*, jclass, jint actor, jint virtualworld)
+{
+	return SetActorVirtualWorld(actor, virtualworld);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectNoCameraCol(JNIEnv*, jclass, jint object)
+{
+	return SetObjectNoCameraCol(object);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectsDefaultCameraCol(JNIEnv*, jclass, jint disable)
+{
+	SetObjectsDefaultCameraCol(disable);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjectNoCameraCol(JNIEnv*, jclass, jint playerid, jint object)
+{
+	return SetPlayerObjectNoCameraCol(playerid, object);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setVehicleParamsCarDoors(JNIEnv*, jclass, jint vehicle, jint driver, jint passenger, jint backleft, jint backright)
+{
+	SetVehicleParamsCarDoors(vehicle, driver, passenger, backleft, backright);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setVehicleParamsCarWindows(JNIEnv*, jclass, jint vehicle, jint driver, jint passenger, jint backleft, jint backright)
+{
+	SetVehicleParamsCarWindows(vehicle, driver, passenger, backleft, backright);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createActor(JNIEnv *, jclass, jint modelid, jfloat x, jfloat y, jfloat z, jfloat rotation)
+{
+	return CreateActor(modelid, x, y, z, rotation);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerPoolSize(JNIEnv*, jclass)
+{
+	return GetPlayerPoolSize();
 }

@@ -415,4 +415,42 @@ int GetVehicleModelInfo(int vehiclemodel, int infotype, float &X, float &Y, floa
 // Virtual Worlds
 int SetVehicleVirtualWorld(int vehicleid, int worldid);
 int GetVehicleVirtualWorld(int vehicleid);
+
+//0.3.7
+int ApplyActorAnimation(int actorid, const char* animlib, const char* animname, float fDelta, int loop, int lockX, int lockY, int freeze, int time);
+int CreateActor(int modelid, float x, float y, float z, float rotation);
+int ClearActorAnimations(int actorid);
+int DestroyActor(int actorid);
+int DisableRemoteVehicleCollisions(int playerid, int disable);
+int EnablePlayerCameraTarget(int playerid, int enable);
+int GetActorFacingAngle(int actorid, float& angle);
+int GetActorHealth(int actorid, float& health);
+int GetActorPoolSize();
+int GetActorPos(int actorid, float& X, float& Y, float& Z);
+int GetActorVirtualWorld(int actorid);
+int GetObjectModel(int objectId);
+int GetPlayerCameraTargetActor(int playerid);
+int GetPlayerCameraTargetObject(int playerid);
+int GetPlayerCameraTargetPlayer(int playerid);
+int GetPlayerCameraTargetVehicle(int playerid);
+int GetPlayerObjectModel(int playerid, int objectId);
+int GetPlayerTargetActor(int playerid);
+int GetVehicleParamsCarDoors(int vehicleid, int& driver, int& passenger, int& backleft, int& backright);
+int GetVehicleParamsCarWindows(int vehicleid, int& driver, int& passenger, int& backleft, int& backright);
+int GetVehicleParamsSirenState(int vehicleid);
+int GetVehiclePoolSize();
+int IsActorInvulnerable(int actorid);
+int IsActorStreamedIn(int actorid, int playerid);
+int IsValidActor(int actorid);
+int SetActorFacingAngle(int actorid, float angle);
+int SetActorHealth(int actorid, float health);
+int SetActorInvulnerable(int actorid, int invulnerable);
+int SetActorPos(int actorid, float X, float Y, float Z);
+int SetActorVirtualWorld(int actorid, int virtualworld);
+int SetObjectNoCameraCol(int objectId);
+int SetObjectsDefaultCameraCol(int disable);
+int SetPlayerObjectNoCameraCol(int playerid, int objectId);
+int SetVehicleParamsCarDoors(int vehicleid, int driver, int passenger, int backleft, int backright);
+int SetVehicleParamsCarWindows(int vehicleid, int driver, int passenger, int backleft, int backright);
+int GetPlayerPoolSize();
 #endif

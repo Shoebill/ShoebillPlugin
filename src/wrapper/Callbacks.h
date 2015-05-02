@@ -83,6 +83,10 @@ int OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, floa
 int OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float fX, float fY, float fZ);
 int OnIncomingConnection(int playerid, char* ip_address, int port);
 int OnTrailerUpdate(int playerid, int vehicleid);
+int OnActorStreamIn(int actorid, int forplayerid);
+int OnActorStreamOut(int actorid, int forplayerid);
+int OnPlayerGiveDamageActor(int playerid, int damaged_actor, int amount, int weapon, int bodypart);
+int OnVehicleSirenStateChange(int playerid, int vehicleid, int newstate);
 int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid, int color1, int color2, int respawn_delay);
 int OnAmxDestroyVehicle(int vehicleid);
 int OnAmxSampObjectCreated(int objectId, int modelid, float x, float y, float z, float rX, float rY, float rZ, int worldid, int interiorid, float render_distance);
