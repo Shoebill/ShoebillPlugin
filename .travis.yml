@@ -4,4 +4,7 @@ jdk: oraclejdk8
 compiler:
   - gcc
 
-script: cmake . && make
+script: 
+  - java -version
+  - jdk_switcher use oraclejdk8
+  - cmake . && make
