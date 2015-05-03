@@ -40,14 +40,10 @@ if(WIN32)
   elseif(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=pentium3m")
   endif()
-endif()
 
-if(UNIX)
-add_definitions(-DLINUX)
-endif()
-
-if(NOT MSVC)
+else()
+  add_definitions(-DLINUX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -O3 -Wall -ansi -std=c++11 -fPIC -fno-strict-aliasing -Wno-write-strings -fshort-wchar -static-libstdc++")
- endif()
+endif()
 
 add_subdirectory(src)
