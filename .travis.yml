@@ -1,7 +1,7 @@
 language: cpp
+jdk: oraclejdk8
 
 compiler:
   - gcc
-  - clang
 
 script: cmake . && make
