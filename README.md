@@ -2,6 +2,12 @@
 
 [![Build Status](http://ci.gtaun.net/buildStatus/icon?job=ShoebillPlugin)](http://ci.gtaun.net/job/ShoebillPlugin/)
 
+# Download
+
+The newest version can always be found here (always 32-Bit):
+- Windows (0.3.7): [Download](http://catboy5.bplaced.net/updater/binaries/Shoebill.dll)
+- Linux (0.3.7): [Download](http://catboy5.bplaced.net/updater/binaries/Shoebill)
+
 # What is the Shoebill Plugin?
 
 The shoebill-plugin is the heart of the shoebill project. It is directly used by the samp-server process. Internally,
