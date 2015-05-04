@@ -252,7 +252,7 @@ int SetTeamCount(int count);
 int AddPlayerClass(int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int weapon1, int weapon1_ammo, int weapon2, int weapon2_ammo, int weapon3, int weapon3_ammo);
 int AddPlayerClassEx(int teamid, int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int weapon1, int weapon1_ammo, int weapon2, int weapon2_ammo, int weapon3, int weapon3_ammo);
 int AddStaticVehicle(int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int color1, int color2);
-int AddStaticVehicleEx(int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int color1, int color2, int respawn_delay);
+int AddStaticVehicleEx(int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int color1, int color2, int respawn_delay, bool addsiren = false);
 int AddStaticPickup(int model, int type, float X, float Y, float Z, int virtualworld);
 int CreatePickup(int model, int type, float X, float Y, float Z, int virtualworld);
 int DestroyPickup(int pickup);
@@ -374,7 +374,7 @@ int ShowPlayerDialog(int playerid, int dialogid, int style, const char* caption,
 //----------------------------------------------------------
 // a_vehicles.inc
 
-int CreateVehicle(int vehicletype, float x, float y, float z, float rotation, int color1, int color2, int respawn_delay);
+int CreateVehicle(int vehicletype, float x, float y, float z, float rotation, int color1, int color2, int respawn_delay, bool addsiren = false);
 int DestroyVehicle(int vehicleid);
 int IsVehicleStreamedIn(int vehicleid, int forplayerid);
 int GetVehiclePos(int vehicleid, float &x, float &y, float &z);

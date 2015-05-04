@@ -2923,15 +2923,15 @@ int AddStaticVehicle(int modelid, float spawn_x, float spawn_y, float spawn_z, f
 	return func(pAMX, args);
 }
 
-int AddStaticVehicleEx(int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int color1, int color2, int respawn_delay)
+int AddStaticVehicleEx(int modelid, float spawn_x, float spawn_y, float spawn_z, float z_angle, int color1, int color2, int respawn_delay, bool addsiren)
 {
 	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
 	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
 
-	cell args[9] =
+	cell args[10] =
 	{
 		sizeof(args)-sizeof(cell),
-		modelid, amx_ftoc(spawn_x), amx_ftoc(spawn_y), amx_ftoc(spawn_z), amx_ftoc(z_angle), color1, color2, respawn_delay
+		modelid, amx_ftoc(spawn_x), amx_ftoc(spawn_y), amx_ftoc(spawn_z), amx_ftoc(z_angle), color1, color2, respawn_delay, addsiren ? 1 : 0
 	};
 
 	return func(pAMX, args);
@@ -4409,7 +4409,7 @@ int ShowPlayerDialog(int playerid, int dialogid, int style, const char* caption,
 		playerid, dialogid, style, amx_NewString(pAMX, caption), amx_NewString(pAMX, info), amx_NewString(pAMX, button1), amx_NewString(pAMX, button2)
 	};
 
-	int ret = func(pAMX, args);
+	auto ret = func(pAMX, args);
 
 	amx_Release(pAMX, args[7]);
 	amx_Release(pAMX, args[6]);
@@ -4422,15 +4422,15 @@ int ShowPlayerDialog(int playerid, int dialogid, int style, const char* caption,
 //----------------------------------------------------------
 // a_vehicles.inc
 
-int CreateVehicle(int vehicletype, float x, float y, float z, float rotation, int color1, int color2, int respawn_delay)
+int CreateVehicle(int vehicletype, float x, float y, float z, float rotation, int color1, int color2, int respawn_delay, bool addsiren)
 {
 	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
 	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
 
-	cell args[9] =
+	cell args[10] =
 	{
 		sizeof(args)-sizeof(cell),
-		vehicletype, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), amx_ftoc(rotation), color1, color2, respawn_delay
+		vehicletype, amx_ftoc(x), amx_ftoc(y), amx_ftoc(z), amx_ftoc(rotation), color1, color2, respawn_delay, addsiren ? 1 : 0
 	};
 
 	return func(pAMX, args);

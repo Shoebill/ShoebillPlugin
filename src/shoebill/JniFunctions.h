@@ -1695,7 +1695,7 @@ extern "C" {
 	* Signature: (IFFFFIII)I
 	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addStaticVehicleEx
-		(JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jint, jint, jint);
+		(JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jint, jint, jint, jboolean);
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
@@ -2487,7 +2487,7 @@ extern "C" {
 	* Signature: (IFFFFIII)I
 	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createVehicle
-		(JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jint, jint, jint);
+		(JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jint, jint, jint, jboolean);
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction

@@ -2440,9 +2440,9 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addStaticVehic
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addStaticVehicleEx
   (JNIEnv *, jclass,  jint modelid, jfloat spawn_x, jfloat spawn_y, jfloat spawn_z, 
-  jfloat z_angle, jint color1, jint color2, jint respawn_delay)
+  jfloat z_angle, jint color1, jint color2, jint respawn_delay, jboolean addsiren)
 {
-	return AddStaticVehicleEx( modelid, spawn_x, spawn_y, spawn_z, z_angle, color1, color2, respawn_delay );
+	return AddStaticVehicleEx( modelid, spawn_x, spawn_y, spawn_z, z_angle, color1, color2, respawn_delay, addsiren);
 }
 
 /*
@@ -3660,9 +3660,9 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_showPlayerDial
  * Signature: (IFFFFIII)I
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createVehicle
-  (JNIEnv *, jclass, jint model, jfloat x, jfloat y, jfloat z, jfloat rotation, jint color1, jint color2, jint respawnDelay)
+  (JNIEnv *, jclass, jint model, jfloat x, jfloat y, jfloat z, jfloat rotation, jint color1, jint color2, jint respawnDelay, jboolean addsiren)
 {
-	return CreateVehicle(model, x, y, z, rotation, color1, color2, respawnDelay);
+	return CreateVehicle(model, x, y, z, rotation, color1, color2, respawnDelay, addsiren);
 }
 
 /*
