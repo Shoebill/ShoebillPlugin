@@ -1,6 +1,6 @@
 # ShoebillPlugin
 
-[![Build Status](http://ci.gtaun.net/buildStatus/icon?job=ShoebillPlugin)](http://ci.gtaun.net/job/ShoebillPlugin/)
+![Build Status](http://ci.gtaun.net/buildStatus/icon?job=ShoebillPlugin)
 
 # Download
 
