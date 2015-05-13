@@ -2286,6 +2286,36 @@ int OnAmxChangeVehicleColor(int vehicleid, int color1, int color2)
 	return ret;
 }
 
+int OnAmxCreateActor(int actorid, int modelid, float x, float y, float z, float rotation)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxCreateActor", "(IIFFFF)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, actorid, modelid, x, y, z, rotation);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
+int OnAmxDestroyActor(int actorid)
+{
+	if (!callbackHandlerObject) return 0;
+
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxDestroyActor", "(I)I");
+	if (!jmid) return 0;
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, actorid);
+	jni_jvm_printExceptionStack(env);
+	return ret;
+}
+
 int RestartShoebill()
 {
 	JNIEnv *env;

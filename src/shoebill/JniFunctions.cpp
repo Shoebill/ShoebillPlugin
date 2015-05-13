@@ -4158,7 +4158,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPublic
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 (JNIEnv *env, jclass, jint pAmx, jstring name)
 {
-	auto amx = reinterpret_cast<AMX*>(pAmx);
+	//TODO: Remove pAMX
 	auto functionName = env->GetStringUTFChars(name, false);
 	auto native = NativeFunctionManager::get().findFunction(functionName);
 	env->ReleaseStringUTFChars(name, functionName);

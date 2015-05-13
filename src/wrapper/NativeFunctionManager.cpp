@@ -785,6 +785,26 @@ static cell AMX_NATIVE_CALL n_SpawnPlayer(AMX* amx, cell* params)
 	return ret;
 }
 
+static cell AMX_NATIVE_CALL n_OnAmxCreateActor(AMX* amx, cell* params)
+{
+	static hookedNative *hookedNative = natives["CreateActor"];
+	hookedNative->hook->get()->unhook();
+	int ret = hookedNative->originalFunc(amx, params);
+	hookedNative->hook->get()->hook();
+	OnAmxCreateActor(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]));
+	return ret;
+}
+
+static cell AMX_NATIVE_CALL n_OnAmxDestroyActor(AMX* amx, cell* params)
+{
+	static hookedNative *hookedNative = natives["DestroyActor"];
+	hookedNative->hook->get()->unhook();
+	int ret = hookedNative->originalFunc(amx, params);
+	hookedNative->hook->get()->hook();
+	OnAmxDestroyActor(ret);
+	return ret;
+}
+
 AMX_NATIVE_INFO FunctionNatives[] =
 {
 	{ "CreateVehicle", n_OnAmxCreateVehicle },
@@ -856,6 +876,8 @@ AMX_NATIVE_INFO FunctionNatives[] =
 	{ "AddVehicleComponent", n_OnAmxAddVehicleComponent },
 	{ "LinkVehicleToInterior", n_OnAmxLinkVehicleToInterior },
 	{ "ChangeVehicleColor", n_OnAmxChangeVehicleColor },
+	{ "CreateActor", n_OnAmxCreateActor },
+	{ "DestroyActor", n_OnAmxDestroyActor },
 	{ "SpawnPlayer", n_SpawnPlayer }
 };
 

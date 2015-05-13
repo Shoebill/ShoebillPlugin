@@ -164,6 +164,10 @@ int OnAmxPlayerTextDrawHide(int playerid, int id);
 int OnAmxAddVehicleComponent(int vehicleid, int componentid);
 int OnAmxLinkVehicleToInterior(int vehicleid, int interiorid);
 int OnAmxChangeVehicleColor(int vehicleid, int color1, int color2);
+
+int OnAmxCreateActor(int actorid, int modelid, float x, float y, float z, float rotation);
+int OnAmxDestroyActor(int actorid);
+
 int RestartShoebill();
 
 cell invokeCallback(AMX*, std::string, cell*);
