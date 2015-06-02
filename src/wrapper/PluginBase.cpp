@@ -21,10 +21,10 @@ SimpleInlineHook _amx_FindPublic_hook;
 std::map<int, std::string> shoebill_callbacks;
 
 cell *amx_param_get_start(AMX *amx) {
-	auto data = amx->data != NULL
-		? amx->data
-		: amx->base + reinterpret_cast<AMX_HEADER *>(amx->base)->dat;
-	return reinterpret_cast<cell *>(data + amx->stk);
+    unsigned char *data = amx->data != NULL
+    ? amx->data
+    : amx->base + ((AMX_HEADER *)amx->base)->dat;
+    return (cell *)(data + amx->stk);
 }
 
 int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
@@ -132,17 +132,17 @@ int AMXAPI amx_FindPublic_hooked(AMX *amx, const char *name, int *index)
 
 void pluginInit(void **ppData)
 {
-	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
-	logprintf = static_cast<logprintf_t>(ppData[PLUGIN_DATA_LOGPRINTF]);
-
-	_amx_Exec = static_cast<amx_Exec_t*>(pAMXFunctions)[PLUGIN_AMX_EXPORT_Exec];
-	_amx_Register = static_cast<amx_Register_t*>(pAMXFunctions)[PLUGIN_AMX_EXPORT_Register];
-	_amx_FindPublic = static_cast<amx_FindPublic_t*>(pAMXFunctions)[PLUGIN_AMX_EXPORT_FindPublic];
-
-    _amx_Exec_hook.init(static_cast<void*>(_amx_Exec), static_cast<void*>(&amx_Exec_hooked));
-	_amx_Register_hook.init(static_cast<void*>(_amx_Register), static_cast<void*>(&amx_Register_hooked));
-	_amx_FindPublic_hook.init(static_cast<void*>(_amx_FindPublic), static_cast<void*>(&amx_FindPublic_hooked));
-
+    pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
+    logprintf = (logprintf_t)ppData[PLUGIN_DATA_LOGPRINTF];
+    
+    _amx_Exec = ((amx_Exec_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_Exec];
+    _amx_Register = ((amx_Register_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_Register];
+    _amx_FindPublic = ((amx_FindPublic_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_FindPublic;
+    
+    _amx_Exec_hook.init((void*)_amx_Exec, (void*)&amx_Exec_hooked);
+    _amx_Register_hook.init((void*)_amx_Register, (void*)&amx_Register_hooked);
+    _amx_FindPublic_hook.init((void*)_amx_FindPublic, (void*)&amx_FindPublic_hooked);
+    
     _amx_Exec_hook.hook();
     _amx_FindPublic_hook.hook();
     _amx_Register_hook.hook();
