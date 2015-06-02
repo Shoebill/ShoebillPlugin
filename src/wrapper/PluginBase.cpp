@@ -137,7 +137,7 @@ void pluginInit(void **ppData)
     
     _amx_Exec = ((amx_Exec_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_Exec];
     _amx_Register = ((amx_Register_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_Register];
-    _amx_FindPublic = ((amx_FindPublic_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_FindPublic;
+    _amx_FindPublic = ((amx_FindPublic_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_FindPublic];
     
     _amx_Exec_hook.init((void*)_amx_Exec, (void*)&amx_Exec_hooked);
     _amx_Register_hook.init((void*)_amx_Register, (void*)&amx_Register_hooked);
