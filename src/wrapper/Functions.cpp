@@ -5205,7 +5205,7 @@ int GetActorPos(int actorid, float& X, float& Y, float& Z)
 	auto ret = func(pAMX, args);
 	X = *reinterpret_cast<float*>(phys_x);
 	Y = *reinterpret_cast<float*>(phys_y);
-	Y = *reinterpret_cast<float*>(phys_z);
+	Z = *reinterpret_cast<float*>(phys_z);
 	amx_Release(pAMX, args[2]);
 	amx_Release(pAMX, args[3]);
 	amx_Release(pAMX, args[4]);

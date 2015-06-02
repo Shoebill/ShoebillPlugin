@@ -5,7 +5,6 @@
 #include "AmxInstanceManager.hpp"
 #include "NativeFunctionManager.h"
 #include "amx/amx.h"
-#include "ShoebillMain.h"
 
 logprintf_t logprintf = NULL;
 
@@ -22,47 +21,46 @@ SimpleInlineHook _amx_FindPublic_hook;
 std::map<int, std::string> shoebill_callbacks;
 
 cell *amx_param_get_start(AMX *amx) {
-	unsigned char *data = amx->data != NULL
+	auto data = amx->data != NULL
 		? amx->data
-		: amx->base + ((AMX_HEADER *)amx->base)->dat;
-	return (cell *)(data + amx->stk);
+		: amx->base + reinterpret_cast<AMX_HEADER *>(amx->base)->dat;
+	return reinterpret_cast<cell *>(data + amx->stk);
 }
 
 int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 {
-	if (AmxInstanceManager::get().getMainAmx() == nullptr) {
+	auto mainAmx = AmxInstanceManager::get().getMainAmx();
+	if (mainAmx == nullptr) {
 		StartShoebill();
 		if (index == AMX_EXEC_MAIN) {
 			AmxInstanceManager::get().markMainAmx(amx);
 			invokeCallback(amx, "OnGameModeInit", NULL);
 		}
 	}
-	if (AmxInstanceManager::get().getMainAmx() == amx && index != AMX_EXEC_CONT)
+	if (mainAmx == amx && index != AMX_EXEC_CONT)
 	{
-		std::string callbackName = std::string();
-
+		std::string callbackName;
 		if (index > SHOEBILL_OFFSET) {
-			AMX* main_amx = AmxInstanceManager::get().getMainAmx();
-			AMX_FUNCSTUBNT *publics = (AMX_FUNCSTUBNT *)(main_amx->base + ((AMX_HEADER *)main_amx->base)->publics);
-			callbackName = std::string((char*)(publics[index].nameofs + amx->base));
+			auto publics = reinterpret_cast<AMX_FUNCSTUBNT *>(mainAmx->base + reinterpret_cast<AMX_HEADER *>(mainAmx->base)->publics);
+			callbackName = std::string(reinterpret_cast<char*>(publics[index].nameofs + amx->base));
 		}
 		else {
 			callbackName = shoebill_callbacks[index];
 		}
 
-		bool do_clean = false;
+		auto do_clean = false;
 
-		cell paramcount = amx->paramcount;
-		cell reset_stk = amx->reset_stk;
+		auto paramcount = amx->paramcount;
+		auto reset_stk = amx->reset_stk;
 		amx->reset_stk = amx->stk;
 		amx->paramcount = 0;
 
-		cell* address = amx_param_get_start(amx);
-		cell* params = new cell[1 + paramcount];
+		auto address = amx_param_get_start(amx);
+		auto params = new cell[1 + paramcount];
 		params[0] = sizeof(cell) * paramcount;
 		memcpy(&params[1], address, params[0]);
-		
-		int *hook = callHookedCallback(amx, callbackName, params);
+
+		auto hook = callHookedCallback(amx, callbackName, params);
 		if (hook) {
 			if (hook[1] == 1) {
 				*retval = hook[0];
@@ -71,7 +69,7 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 		}
 
 		if (!do_clean) {
-			int ret = invokeCallback(amx, callbackName, params);
+			auto ret = invokeCallback(amx, callbackName, params);
 			if (shouldCancelCallback(callbackName, ret))
 			{
 				*retval = ret;
@@ -92,7 +90,7 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 		amx->paramcount = paramcount;
 	}
 	_amx_Exec_hook.unhook();
-	int ret = _amx_Exec(amx, retval, index);
+	auto ret = _amx_Exec(amx, retval, index);
 	_amx_Exec_hook.hook();
 	return ret;
 }
@@ -100,9 +98,9 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 int AMXAPI amx_Register_hooked(AMX *amx, const AMX_NATIVE_INFO *nativelist, int number)
 {
     _amx_Register_hook.unhook();
-	int ret = _amx_Register(amx, nativelist, number);
+	auto ret = _amx_Register(amx, nativelist, number);
     _amx_Register_hook.hook();
-	for (int i = 0; (number >= 0 && i < number) || nativelist[i].name != nullptr; i++)
+	for (auto i = 0; (number >= 0 && i < number) || nativelist[i].name != nullptr; i++)
 	{
 		NativeFunctionManager::get().registerFunction(amx, nativelist[i].name, nativelist[i].func, i);
 	}
@@ -112,7 +110,7 @@ int AMXAPI amx_Register_hooked(AMX *amx, const AMX_NATIVE_INFO *nativelist, int 
 int AMXAPI amx_FindPublic_hooked(AMX *amx, const char *name, int *index)
 {
     _amx_FindPublic_hook.unhook();
-	int ret = _amx_FindPublic(amx, name, index);
+	auto ret = _amx_FindPublic(amx, name, index);
     _amx_FindPublic_hook.hook();
 	if (amx == AmxInstanceManager::get().getMainAmx()) {
 		if (ret != AMX_ERR_NONE) {
@@ -135,15 +133,15 @@ int AMXAPI amx_FindPublic_hooked(AMX *amx, const char *name, int *index)
 void pluginInit(void **ppData)
 {
 	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
-	logprintf = (logprintf_t)ppData[PLUGIN_DATA_LOGPRINTF];
+	logprintf = static_cast<logprintf_t>(ppData[PLUGIN_DATA_LOGPRINTF]);
 
-	_amx_Exec = ((amx_Exec_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_Exec];
-	_amx_Register = ((amx_Register_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_Register];
-	_amx_FindPublic = ((amx_FindPublic_t*)pAMXFunctions)[PLUGIN_AMX_EXPORT_FindPublic];
+	_amx_Exec = static_cast<amx_Exec_t*>(pAMXFunctions)[PLUGIN_AMX_EXPORT_Exec];
+	_amx_Register = static_cast<amx_Register_t*>(pAMXFunctions)[PLUGIN_AMX_EXPORT_Register];
+	_amx_FindPublic = static_cast<amx_FindPublic_t*>(pAMXFunctions)[PLUGIN_AMX_EXPORT_FindPublic];
 
-    _amx_Exec_hook.init((void*)_amx_Exec, (void*)&amx_Exec_hooked);
-	_amx_Register_hook.init((void*)_amx_Register, (void*)&amx_Register_hooked);
-	_amx_FindPublic_hook.init((void*)_amx_FindPublic, (void*)&amx_FindPublic_hooked);
+    _amx_Exec_hook.init(static_cast<void*>(_amx_Exec), static_cast<void*>(&amx_Exec_hooked));
+	_amx_Register_hook.init(static_cast<void*>(_amx_Register), static_cast<void*>(&amx_Register_hooked));
+	_amx_FindPublic_hook.init(static_cast<void*>(_amx_FindPublic), static_cast<void*>(&amx_FindPublic_hooked));
 
     _amx_Exec_hook.hook();
     _amx_FindPublic_hook.hook();
