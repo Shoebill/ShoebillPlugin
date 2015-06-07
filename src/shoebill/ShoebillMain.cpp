@@ -1214,17 +1214,17 @@ int OnVehicleSirenStateChange(int playerid, int vehicleid, int newstate)
 	return ret;
 }
 
-int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid, int color1, int color2, int respawn_delay) 
+int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid, int color1, int color2, int respawn_delay, int addsiren) 
 {
 	if (!callbackHandlerObject) return 0;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxVehicleCreated", "(IIFFFFIIIII)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxVehicleCreated", "(IIFFFFIIIIII)I");
 	if (!jmid) return 0;
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, modelid, x, y, z, angle, interiorid, worldid, color1, color2, respawn_delay);
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, vehicleid, modelid, x, y, z, angle, interiorid, worldid, color1, color2, respawn_delay, addsiren);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }

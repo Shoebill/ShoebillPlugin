@@ -47,11 +47,7 @@ static cell AMX_NATIVE_CALL n_OnAmxCreateVehicle(AMX* amx, cell* params) {
 	hookedNative->hook->get()->unhook();
 	int ret = hookedNative->originalFunc(amx, params);
 	hookedNative->hook->get()->hook();
-	int paramcount = params[0] / sizeof(cell);
-	if (paramcount == 8)
-		OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], params[8]);
-	else if (paramcount == 7)
-		OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], 60);
+	OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], params[8], params[9]);
 	return ret;
 }
 
@@ -60,11 +56,7 @@ static cell AMX_NATIVE_CALL n_OnAmxAddStaticVehicle(AMX* amx, cell* params) {
 	hookedNative->hook->get()->unhook();
 	int ret = hookedNative->originalFunc(amx, params);
 	hookedNative->hook->get()->hook();
-	int paramcount = params[0] / sizeof(cell);
-	if (paramcount == 8)
-		OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], params[8]);
-	else if (paramcount == 7)
-		OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], 60);
+	OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], params[8], params[9]);
 	return ret;
 }
 
@@ -73,11 +65,7 @@ static cell AMX_NATIVE_CALL n_OnAmxAddStaticVehicleEx(AMX* amx, cell* params) {
 	hookedNative->hook->get()->unhook();
 	int ret = hookedNative->originalFunc(amx, params);
 	hookedNative->hook->get()->hook();
-	int paramcount = params[0] / sizeof(cell);
-	if (paramcount == 8)
-		OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], params[8]);
-	else if (paramcount == 7)
-		OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], 60);
+	OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), 0, 0, params[6], params[7], params[8], params[9]);
 	return ret;
 }
 
