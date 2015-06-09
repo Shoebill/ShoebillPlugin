@@ -16,9 +16,8 @@
 #ifndef __AMXINSTANCEMANAGER__
 #define __AMXINSTANCEMANAGER__
 #include <unordered_set>
-
 #include "amx/amx.h"
-#include "Callbacks.h"
+#include <map>
 
 class AmxInstanceManager
 {
@@ -43,13 +42,18 @@ public:
 	{
 		if (!isVaild(amx)) {
 			amxInstances.insert(amx);
+			registeredFunctions[amx] = std::map<std::string, std::vector<std::string>>();
 		}
 	}
 
 	void unregisterAmx(AMX *amx)
 	{
-		amxInstances.erase(amx);
-		if (mainAmx == amx) mainAmx = nullptr;
+		if (isVaild(amx))
+		{
+			registeredFunctions.erase(registeredFunctions.find(amx));
+			amxInstances.erase(amx);
+			if (mainAmx == amx) mainAmx = nullptr;
+		}
 	}
 
 	bool isVaild(AMX *amx)
@@ -61,6 +65,34 @@ public:
 	{
 		if (!isVaild(amx)) return;
 		mainAmx = amx;
+	}
+
+	inline bool registeredFunctionExists(AMX* amx, std::string functionName)
+	{
+		return registeredFunctions[amx].find(functionName) != registeredFunctions[amx].end();
+	}
+
+	inline bool registerFunction(AMX* amx, std::string functionName, std::vector<std::string> classes)
+	{
+		if (registeredFunctionExists(amx, functionName))
+			return false;
+		registeredFunctions[amx][functionName] = classes;
+		return true;
+	}
+
+	inline std::vector<std::string> getRegisteredParamters(AMX* amx, std::string functionName)
+	{
+		if (!registeredFunctionExists(amx, functionName))
+			return std::vector<std::string>();
+		return registeredFunctions[amx][functionName];
+	}
+
+	inline bool unregisterFunction(AMX* amx, std::string functionName)
+	{
+		if (!registeredFunctionExists(amx, functionName))
+			return false;
+		registeredFunctions[amx].erase(registeredFunctions[amx].find(functionName));
+		return true;
 	}
 
 	inline AMX* getMainAmx()
@@ -87,6 +119,7 @@ public:
 private:
 	std::unordered_set<AMX*> amxInstances;
 	AMX *mainAmx;
+	std::map<AMX*, std::map<std::string, std::vector<std::string>>> registeredFunctions;
 
 	AmxInstanceManager(const AmxInstanceManager&) = delete;
 	AmxInstanceManager& operator= (const AmxInstanceManager&) = delete;

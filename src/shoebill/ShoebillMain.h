@@ -15,6 +15,28 @@
  */
 #ifndef __SHOEBILL_MAIN__
 #define __SHOEBILL_MAIN__
+
+#include <jni.h>
+#include <set>
+#include "AmxInstanceManager.hpp"
+#include "AmxHelper.h"
+#include "samp.h"
+#include "NativeFunctionManager.h"
+
+#include "EncodingUtils.h"
+#include "JniUtils.h"
+
+#include "ShoebillMain.h"
+#include <Callbacks.h>
+
+#if defined(LINUX)
+#include "linux.h"
+#include <map>
+#include <fstream>
+
+extern std::map<int, std::string> codepages;
+#endif
+
 inline int getServerCodepage()
 {
 	extern int serverCodepage;

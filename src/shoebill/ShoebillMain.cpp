@@ -13,27 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include <jni.h>
-#include <set>
-#include "AmxInstanceManager.hpp"
-#include "AmxHelper.h"
-#include "samp.h"
-#include "NativeFunctionManager.h"
-
-#include "EncodingUtils.h"
-#include "JniUtils.h"
-
 #include "ShoebillMain.h"
-#include <Callbacks.h>
-
-#if defined(LINUX)
-#include "linux.h"
-#include <map>
-#include <fstream>
-
-extern std::map<int, std::string> codepages;
-#endif
 
 const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
 const char JVM_OPTION_FILE_PATH[] = "./shoebill/jvm_options.txt";
@@ -57,9 +37,12 @@ jobject shoebillObject = NULL;
 jclass callbackHandlerClass = NULL;
 jobject callbackHandlerObject = NULL;
 
+jclass integerClass = NULL;
+jclass floatClass = NULL;
+jclass stringClass = NULL;
+
 int serverCodepage = 1252;
 int playerCodepage[MAX_PLAYERS] = { 0 };
-
 
 int Initialize(JNIEnv *env);
 int Uninitialize(JNIEnv *env);
@@ -68,6 +51,93 @@ int CreateShoebillObject(JNIEnv *env);
 int ReleaseShoebillObject(JNIEnv *env);
 bool initialized = false;
 
+cell AMX_NATIVE_CALL CallShoebillFunction(AMX* amx, cell* params)
+{
+	int parameterCount = params[0] / sizeof(cell);
+	char functionName[128];
+	amx_GetString(amx, params[1], functionName, sizeof(functionName));
+	if (!AmxInstanceManager::get().registeredFunctionExists(amx, std::string(functionName)))
+	{
+		logprintf("[SHOEBILL] Function %s is not registered.", functionName);
+		return -1;
+	}
+	auto definedParameters = AmxInstanceManager::get().getRegisteredParamters(amx, std::string(functionName));
+	if (parameterCount-1 != definedParameters.size())
+	{
+		logprintf("[SHOEBILL] Calling %s with %i parameters, but was expecting %i parameters.", functionName, parameterCount-1, definedParameters.size());
+		return -1;
+	}
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+	static auto objectClass = env->FindClass("java/lang/Object");
+	jobjectArray objectArray = env->NewObjectArray(definedParameters.size(), objectClass, NULL);
+	env->NewGlobalRef(objectArray);
+	std::vector<cell*> referenceValues;
+	for (auto i = 0; i < definedParameters.size(); i++)
+	{
+		cell iterationCell = params[2 + i];
+		if (definedParameters[i] == "java.lang.String")
+		{
+			char parameterString[1024];
+			cell* phys_addr = NULL;
+			amx_GetString(amx, iterationCell, parameterString, sizeof(parameterString));
+			amx_GetAddr(amx, iterationCell, &phys_addr);
+			auto string = env->NewStringUTF(parameterString);
+			env->SetObjectArrayElement(objectArray, i, string);
+			referenceValues.push_back(phys_addr);
+		}
+		else if (definedParameters[i] == "java.lang.Integer")
+		{
+			auto methodId = env->GetMethodID(integerClass, "<init>", "(I)V");
+			cell* integerValue;
+			amx_GetAddr(amx, iterationCell, &integerValue);
+			auto integerObject = env->NewObject(integerClass, methodId, *integerValue);
+			env->SetObjectArrayElement(objectArray, i, integerObject);
+			referenceValues.push_back(integerValue);
+		}
+		else if (definedParameters[i] == "java.lang.Float")
+		{
+			auto methodId = env->GetMethodID(floatClass, "<init>", "(F)V");
+			cell* floatValue;
+			amx_GetAddr(amx, iterationCell, &floatValue);
+			auto floatObject = env->NewObject(floatClass, methodId, amx_ctof(*floatValue));
+			env->SetObjectArrayElement(objectArray, i, floatObject);
+			referenceValues.push_back(floatValue);
+		}
+	}
+	auto result = CallRegisteredFunction(std::string(functionName), objectArray);
+	for (auto i = 0; i < referenceValues.size(); i++)
+	{
+		if (definedParameters[i] == "java.lang.String")
+		{
+			auto string = (jstring)env->GetObjectArrayElement(objectArray, i);
+			auto stringObject = env->GetStringUTFChars(string, NULL);
+			amx_SetString(referenceValues[i], stringObject, NULL, NULL, strlen(stringObject)+1);
+			env->ReleaseStringUTFChars(string, stringObject);
+		}
+		else if (definedParameters[i] == "java.lang.Integer")
+		{
+			auto integer = env->GetObjectArrayElement(objectArray, i);
+			static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
+			*referenceValues[i] = env->CallIntMethod(integer, methodId);
+		}
+		else if (definedParameters[i] == "java.lang.Float")
+		{
+			auto floatObject = env->GetObjectArrayElement(objectArray, i);
+			static auto methodId = env->GetMethodID(floatClass, "floatValue", "()F");
+			auto res = env->CallFloatMethod(floatObject, methodId);
+			*referenceValues[i] = amx_ftoc(res);
+		}
+	}
+	env->DeleteGlobalRef(objectArray);
+	return result;
+}
+
+AMX_NATIVE_INFO PluginExports[]
+{
+	{"CallShoebillFunction", CallShoebillFunction},
+	{0, 0}
+};
 
 void OnShoebillLoad()
 {
@@ -126,8 +196,8 @@ void OnUnloadPlugin()
 
 void OnAmxLoad(AMX *amx)
 {
+	amx_Register(amx, PluginExports, -1);
 	AmxInstanceManager::get().registerAmx(amx);
-
 	if (!callbackHandlerObject) return;
 
 	JNIEnv *env;
@@ -189,6 +259,11 @@ int Initialize(JNIEnv *env)
 	}
 	shoebillLauncherClass = (jclass)(env->NewGlobalRef(shoebillLauncherClass));
 	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	integerClass = env->FindClass("java/lang/Integer");
+	floatClass = env->FindClass("java/lang/Float");
+	stringClass = env->FindClass("java/lang/String");
+
 	StartShoebill();
 	initialized = true;
 	return 0;
@@ -205,7 +280,6 @@ int Uninitialize(JNIEnv *env)
 
 int CreateShoebillObject(JNIEnv *env)
 {
-	jobject context = NULL;
 	static jmethodID resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass, RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
 	if (!resolveDependenciesMethodID)
 	{
@@ -213,7 +287,7 @@ int CreateShoebillObject(JNIEnv *env)
 		return -8;
 	}
 
-	context = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
+	jobject context = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
 	if (!context)
 	{
 		jni_jvm_printExceptionStack(env);
@@ -307,7 +381,6 @@ int CreateShoebillObject(JNIEnv *env)
 	callbackHandlerClass = (jclass)(env->NewGlobalRef(env->GetObjectClass(callbackHandlerObject)));
 	initialized = true;
 	OnShoebillLoad();
-
 	logprintf("  > Shoebill has been initialized.");
 	return 0;
 }
@@ -341,6 +414,23 @@ void OnProcessTick()
 
 	env->CallVoidMethod(callbackHandlerObject, jmid);
 	jni_jvm_printExceptionStack(env);
+}
+
+int CallRegisteredFunction(std::string functionName, jobjectArray parameters)
+{
+	if (!callbackHandlerObject) return -1;
+
+	JNIEnv *env = NULL;
+	jvm->AttachCurrentThread((void**)&env, NULL);
+
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRegisteredFunctionCall", "(Ljava/lang/String;[Ljava/lang/Object;)I");
+	if (!jmid) return -1;
+
+	auto jstr = env->NewStringUTF(functionName.c_str());
+
+	int result = env->CallIntMethod(callbackHandlerObject, jmid, jstr, parameters);
+	jni_jvm_printExceptionStack(env);
+	return result;
 }
 
 int OnGameModeInit()

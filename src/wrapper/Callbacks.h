@@ -28,6 +28,10 @@ void OnAmxLoad(AMX *amx);
 void OnAmxUnload(AMX *amx);
 void OnProcessTick();
 
+// AMX Callbacks
+
+int CallRegisteredFunction(std::string functionName, jobjectArray parameters);
+
 // SA:MP Callbacks
 int OnGameModeInit();
 int OnGameModeExit();

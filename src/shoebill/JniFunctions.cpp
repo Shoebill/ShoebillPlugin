@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-#include <string.h>
-#include <vector>
 #include "JniFunctions.h"
-#include "ShoebillMain.h"
-#include "EncodingUtils.h"
 
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -4165,34 +4161,6 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 	return reinterpret_cast<int>(native);
 }
 
-cell AMX_NATIVE_CALL registeredPublicCalled(AMX* amx, cell* params)
-{
-	//TODO: Add code maybe?
-	return 1;
-}
-
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerPublic
-(JNIEnv *env, jclass, jint pAmx, jstring name, jobject )
-{
-	auto amx = reinterpret_cast<AMX*>(pAmx);
-	auto functionName = env->GetStringUTFChars(name, false);
-	const AMX_NATIVE_INFO *info = new AMX_NATIVE_INFO { functionName, registeredPublicCalled };
-	auto ret = amx_Register(amx, info, -1);
-	env->ReleaseStringUTFChars(name, functionName);
-	return ret;
-}
-
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerNative
-(JNIEnv *env, jclass, jint pAmx, jstring name, jobject)
-{
-	auto amx = reinterpret_cast<AMX*>(pAmx);
-	auto functionName = env->GetStringUTFChars(name, false);
-	const AMX_NATIVE_INFO *info = new AMX_NATIVE_INFO{ functionName, registeredPublicCalled };
-	auto ret = amx_Register(amx, info, -1);
-	env->ReleaseStringUTFChars(name, functionName);
-	return ret;
-}
-
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction
 (JNIEnv *env, jclass, jint pAmx, jint index, jobjectArray args)
 {
@@ -4638,4 +4606,38 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createActor(JN
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerPoolSize(JNIEnv*, jclass)
 {
 	return GetPlayerPoolSize();
+}
+
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unregisterFunction(JNIEnv* env, jclass, jint amxHandle, jstring name)
+{
+	AMX* amx = (AMX*)amxHandle;
+	auto functionName = env->GetStringUTFChars(name, NULL);
+	auto functionString = std::string(functionName);
+	env->ReleaseStringUTFChars(name, functionName);
+	return AmxInstanceManager::get().unregisterFunction(amx, functionString);
+}
+
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFunction(JNIEnv* env, jclass, jint amxHandle, jstring name, jobjectArray classes)
+{
+	AMX* amx = (AMX*)amxHandle;
+	auto functionName = env->GetStringUTFChars(name, NULL);
+	auto functionString = std::string(functionName);
+	env->ReleaseStringUTFChars(name, functionName);
+	if (AmxInstanceManager::get().registeredFunctionExists(amx, functionString))
+		return false;
+	const int arrayLength = env->GetArrayLength(classes);
+	std::vector<std::string> classNames;
+	for (int i = 0; i < arrayLength; i++)
+	{
+		auto object = env->GetObjectArrayElement(classes, i);
+		auto objectclass = env->GetObjectClass(object);
+		auto mid = env->GetMethodID(objectclass, "getName", "()Ljava/lang/String;");
+		auto str = static_cast<jstring>(env->CallObjectMethod(object, mid));
+		auto classname = env->GetStringUTFChars(str, false);
+		auto classNameString = std::string(classname);
+		classNames.push_back(classNameString);
+		env->ReleaseStringUTFChars(str, classname);
+	}
+	AmxInstanceManager::get().registerFunction(amx, functionString, classNames);
+	return true;
 }
