@@ -18,6 +18,7 @@
 #include <unordered_set>
 #include "amx/amx.h"
 #include <map>
+#include <vector>
 
 class AmxInstanceManager
 {
