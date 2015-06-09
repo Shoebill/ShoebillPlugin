@@ -4636,6 +4636,8 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 		auto classname = env->GetStringUTFChars(str, false);
 		auto classNameString = std::string(classname);
 		classNames.push_back(classNameString);
+		if (classNameString.find("[L") == 0) //array
+			classNames.push_back("java.lang.Integer"); //sizeof()
 		env->ReleaseStringUTFChars(str, classname);
 	}
 	AmxInstanceManager::get().registerFunction(amx, functionString, classNames);

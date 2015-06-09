@@ -72,7 +72,9 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX* amx, cell* params)
 	static auto objectClass = env->FindClass("java/lang/Object");
 	jobjectArray objectArray = env->NewObjectArray(definedParameters.size(), objectClass, NULL);
 	env->NewGlobalRef(objectArray);
-	std::vector<cell*> referenceValues;
+	std::vector<std::pair<cell*, std::string>> referenceValues;
+	std::map<cell*, int> arrayLengths;
+	int lastArrayIndex = 0;
 	for (auto i = 0; i < definedParameters.size(); i++)
 	{
 		cell iterationCell = params[2 + i];
@@ -84,49 +86,148 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX* amx, cell* params)
 			amx_GetAddr(amx, iterationCell, &phys_addr);
 			auto string = env->NewStringUTF(parameterString);
 			env->SetObjectArrayElement(objectArray, i, string);
-			referenceValues.push_back(phys_addr);
+			referenceValues.push_back(std::pair<cell*, std::string>(phys_addr, definedParameters[i]));
 		}
 		else if (definedParameters[i] == "java.lang.Integer")
 		{
-			auto methodId = env->GetMethodID(integerClass, "<init>", "(I)V");
+			static auto methodId = env->GetMethodID(integerClass, "<init>", "(I)V");
 			cell* integerValue;
 			amx_GetAddr(amx, iterationCell, &integerValue);
 			auto integerObject = env->NewObject(integerClass, methodId, *integerValue);
 			env->SetObjectArrayElement(objectArray, i, integerObject);
-			referenceValues.push_back(integerValue);
+			referenceValues.push_back(std::pair<cell*, std::string>(integerValue, definedParameters[i]));
 		}
 		else if (definedParameters[i] == "java.lang.Float")
 		{
-			auto methodId = env->GetMethodID(floatClass, "<init>", "(F)V");
+			static auto methodId = env->GetMethodID(floatClass, "<init>", "(F)V");
 			cell* floatValue;
 			amx_GetAddr(amx, iterationCell, &floatValue);
 			auto floatObject = env->NewObject(floatClass, methodId, amx_ctof(*floatValue));
 			env->SetObjectArrayElement(objectArray, i, floatObject);
-			referenceValues.push_back(floatValue);
+			referenceValues.push_back(std::pair<cell*, std::string>(floatValue, definedParameters[i]));
+		}
+		/*else if (definedParameters[i] == "[Ljava.lang.String;")
+		{
+			cell* phys_addr = NULL;
+			amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
+			auto arrayLength = *phys_addr;
+			cell* array = &iterationCell;
+			auto javaArray = env->NewObjectArray(arrayLength, stringClass, NULL);
+			arrayLengths[array] = arrayLength;
+			for (auto a = 0; a < arrayLength; a++)
+			{
+				char parameterString[1024];
+				amx_GetString(amx, *(array + a) + 8, parameterString, sizeof(parameterString));
+				env->SetObjectArrayElement(javaArray, a, env->NewStringUTF(parameterString));
+			}
+			env->SetObjectArrayElement(objectArray, lastArrayIndex, javaArray);
+			referenceValues.push_back(std::pair<cell*, std::string>(array, definedParameters[i]));
+			i += 1; //skip next iteration because of length
+			lastArrayIndex += 1;
+		}*/
+		else if (definedParameters[i] == "[Ljava.lang.Integer;")
+		{
+			cell* phys_addr = NULL;
+			amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
+			auto arrayLength = *phys_addr;
+			cell* array = NULL;
+			amx_GetAddr(amx, iterationCell, &array);
+			arrayLengths[array] = arrayLength;
+			auto javaArray = env->NewObjectArray(arrayLength, integerClass, NULL);
+			static auto methodId = env->GetMethodID(integerClass, "<init>", "(I)V");
+			for (auto a = 0; a < arrayLength; a++)
+			{
+				env->SetObjectArrayElement(javaArray, a, env->NewObject(integerClass, methodId, *(array + a)));
+			}
+			env->SetObjectArrayElement(objectArray, lastArrayIndex, javaArray);
+			referenceValues.push_back(std::pair<cell*, std::string>(array, definedParameters[i]));
+			i += 1; //skip next iteration because of length
+			lastArrayIndex += 1;
+		}
+		else if (definedParameters[i] == "[Ljava.lang.Float;")
+		{
+			cell* phys_addr = NULL;
+			amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
+			auto arrayLength = *phys_addr;
+			cell* array = NULL;
+			amx_GetAddr(amx, iterationCell, &array);
+			arrayLengths[array] = arrayLength;
+			auto javaArray = env->NewObjectArray(arrayLength, floatClass, NULL);
+			static auto methodId = env->GetMethodID(floatClass, "<init>", "(F)V");
+			for (auto a = 0; a < arrayLength; a++)
+			{
+				env->SetObjectArrayElement(javaArray, a, env->NewObject(floatClass, methodId, amx_ctof(*(array + a))));
+			}
+			env->SetObjectArrayElement(objectArray, lastArrayIndex, javaArray);
+			referenceValues.push_back(std::pair<cell*, std::string>(array, definedParameters[i]));
+			i += 1; //skip next iteration because of length
+			lastArrayIndex += 1;
 		}
 	}
 	auto result = CallRegisteredFunction(std::string(functionName), objectArray);
 	for (auto i = 0; i < referenceValues.size(); i++)
 	{
-		if (definedParameters[i] == "java.lang.String")
+		if (referenceValues[i].second == "java.lang.String")
 		{
 			auto string = (jstring)env->GetObjectArrayElement(objectArray, i);
 			auto stringObject = env->GetStringUTFChars(string, NULL);
-			amx_SetString(referenceValues[i], stringObject, NULL, NULL, strlen(stringObject)+1);
+			amx_SetString(referenceValues[i].first, stringObject, NULL, NULL, strlen(stringObject)+1);
 			env->ReleaseStringUTFChars(string, stringObject);
 		}
-		else if (definedParameters[i] == "java.lang.Integer")
+		else if (referenceValues[i].second == "java.lang.Integer")
 		{
 			auto integer = env->GetObjectArrayElement(objectArray, i);
 			static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
-			*referenceValues[i] = env->CallIntMethod(integer, methodId);
+			*referenceValues[i].first = env->CallIntMethod(integer, methodId);
 		}
-		else if (definedParameters[i] == "java.lang.Float")
+		else if (referenceValues[i].second == "java.lang.Float")
 		{
 			auto floatObject = env->GetObjectArrayElement(objectArray, i);
 			static auto methodId = env->GetMethodID(floatClass, "floatValue", "()F");
 			auto res = env->CallFloatMethod(floatObject, methodId);
-			*referenceValues[i] = amx_ftoc(res);
+			*referenceValues[i].first = amx_ftoc(res);
+		}
+		else if (referenceValues[i].second == "[Ljava.lang.String;")
+		{
+			auto stringArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
+			int newArrayLength = env->GetArrayLength(stringArrayObject);
+			if (newArrayLength > params[2 + i + 1])
+				logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", functionName);
+			cell* pawnArray = referenceValues[i].first;
+			auto arrayLength = arrayLengths[pawnArray];
+			for (int a = 0; a < arrayLength; a++) {
+				amx_Release(amx, *(pawnArray + a));
+				auto stringObject = static_cast<jstring>(env->GetObjectArrayElement(stringArrayObject, a));
+				auto string = env->GetStringUTFChars(stringObject, false);
+				*(pawnArray + a) = amx_NewString(amx, string, strlen(string) + 1);
+				env->ReleaseStringUTFChars(stringObject, string);
+			}
+		}
+		else if (referenceValues[i].second == "[Ljava.lang.Integer;")
+		{
+			auto intArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
+			int newArrayLength = env->GetArrayLength(intArrayObject);
+			if (newArrayLength > params[2 + i + 1])
+				logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", functionName);
+			cell* pawnArray = referenceValues[i].first;
+			auto arrayLength = arrayLengths[pawnArray];
+			static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
+			for (int a = 0; a < arrayLength; a++)
+				*(pawnArray + a) = env->CallIntMethod(env->GetObjectArrayElement(intArrayObject, a), methodId);
+		}
+		else if (referenceValues[i].second == "[Ljava.lang.Float;")
+		{
+			auto floatArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
+			int newArrayLength = env->GetArrayLength(floatArrayObject);
+			if (newArrayLength > params[2 + i + 1])
+				logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", functionName);
+			cell* pawnArray = referenceValues[i].first;
+			auto arrayLength = arrayLengths[pawnArray];
+			static auto methodId = env->GetMethodID(floatClass, "floatValue", "()F");
+			for (int a = 0; a < arrayLength; a++) {
+				auto newValue = env->CallFloatMethod(env->GetObjectArrayElement(floatArrayObject, a), methodId);
+				*(pawnArray + a) = amx_ftoc(newValue);
+			}
 		}
 	}
 	env->DeleteGlobalRef(objectArray);
