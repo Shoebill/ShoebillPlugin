@@ -4643,3 +4643,134 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 	AmxInstanceManager::get().registerFunction(amx, functionString, classNames);
 	return true;
 }
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarInt(JNIEnv* env, jclass, jstring jVarName, jint jValue)
+{
+	auto wmsg = env->GetStringChars(jVarName, NULL);
+	int len = env->GetStringLength(jVarName);
+
+	char varname[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	env->ReleaseStringChars(jVarName, wmsg);
+
+	SetSVarInt(varname, jValue);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarFloat(JNIEnv* env, jclass, jstring jVarName, jfloat jValue)
+{
+	auto wmsg = env->GetStringChars(jVarName, NULL);
+	int len = env->GetStringLength(jVarName);
+
+	char varname[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	env->ReleaseStringChars(jVarName, wmsg);
+
+	SetSVarFloat(varname, jValue);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarString(JNIEnv* env, jclass, jstring jVarName, jstring jValue)
+{
+	auto wmsg = env->GetStringChars(jVarName, NULL);
+	int len = env->GetStringLength(jVarName);
+
+	auto wmsgValue = env->GetStringChars(jValue, NULL);
+	int lenValue = env->GetStringLength(jValue);
+
+	char varname[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	env->ReleaseStringChars(jVarName, wmsg);
+
+	char value[1024];
+	wcs2mbs(getServerCodepage(), wmsgValue, lenValue, value, sizeof(value));
+	env->ReleaseStringChars(jValue, wmsgValue);
+
+	SetSVarString(varname, value);
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarInt(JNIEnv* env, jclass, jstring jVarName)
+{
+	auto wmsg = env->GetStringChars(jVarName, NULL);
+	int len = env->GetStringLength(jVarName);
+
+	char varname[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	env->ReleaseStringChars(jVarName, wmsg);
+
+	return GetSVarInt(varname);
+}
+
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarFloat(JNIEnv* env, jclass, jstring jVarName)
+{
+	auto wmsg = env->GetStringChars(jVarName, NULL);
+	int len = env->GetStringLength(jVarName);
+
+	char varname[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	env->ReleaseStringChars(jVarName, wmsg);
+
+	return GetSVarFloat(varname);
+}
+
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarString(JNIEnv* env, jclass, jstring jVarName)
+{
+	auto wmsg = env->GetStringChars(jVarName, NULL);
+	int len = env->GetStringLength(jVarName);
+
+	char varname[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	env->ReleaseStringChars(jVarName, wmsg);
+
+	char value[1024];
+
+	GetSVarString(varname, &value[0], sizeof(value));
+
+	if (value)
+	{
+		jchar tempChars[sizeof(value)];
+		for (int i = 0; i < sizeof(tempChars) / sizeof(jchar); i++)
+		{
+			tempChars[i] = value[i];
+		}
+		return env->NewString(tempChars, strlen(value));
+	}
+	return NULL;
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deleteSVar(JNIEnv* env, jclass, jstring jVarName)
+{
+	auto wmsg = env->GetStringChars(jVarName, NULL);
+	int len = env->GetStringLength(jVarName);
+
+	char varname[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	env->ReleaseStringChars(jVarName, wmsg);
+
+	DeleteSVar(varname);
+}
+
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash(JNIEnv* env, jclass, jstring jPassword, jstring jSalt)
+{
+	auto wmsg = env->GetStringChars(jPassword, NULL);
+	int len = env->GetStringLength(jPassword);
+
+	auto wmsgSalt = env->GetStringChars(jSalt, NULL);
+	int saltLen = env->GetStringLength(jSalt);
+
+	char password[1024];
+	wcs2mbs(getServerCodepage(), wmsg, len, password, sizeof(password));
+	env->ReleaseStringChars(jPassword, wmsg);
+
+	char salt[1024];
+	wcs2mbs(getServerCodepage(), wmsgSalt, saltLen, salt, sizeof(salt));
+	env->ReleaseStringChars(jSalt, wmsgSalt);
+
+	char hash[1024];
+	SHA256_PassHash(password, salt, &hash[0], sizeof(hash));
+
+	jchar tempChars[sizeof(hash)];
+	for (int i = 0; i < sizeof(tempChars) / sizeof(jchar); i++)
+	{
+		tempChars[i] = hash[i];
+	}
+	return env->NewString(tempChars, strlen(hash));
+}

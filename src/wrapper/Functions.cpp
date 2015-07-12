@@ -3505,6 +3505,140 @@ int UnBlockIpAddress(const char* ip_address)
 	return ret;
 }
 
+int SetSVarInt(const char* varname, int value)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, varname), value
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[1]);
+	return ret;
+}
+
+int GetSVarInt(const char* varname)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, varname)
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[1]);
+	return ret;
+}
+
+int SetSVarString(const char* varname, const char* value)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, varname), amx_NewString(pAMX, value)
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[1]);
+	amx_Release(pAMX, args[2]);
+	return ret;
+}
+
+int GetSVarString(const char* varname, char* output, int len)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+	cell *phys;
+
+	cell args[4] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, varname), amx_Allot(pAMX, len, &phys), len
+	};
+
+	int ret = func(pAMX, args);
+	amx_GetString(output, phys, 0, len);
+	amx_Release(pAMX, args[1]);
+	amx_Release(pAMX, args[2]);
+	return ret;
+}
+
+int SetSVarFloat(const char* varname, float value)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[3] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, varname), amx_ftoc(value)
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[1]);
+	return ret;
+}
+
+float GetSVarFloat(const char* varname)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, varname)
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[1]);
+	return amx_ctof(ret);
+}
+
+int DeleteSVar(const char* varname)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+
+	cell args[2] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, varname)
+	};
+
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[1]);
+	return ret;
+}
+
+int SHA256_PassHash(const char* password, const char* salt, char* ret_hash, int ret_hash_length)
+{
+	static AMX_NATIVE func = NativeFunctionManager::get().findFunction(__FUNCTION__);
+	AMX *pAMX = AmxInstanceManager::get().getAvailableAmx();
+	cell *phys;
+
+	cell args[5] =
+	{
+		sizeof(args) - sizeof(cell),
+		amx_NewString(pAMX, password), amx_NewString(pAMX, salt), amx_Allot(pAMX, ret_hash_length, &phys), ret_hash_length
+	};
+	auto ret = func(pAMX, args);
+	amx_Release(pAMX, args[1]);
+	amx_Release(pAMX, args[2]);
+	amx_GetString(ret_hash, phys, 0, ret_hash_length);
+	amx_Release(pAMX, args[3]);
+	return ret;
+}
 
 // Extended admin network stats
 int GetServerTickRate()

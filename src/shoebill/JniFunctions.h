@@ -1568,6 +1568,70 @@ extern "C" {
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    setSVarInt
+	* Signature: (Ljava/lang/String;I)V
+	*/
+	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarInt
+		(JNIEnv *, jclass, jstring, jint);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    setSVarFloat
+	* Signature: (Ljava/lang/String;F)V
+	*/
+	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarFloat
+		(JNIEnv *, jclass, jstring, jfloat);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    setSVarString
+	* Signature: (Ljava/lang/String;Ljava/lang/String;)V
+	*/
+	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarString
+		(JNIEnv *, jclass, jstring, jstring);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    getSVarInt
+	* Signature: (Ljava/lang/String;)I
+	*/
+	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarInt
+		(JNIEnv *, jclass, jstring);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    getSVarFloat
+	* Signature: (Ljava/lang/String;)F
+	*/
+	JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarFloat
+		(JNIEnv *, jclass, jstring);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    getSVarString
+	* Signature: (Ljava/lang/String;)Ljava/lang/String;
+	*/
+	JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarString
+		(JNIEnv *, jclass, jstring);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    deleteSVar
+	* Signature: (Ljava/lang/String;)V
+	*/
+	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deleteSVar
+		(JNIEnv *, jclass, jstring);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    sha256Hash
+	* Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	*/
+	JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash
+		(JNIEnv *, jclass, jstring, jstring);
+
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
 	* Method:    sendClientMessage
 	* Signature: (IILjava/lang/String;)V
 	*/

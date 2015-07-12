@@ -295,6 +295,17 @@ int GetPlayerVersion(int playerid, char* version, int len); // Returns the SA-MP
 int BlockIpAddress(const char* ip_address, int timems);
 int UnBlockIpAddress(const char* ip_address);
 
+// Server
+int SetSVarInt(const char* varname, int value);
+int GetSVarInt(const char* varname);
+int SetSVarString(const char* varname, const char* value);
+int GetSVarString(const char* varname, char* output, int len);
+int SetSVarFloat(const char* varname, float value);
+float GetSVarFloat(const char* varname);
+int DeleteSVar(const char* varname);
+
+int SHA256_PassHash(const char* password, const char* salt, char* ret_hash, int ret_hash_length);
+
 // Extended admin network stats
 int GetServerTickRate();
 int NetStats_GetConnectedTime(int playerid);
