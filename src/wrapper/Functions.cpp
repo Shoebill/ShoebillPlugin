@@ -5183,14 +5183,12 @@ int ApplyActorAnimation(int actorid, const char* animlib, const char* animname, 
 {
 	static auto func = NativeFunctionManager::get().findFunction(__FUNCTION__);
 	auto pAMX = AmxInstanceManager::get().getAvailableAmx();
-	auto animLibStr = amx_NewString(pAMX, animlib, strlen(animlib));
-	auto animNameStr = amx_NewString(pAMX, animname, strlen(animname));
 	cell args[10] =
 	{
 		sizeof(args) - sizeof(cell),
 		actorid,
-		animLibStr,
-		animNameStr,
+		amx_NewString(pAMX, animlib),
+		amx_NewString(pAMX, animname),
 		amx_ftoc(fDelta),
 		loop,
 		lockX,
@@ -5199,8 +5197,8 @@ int ApplyActorAnimation(int actorid, const char* animlib, const char* animname, 
 		time
 	};
 	auto ret = func(pAMX, args);
-	amx_Release(pAMX, animLibStr);
-	amx_Release(pAMX, animNameStr);
+	amx_Release(pAMX, args[2]);
+	amx_Release(pAMX, args[3]);
 	return ret;
 }
 
