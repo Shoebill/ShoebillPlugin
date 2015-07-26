@@ -44,9 +44,7 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 			auto publics = reinterpret_cast<AMX_FUNCSTUBNT *>(mainAmx->base + reinterpret_cast<AMX_HEADER *>(mainAmx->base)->publics);
 			callbackName = std::string(reinterpret_cast<char*>(publics[index].nameofs + amx->base));
 		}
-		else {
-			callbackName = shoebill_callbacks[index];
-		}
+		else callbackName = shoebill_callbacks[index];
 
 		auto do_clean = false;
 
@@ -80,7 +78,14 @@ int AMXAPI amx_Exec_hooked(AMX *amx, cell *retval, int index)
 		delete[] params;
 		delete[] hook;
 
-		if (do_clean || index <= SHOEBILL_OFFSET) {
+		if (index <= SHOEBILL_OFFSET && !do_clean) {
+			_amx_Exec_hook.unhook();
+			_amx_Exec(mainAmx, retval, index);
+			_amx_Exec_hook.hook();
+			do_clean = true;
+		}
+
+		if (do_clean) {
 			amx->stk += paramcount * sizeof(cell);
 			amx->paramcount = 0;
 			amx->error = AMX_ERR_NONE;
@@ -112,7 +117,8 @@ int AMXAPI amx_FindPublic_hooked(AMX *amx, const char *name, int *index)
     _amx_FindPublic_hook.unhook();
 	auto ret = _amx_FindPublic(amx, name, index);
     _amx_FindPublic_hook.hook();
-	if (amx == AmxInstanceManager::get().getMainAmx()) {
+	if (amx == AmxInstanceManager::get().getMainAmx())
+	{
 		if (ret != AMX_ERR_NONE) {
 			auto it = shoebill_callbacks.begin();
 			while (it != shoebill_callbacks.end()) {
@@ -123,9 +129,9 @@ int AMXAPI amx_FindPublic_hooked(AMX *amx, const char *name, int *index)
 				++it;
 			}
 			*index = SHOEBILL_OFFSET - shoebill_callbacks.size();
-			shoebill_callbacks[*index] = std::string(name);
-			return AMX_ERR_NONE;
 		}
+		shoebill_callbacks[*index] = std::string(name);
+		return AMX_ERR_NONE;
 	}
 	return ret;
 }

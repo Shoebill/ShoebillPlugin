@@ -15,7 +15,6 @@
  */
 #include "AmxHelper.h"
 #include "Callbacks.h"
-#include "samp.h"
 
 #include "PluginBase.h"
 
