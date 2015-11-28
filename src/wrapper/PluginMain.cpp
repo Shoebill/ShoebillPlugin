@@ -20,18 +20,24 @@
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 {
-	return SUPPORTS_VERSION | SUPPORTS_AMX_NATIVES | SUPPORTS_PROCESS_TICK;
+	return sampgdk::Supports() | SUPPORTS_VERSION | SUPPORTS_AMX_NATIVES | SUPPORTS_PROCESS_TICK;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 {
-	pluginInit(ppData);
-	return OnLoadPlugin();
+	if (sampgdk::Load(ppData)) 
+	{
+		pluginInit(ppData);
+		return OnLoadPlugin();
+	}
+	return false;
 }
 
 PLUGIN_EXPORT void PLUGIN_CALL Unload()
 {
 	OnUnloadPlugin();
+	sampgdk::Unload();
+	
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
@@ -48,5 +54,6 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX *amx)
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
 {
+	sampgdk::ProcessTick();
 	OnProcessTick();
 }

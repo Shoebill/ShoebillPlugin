@@ -32,7 +32,6 @@ void SimpleInlineHook::removePageProtect(void* address, size_t size)
 #else
 
 #include <sys/mman.h>
-#include <unistd.h>
 
 void SimpleInlineHook::removePageProtect(void* address, size_t size)
 {

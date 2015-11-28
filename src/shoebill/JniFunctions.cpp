@@ -90,7 +90,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_attachObjectTo
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_attachObjectToObject
   (JNIEnv *, jclass, jint objectid, jint attachtoid, jfloat offsetX, jfloat offsetY, jfloat offsetZ, jfloat rotX, jfloat rotY, jfloat rotZ, jint syncRotation)
 {
-	AttachObjectToObject( objectid, attachtoid, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, syncRotation );
+	AttachObjectToObject(objectid, attachtoid, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, (bool) syncRotation);
 }
 
 /*
@@ -130,7 +130,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getObjectPos
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetObjectPos( objectid, x, y, z );
+	GetObjectPos( objectid, &x, &y, &z );
 
 	env->SetFloatField( vector3d, fidX, x );
 	env->SetFloatField( vector3d, fidY, y );
@@ -162,7 +162,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getObjectRot
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float rotX, rotY, rotZ;
-	GetObjectRot(objectid, rotX, rotY, rotZ);
+	GetObjectRot(objectid, &rotX, &rotY, &rotZ);
 
 	env->SetFloatField( rotate, fidX, rotX );
 	env->SetFloatField( rotate, fidY, rotY );
@@ -177,7 +177,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getObjectRot
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isValidObject
   (JNIEnv *, jclass, jint objectid)
 {
-	return IsValidObject(objectid);
+	return (jboolean) IsValidObject(objectid);
 }
 
 /*
@@ -221,7 +221,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_stopObject
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isObjectMoving
   (JNIEnv *, jclass, jint objectid)
 {
-	return IsObjectMoving(objectid);
+	return (jboolean) IsObjectMoving(objectid);
 }
 
 /*
@@ -232,7 +232,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isObjectMo
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_editObject
   (JNIEnv *, jclass, jint playerid, jint objectid)
 {
-	return EditObject(playerid, objectid);
+	return (jboolean) EditObject(playerid, objectid);
 }
 
 /*
@@ -243,7 +243,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_editObject
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_editPlayerObject
   (JNIEnv *, jclass, jint playerid, jint objectid)
 {
-	return EditPlayerObject(playerid, objectid);
+	return (jboolean) EditPlayerObject(playerid, objectid);
 }
 
 /*
@@ -315,7 +315,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerObjec
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetPlayerObjectPos( playerid, objectid, x, y, z );
+	GetPlayerObjectPos( playerid, objectid, &x, &y, &z );
 
 	env->SetFloatField( vector3d, fidX, x );
 	env->SetFloatField( vector3d, fidY, y );
@@ -347,7 +347,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerObjec
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float rotX, rotY, rotZ;
-	GetPlayerObjectRot( playerid, objectid, rotX, rotY, rotZ );
+	GetPlayerObjectRot( playerid, objectid, &rotX, &rotY, &rotZ );
 
 	env->SetFloatField( rotate, fidX, rotX );
 	env->SetFloatField( rotate, fidY, rotY );
@@ -362,7 +362,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerObjec
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isValidPlayerObject
   (JNIEnv *, jclass, jint playerid, jint objectid)
 {
-	return IsValidPlayerObject( playerid, objectid );
+	return (jboolean) IsValidPlayerObject(playerid, objectid );
 }
 
 /*
@@ -406,7 +406,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_stopPlayerObje
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerObjectMoving
   (JNIEnv *, jclass, jint playerid, jint objectid)
 {
-	return IsPlayerObjectMoving(playerid, objectid);
+	return (jboolean) IsPlayerObjectMoving(playerid, objectid);
 }
 
 /*
@@ -433,14 +433,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectMater
 	int len = env->GetStringLength(txdname);
 
 	char _txdname[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, _txdname, sizeof(_txdname) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, _txdname, sizeof(_txdname) );
 	env->ReleaseStringChars(txdname, wmsg);
 
 	auto wmsg2 = env->GetStringChars(texturename, NULL);
 	len = env->GetStringLength(texturename);
 
 	char _texturename[1024];
-	wcs2mbs( getServerCodepage(), wmsg2, len, _texturename, sizeof(_texturename) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg2, len, _texturename, sizeof(_texturename) );
 	env->ReleaseStringChars(texturename, wmsg2);
 
 	SetObjectMaterial(objectid, materialindex, modelid, _txdname, _texturename, materialcolor);
@@ -458,14 +458,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjec
 	int len = env->GetStringLength(txdname);
 
 	char _txdname[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, _txdname, sizeof(_txdname) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, _txdname, sizeof(_txdname) );
 	env->ReleaseStringChars(txdname, wmsg);
 
 	wmsg = env->GetStringChars(texturename, NULL);
 	len = env->GetStringLength(texturename);
 
 	char _texturename[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, _texturename, sizeof(_texturename) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, _texturename, sizeof(_texturename) );
 	env->ReleaseStringChars(texturename, wmsg);
 
 	SetPlayerObjectMaterial(playerid, objectid, materialindex, modelid, _txdname, _texturename, materialcolor);
@@ -483,17 +483,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectMater
 	int len = env->GetStringLength(text);
 
 	char _text[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, _text, sizeof(_text) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, _text, sizeof(_text) );
 	env->ReleaseStringChars(text, wmsg);
 
 	auto wmsg2 = env->GetStringChars(fontface, NULL);
 	len = env->GetStringLength(fontface);
 
 	char _fontface[1024];
-	wcs2mbs( getServerCodepage(), wmsg2, len, _fontface, sizeof(_fontface) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg2, len, _fontface, sizeof(_fontface) );
 	env->ReleaseStringChars(fontface, wmsg2);
 
-	SetObjectMaterialText(objectid, _text, materialindex, materialsize, _fontface, fontsize, bold, fontcolor, backcolor, textalignment);
+	SetObjectMaterialText(objectid, _text, materialindex, materialsize, _fontface, fontsize, (bool) bold, fontcolor, backcolor, textalignment);
 }
 
 /*
@@ -508,17 +508,18 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjec
 	int len = env->GetStringLength(text);
 
 	char _text[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, _text, sizeof(_text) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, _text, sizeof(_text) );
 	env->ReleaseStringChars(text, wmsg);
 
 	auto wmsg2 = env->GetStringChars(fontface, NULL);
 	len = env->GetStringLength(fontface);
 
 	char _fontface[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg2, len, _fontface, sizeof(_fontface) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg2, len, _fontface, sizeof(_fontface) );
 	env->ReleaseStringChars(fontface, wmsg2);
 
-	SetPlayerObjectMaterialText(playerid, objectid, _text, materialindex, materialsize, _fontface, fontsize, bold, fontcolor, backcolor, textalignment);
+	SetPlayerObjectMaterialText(playerid, objectid, _text, materialindex, materialsize, _fontface, fontsize,
+	                            (bool) bold, fontcolor, backcolor, textalignment);
 }
 
 /*
@@ -595,7 +596,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerPos
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetPlayerPos( playerid, x, y, z );
+	GetPlayerPos( playerid, &x, &y, &z );
 
 	env->SetFloatField( vector3d, fidX, x );
 	env->SetFloatField( vector3d, fidY, y );
@@ -622,7 +623,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerFac
   (JNIEnv *, jclass, jint playerid)
 {
 	float angle;
-	GetPlayerFacingAngle( playerid, angle );
+	GetPlayerFacingAngle( playerid, &angle );
 
 	return angle;
 }
@@ -635,7 +636,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerFac
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerInRangeOfPoint
   (JNIEnv *, jclass, jint playerid, jfloat range, jfloat x, jfloat y, jfloat z)
 {
-	return IsPlayerInRangeOfPoint(playerid, range, x, y, z);
+	return (jboolean) IsPlayerInRangeOfPoint(playerid, range, x, y, z);
 }
 
 /*
@@ -646,7 +647,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerIn
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerStreamedIn
   (JNIEnv *, jclass, jint playerid, jint forplayerid)
 {
-	return IsPlayerStreamedIn(playerid, forplayerid);
+	return (jboolean) IsPlayerStreamedIn(playerid, forplayerid);
 }
 
 /*
@@ -691,7 +692,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerHea
   (JNIEnv *, jclass, jint playerid)
 {
 	float health;
-	GetPlayerHealth( playerid, health );
+	GetPlayerHealth( playerid, &health );
 
 	return health;
 }
@@ -716,7 +717,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerArm
   (JNIEnv *, jclass, jint playerid)
 {
 	float armour;
-	GetPlayerArmour( playerid, armour );
+	GetPlayerArmour( playerid, &armour );
 
 	return armour;
 }
@@ -923,7 +924,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerWeapo
 	static auto setWeaponMethodId = env->GetMethodID(cls, "setModel", "(I)V");
 
 	int weaponid, ammo;
-	GetPlayerWeaponData( playerid, slot, weaponid, ammo );
+	GetPlayerWeaponData( playerid, slot, &weaponid, &ammo );
 
 	//env->SetIntField( weapondata, fidId, weaponid );
 	env->CallVoidMethod(weapondata, setWeaponMethodId, weaponid);
@@ -964,7 +965,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerName
 	int len = env->GetStringLength(name);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(name, wmsg);
 
 	return SetPlayerName(playerid, str);
@@ -1042,7 +1043,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerKeys
 	static auto fidLeftright = env->GetFieldID(cls, "leftrightValue", "I");
 
 	int keys, updown, leftright;
-	GetPlayerKeys( playerid, keys, updown, leftright );
+	GetPlayerKeys( playerid, &keys, &updown, &leftright );
 
 	env->SetIntField( keystate, fidKeys, keys );
 	env->SetIntField( keystate, fidUpdown, updown );
@@ -1061,7 +1062,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerNa
 	GetPlayerName( playerid, name, sizeof(name) );
 
 	jchar wstr[MAX_PLAYER_NAME];
-	auto len = mbs2wcs(getServerCodepage(), name, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
+	auto len = mbs2wcs((unsigned int) getServerCodepage(), name, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
 
 	return env->NewString(wstr, len);
 }
@@ -1090,7 +1091,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerTime
 	static auto fidMinute = env->GetFieldID(cls, "minute", "I");
 
 	int hour, minute;
-	GetPlayerTime( playerid, hour, minute );
+	GetPlayerTime( playerid, &hour, &minute );
 
 	env->SetIntField( time, fidHour, hour );
 	env->SetIntField( time, fidMinute, minute );
@@ -1198,7 +1199,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerVeloc
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetPlayerVelocity( playerid, x, y, z );
+	GetPlayerVelocity( playerid, &x, &y, &z );
 
 	env->SetFloatField( velocity, fidX, x );
 	env->SetFloatField( velocity, fidY, y );
@@ -1228,10 +1229,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playAudioStrea
 	int len = env->GetStringLength(url);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wurl, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wurl, len, str, sizeof(str) );
 	env->ReleaseStringChars(url, wurl);
 
-	PlayAudioStreamForPlayer( player, str, posX, posY, posZ, distance, usepos );
+	PlayAudioStreamForPlayer(player, str, posX, posY, posZ, distance, (bool) usepos);
 }
 
 /*
@@ -1257,7 +1258,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerShopN
 	int len = env->GetStringLength(name);
 
 	char str[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(name, wmsg);
 
 	SetPlayerShopName( playerid, str );
@@ -1321,7 +1322,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerLastS
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z, hx, hy, hz;
-	GetPlayerLastShotVectors(playerid, x, y, z, hx, hy, hz);
+	GetPlayerLastShotVectors(playerid, &x, &y, &z, &hx, &hy, &hz);
 
 	env->SetFloatField(origin, fidX, x);
 	env->SetFloatField(origin, fidY, y);
@@ -1341,8 +1342,8 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerA
   (JNIEnv *, jclass, jint playerid, jint index, jint modelid, jint bone, jfloat offsetX, jfloat offsetY,
   jfloat offsetZ, jfloat rotX, jfloat rotY, jfloat rotZ, jfloat scaleX, jfloat scaleY, jfloat scaleZ, jint materialcolor1, jint materialcolor2)
 {
-	return SetPlayerAttachedObject( playerid, index, modelid, bone,
-		offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, materialcolor1, materialcolor2 );
+	return (jboolean) SetPlayerAttachedObject(playerid, index, modelid, bone,
+	                                          offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, materialcolor1, materialcolor2 );
 }
 
 /*
@@ -1353,7 +1354,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerA
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_removePlayerAttachedObject
   (JNIEnv *, jclass, jint playerid, jint index)
 {
-	return RemovePlayerAttachedObject(playerid, index);
+	return (jboolean) RemovePlayerAttachedObject(playerid, index);
 }
 
 /*
@@ -1364,7 +1365,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_removePlay
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerAttachedObjectSlotUsed
   (JNIEnv *, jclass, jint playerid, jint index)
 {
-	return IsPlayerAttachedObjectSlotUsed(playerid, index);
+	return (jboolean) IsPlayerAttachedObjectSlotUsed(playerid, index);
 }
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
@@ -1374,7 +1375,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerAt
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_editAttachedObject
   (JNIEnv *, jclass, jint playerid, jint index)
 {
-	return EditAttachedObject(playerid, index);
+	return (jboolean) EditAttachedObject(playerid, index);
 }
 
 /*
@@ -1389,7 +1390,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createPlayerTe
 	int len = env->GetStringLength(text);
 
 	char _text[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, _text, sizeof(_text) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, _text, sizeof(_text) );
 	env->ReleaseStringChars(text, wmsg);
 
 	return CreatePlayerTextDraw(playerid, x, y, _text);
@@ -1458,7 +1459,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDraw
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDrawUseBox
   (JNIEnv *, jclass, jint playerid, jint textid, jint use)
 {
-	PlayerTextDrawUseBox(playerid, textid, use);
+	PlayerTextDrawUseBox(playerid, textid, (bool) use);
 }
 
 /*
@@ -1524,7 +1525,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDraw
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDrawSetProportional
   (JNIEnv *, jclass, jint playerid, jint textid, jint set)
 {
-	PlayerTextDrawSetProportional(playerid, textid, set);
+	PlayerTextDrawSetProportional(playerid, textid, (bool) set);
 }
 
 /*
@@ -1535,7 +1536,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDraw
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDrawSetSelectable
   (JNIEnv *, jclass, jint playerid, jint textid, jint set)
 {
-	PlayerTextDrawSetSelectable(playerid, textid, set);
+	PlayerTextDrawSetSelectable(playerid, textid, (bool) set);
 }
 
 /*
@@ -1572,7 +1573,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDraw
 	int len = env->GetStringLength(string);
 
 	char _string[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, _string, sizeof(_string) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, _string, sizeof(_string) );
 	env->ReleaseStringChars(string, wmsg);
 
 	PlayerTextDrawSetString(playerid, textid, _string);
@@ -1623,7 +1624,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerChatB
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	SetPlayerChatBubble( playerid, str, color, drawdistance, expiretime );
@@ -1707,7 +1708,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_applyAnimation
 	auto str_animlib = env->GetStringUTFChars(animlib, NULL);
 	auto str_animname = env->GetStringUTFChars(animname, NULL);
 
-	ApplyAnimation( playerid, str_animlib, str_animname, delta, loop, lockX, lockY, freeze, time, forcesync );
+	ApplyAnimation(playerid, str_animlib, str_animname, delta, (bool) loop, (bool) lockX, (bool) lockY, (bool) freeze, time, (bool) forcesync);
 
 	env->ReleaseStringUTFChars(animlib, str_animlib);
 	env->ReleaseStringUTFChars(animname, str_animname);
@@ -1721,7 +1722,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_applyAnimation
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_clearAnimations
   (JNIEnv *, jclass, jint playerid, jint forcesync)
 {
-	ClearAnimations( playerid, forcesync );
+	ClearAnimations(playerid, (bool) forcesync);
 }
 
 /*
@@ -1904,7 +1905,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCamer
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetPlayerCameraPos( playerid, x, y, z );
+	GetPlayerCameraPos( playerid, &x, &y, &z );
 
 	env->SetFloatField( vector3d, fidX, x );
 	env->SetFloatField( vector3d, fidY, y );
@@ -1925,7 +1926,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCamer
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetPlayerCameraFrontVector( playerid, x, y, z );
+	GetPlayerCameraFrontVector( playerid, &x, &y, &z );
 
 	env->SetFloatField( vector3d, fidX, x );
 	env->SetFloatField( vector3d, fidY, y );
@@ -2016,7 +2017,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_interpolateCam
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerConnected
   (JNIEnv *, jclass, jint playerid)
 {
-	return IsPlayerConnected(playerid);
+	return (jboolean) IsPlayerConnected(playerid);
 }
 
 /*
@@ -2027,7 +2028,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerCo
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerInVehicle
   (JNIEnv *, jclass, jint playerid, jint vehicleid)
 {
-	return IsPlayerInVehicle(playerid, vehicleid);
+	return (jboolean) IsPlayerInVehicle(playerid, vehicleid);
 }
 
 /*
@@ -2038,7 +2039,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerIn
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerInAnyVehicle
   (JNIEnv *, jclass, jint playerid)
 {
-	return IsPlayerInAnyVehicle(playerid);
+	return (jboolean) IsPlayerInAnyVehicle(playerid);
 }
 
 /*
@@ -2049,7 +2050,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerIn
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerInCheckpoint
   (JNIEnv *, jclass, jint playerid)
 {
-	return IsPlayerInCheckpoint(playerid);
+	return (jboolean) IsPlayerInCheckpoint(playerid);
 }
 
 /*
@@ -2060,7 +2061,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerIn
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerInRaceCheckpoint
   (JNIEnv *, jclass, jint playerid)
 {
-	return IsPlayerInRaceCheckpoint(playerid);
+	return (jboolean) IsPlayerInRaceCheckpoint(playerid);
 }
 
 /*
@@ -2093,7 +2094,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerVirtu
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_enableStuntBonusForPlayer
   (JNIEnv *, jclass, jint playerid, jint enabled)
 {
-	EnableStuntBonusForPlayer( playerid, enabled );
+	EnableStuntBonusForPlayer(playerid, (bool) enabled);
 }
 
 /*
@@ -2211,7 +2212,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendClientMess
 	int len = env->GetStringLength(message);
 	
 	char msg[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 
 	SendClientMessage( playerid, color, msg );
@@ -2229,7 +2230,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendClientMess
 	int len = env->GetStringLength(message);
 
 	char msg[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, msg, sizeof(msg) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 
 	SendClientMessageToAll( color, msg );
@@ -2247,7 +2248,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendPlayerMess
 	int len = env->GetStringLength(message);
 
 	char msg[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 
 	SendPlayerMessageToPlayer( playerid, senderid, msg );
@@ -2265,7 +2266,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendPlayerMess
 	int len = env->GetStringLength(message);
 
 	char msg[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, msg, sizeof(msg) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, msg, sizeof(msg) );
 	env->ReleaseStringChars(message, wmsg);
 	
 	SendPlayerMessageToAll( senderid, msg );
@@ -2305,7 +2306,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_gameTextForAll
 	int len = env->GetStringLength(string);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(string, wmsg);
 
 	GameTextForAll( str, time, style );
@@ -2323,7 +2324,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_gameTextForPla
 	int len = env->GetStringLength(string);
 
 	char str[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(string, wmsg);
 
 	GameTextForPlayer( playerid, str, time, style );
@@ -2337,7 +2338,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_gameTextForPla
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setTimer
   (JNIEnv *, jclass, jint index, jint interval, jint repeating)
 {
-	return SetTimer( index, interval, repeating );
+	return SetTimer(interval, repeating > 0, NULL, NULL);
 }
 
 /*
@@ -2374,7 +2375,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setGameModeTex
 	int len = env->GetStringLength(string);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(string, wmsg);
 
 	SetGameModeText( str );
@@ -2711,7 +2712,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_connectNPC
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerNPC
   (JNIEnv *, jclass, jint playerid)
 {
-	return IsPlayerNPC(playerid);
+	return (jboolean) IsPlayerNPC(playerid);
 }
 
 /*
@@ -2722,7 +2723,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerNP
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isPlayerAdmin
   (JNIEnv *, jclass, jint playerid)
 {
-	return IsPlayerAdmin(playerid);
+	return (jboolean) IsPlayerAdmin(playerid);
 }
 
 /*
@@ -2759,7 +2760,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_banEx
 	int len = env->GetStringLength(reason);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(reason, wmsg);
 
 	BanEx( playerid, str );
@@ -2777,7 +2778,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendRconComman
 	int len = env->GetStringLength(cmd);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(cmd, wmsg);
 
 	SendRconCommand( str );
@@ -2798,7 +2799,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVa
 	env->ReleaseStringUTFChars(varname, str_varname);
 
 	jchar wstr[256];
-	auto len = mbs2wcs(getServerCodepage(), var, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
+	auto len = mbs2wcs((unsigned int) getServerCodepage(), var, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
 	return env->NewString(wstr, len);
 }
 
@@ -2831,7 +2832,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerV
 	auto ret = GetServerVarAsBool(str_varname);
 
 	env->ReleaseStringUTFChars(varname, str_varname);
-	return ret;
+	return (jboolean) ret;
 }
 
 /*
@@ -2846,7 +2847,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerNe
 	GetPlayerNetworkStats( playerid, retstr, sizeof(retstr) );
 
 	jchar wstr[2048];
-	auto len = mbs2wcs(getServerCodepage(), retstr, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
+	auto len = mbs2wcs((unsigned int) getServerCodepage(), retstr, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
 
 	return env->NewString(wstr, len);
 }
@@ -2863,7 +2864,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNetworkS
 	GetNetworkStats( retstr, sizeof(retstr) );
 
 	jchar wstr[2048];
-	auto len = mbs2wcs(getServerCodepage(), retstr, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
+	auto len = mbs2wcs((unsigned int) getServerCodepage(), retstr, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
 
 	return env->NewString(wstr, len);
 }
@@ -3102,7 +3103,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hideMenuForPla
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isValidMenu
   (JNIEnv *, jclass, jint menuid)
 {
-	return IsValidMenu( menuid );
+	return (jboolean) IsValidMenu(menuid );
 }
 
 /*
@@ -3281,7 +3282,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawFont
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetProportional
   (JNIEnv *, jclass, jint textid, jint set)
 {
-	TextDrawSetProportional( textid, set );
+	TextDrawSetProportional(textid, (bool) set);
 }
 
 /*
@@ -3292,7 +3293,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetPro
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetSelectable
   (JNIEnv *, jclass, jint textid, jint set)
 {
-	TextDrawSetSelectable(textid, set);
+	TextDrawSetSelectable(textid, (bool) set);
 }
 
 /*
@@ -3510,7 +3511,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_create3DTextLa
 	auto len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	return Create3DTextLabel(str, color, x, y, z, drawDistance, worldid, testLOS);
@@ -3561,7 +3562,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_update3DTextLa
 	auto len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( getServerCodepage(), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	Update3DTextLabelText( id, color, str );
@@ -3580,7 +3581,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createPlayer3D
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	return CreatePlayer3DTextLabel( playerid, str, color, x, y, z, drawDistance, attachedplayerid, attachedvehicleid, testLOS );
@@ -3609,7 +3610,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_updatePlayer3D
 	int len = env->GetStringLength(text);
 
 	char str[1024];
-	wcs2mbs( getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg, len, str, sizeof(str) );
 	env->ReleaseStringChars(text, wmsg);
 
 	UpdatePlayer3DTextLabelText( playerid, id, color, str );
@@ -3629,22 +3630,22 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_showPlayerDial
 
 	auto wmsg1 = env->GetStringChars(caption, NULL);
 	len = env->GetStringLength(caption);
-	wcs2mbs( getPlayerCodepage(playerid), wmsg1, len, str_caption, sizeof(str_caption) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg1, len, str_caption, sizeof(str_caption) );
 	env->ReleaseStringChars(caption, wmsg1);
 
 	auto wmsg2 = env->GetStringChars(info, NULL);
 	len = env->GetStringLength(info);
-	wcs2mbs( getPlayerCodepage(playerid), wmsg2, len, str_info, sizeof(str_info) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg2, len, str_info, sizeof(str_info) );
 	env->ReleaseStringChars(info, wmsg2);
 
 	auto wmsg3 = env->GetStringChars(button1, NULL);
 	len = env->GetStringLength(button1);
-	wcs2mbs( getPlayerCodepage(playerid), wmsg3, len, str_button1, sizeof(str_button1) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg3, len, str_button1, sizeof(str_button1) );
 	env->ReleaseStringChars(button1, wmsg3);
 
 	auto wmsg4 = env->GetStringChars(button2, NULL);
 	len = env->GetStringLength(button2);
-	wcs2mbs( getPlayerCodepage(playerid), wmsg4, len, str_button2, sizeof(str_button2) );
+	wcs2mbs((unsigned int) getPlayerCodepage(playerid), wmsg4, len, str_button2, sizeof(str_button2) );
 	env->ReleaseStringChars(button2, wmsg4);
 
 	return ShowPlayerDialog(playerid, dialogid, style, str_caption, str_info, str_button1, str_button2);
@@ -3680,7 +3681,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_destroyVehicle
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isVehicleStreamedIn
   (JNIEnv *, jclass, jint vehicleid, jint forplayerid)
 {
-	return IsVehicleStreamedIn(vehicleid, forplayerid);
+	return (jboolean) IsVehicleStreamedIn(vehicleid, forplayerid);
 }
 
 /*
@@ -3697,7 +3698,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehiclePos
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetVehiclePos( vehicleid, x, y, z );
+	GetVehiclePos( vehicleid, &x, &y, &z );
 
 	env->SetFloatField( vector3d, fidX, x );
 	env->SetFloatField( vector3d, fidY, y );
@@ -3724,7 +3725,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleZA
   (JNIEnv *, jclass, jint vehicleid)
 {
 	float angle;
-	GetVehicleZAngle( vehicleid, angle );
+	GetVehicleZAngle( vehicleid, &angle );
 
 	return angle;
 }
@@ -3744,7 +3745,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleRota
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float w, x, y, z;
-	GetVehicleRotationQuat( vehicleid, w, x, y, z );
+	GetVehicleRotationQuat( vehicleid, &w, &x, &y, &z );
 
 	env->SetFloatField( quat, fidW, w );
 	env->SetFloatField( quat, fidX, x );
@@ -3794,7 +3795,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setVehiclePara
   (JNIEnv *, jclass, jint vehicleid, jint engine, jint lights,
   jint alarm, jint doors, jint bonnet, jint boot, jint objective)
 {
-	SetVehicleParamsEx( vehicleid, engine, lights, alarm, doors, bonnet, boot, objective );
+	SetVehicleParamsEx(vehicleid, (bool) engine, (bool) lights, (bool) alarm, (bool) doors, (bool) bonnet, (bool) boot, (bool) objective);
 }
 
 /*
@@ -3815,7 +3816,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehiclePara
 	static auto fidObjective = env->GetFieldID(cls, "objective", "I");
 
 	int engine, lights, alarm, doors, bonnet, boot, objective;
-	GetVehicleParamsEx( vehicleid, engine, lights, alarm, doors, bonnet, boot, objective );
+	GetVehicleParamsEx( vehicleid, &engine, &lights, &alarm, &doors, &bonnet, &boot, &objective );
 
 	env->SetIntField( state, fidEngine, engine );
 	env->SetIntField( state, fidLights, lights );
@@ -3912,7 +3913,7 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleHe
   (JNIEnv *, jclass, jint vehicleid)
 {
 	float health;
-	GetVehicleHealth( vehicleid, health );
+	GetVehicleHealth( vehicleid, &health );
 
 	return health;
 }
@@ -3947,7 +3948,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_detachTrailerF
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_isTrailerAttachedToVehicle
   (JNIEnv *, jclass, jint vehicleid)
 {
-	return IsTrailerAttachedToVehicle(vehicleid);
+	return (jboolean) IsTrailerAttachedToVehicle(vehicleid);
 }
 
 /*
@@ -4034,7 +4035,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleVelo
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetVehicleVelocity( vehicleid, x, y, z );
+	GetVehicleVelocity( vehicleid, &x, &y, &z );
 
 	env->SetFloatField( velocity, fidX, x );
 	env->SetFloatField( velocity, fidY, y );
@@ -4078,7 +4079,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleDama
 	static auto fidTires = env->GetFieldID(cls, "lights", "I");
 
 	int panels, doors, lights, tires;
-	GetVehicleDamageStatus( vehicleid, panels, doors, lights, tires );
+	GetVehicleDamageStatus( vehicleid, &panels, &doors, &lights, &tires );
 
 	env->SetIntField( damage, fidPanels, panels );
 	env->SetIntField( damage, fidDoors, doors );
@@ -4111,7 +4112,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleMode
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetVehicleModelInfo(vehiclemodel, infotype, x, y, z);
+	GetVehicleModelInfo(vehiclemodel, infotype, &x, &y, &z);
 
 	env->SetFloatField( vector3d, fidX, x );
 	env->SetFloatField( vector3d, fidY, y );
@@ -4152,11 +4153,10 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPublic
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
-(JNIEnv *env, jclass, jint pAmx, jstring name)
+(JNIEnv *env, jclass, jstring name)
 {
-	//TODO: Remove pAMX
 	auto functionName = env->GetStringUTFChars(name, false);
-	auto native = NativeFunctionManager::get().findFunction(functionName);
+	auto native = sampgdk_FindNative(functionName);
 	env->ReleaseStringUTFChars(name, functionName);
 	return reinterpret_cast<int>(native);
 }
@@ -4164,14 +4164,14 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction
 (JNIEnv *env, jclass, jint pAmx, jint index, jobjectArray args)
 {
-	auto amx = reinterpret_cast<AMX*>(pAmx);
+	AMX* amx = (AMX*)pAmx;
 	cell retval;
 	int arrayLength = env->GetArrayLength(args);
 	auto native = reinterpret_cast<AMX_NATIVE>(index);
 	cell params[33];
 	std::vector<cell> stringCells;
 	std::map<std::pair<jobject, std::string>, std::pair<cell*, cell>> references;
-	params[0] = arrayLength * sizeof(cell);
+	params[0] = (cell) (arrayLength * sizeof(cell));
 	for (auto i = 0; i < arrayLength; i++)
 	{
 		auto object = env->GetObjectArrayElement(args, i);
@@ -4206,6 +4206,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 			else if (!strcmp(classname, "class net.gtaun.shoebill.amx.types.ReferenceInt") || !strcmp(classname, "class net.gtaun.shoebill.amx.types.ReferenceFloat"))
 			{
 				cell amx_addr, *phys_addr;
+			
 				amx_Allot(amx, 1, &amx_addr, &phys_addr);
 				params[i + 1] = amx_addr;
 				references[std::pair<jobject, std::string>(object, std::string(classname))] = std::pair<cell*, cell>(phys_addr, amx_addr);
@@ -4365,7 +4366,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallba
 	auto success = hookCallback(std::string(callbackName), std::string(callbackTypes));
 	env->ReleaseStringUTFChars(name, callbackName);
 	env->ReleaseStringUTFChars(types, callbackTypes);
-	return success;
+	return (jboolean) success;
 }
 
 /*
@@ -4379,7 +4380,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unhookCall
 	auto callbackName = env->GetStringUTFChars(name, nullptr);
 	auto success = unhookCallback(std::string(callbackName));
 	env->ReleaseStringUTFChars(name, callbackName);
-	return success;
+	return (jboolean) success;
 }
 
 JNIEXPORT jint JNICALL
@@ -4388,7 +4389,7 @@ JNIEXPORT jint JNICALL
 {
 	auto animLibStr = env->GetStringUTFChars(animLib, nullptr);
 	auto animNameStr = env->GetStringUTFChars(animName, nullptr);
-	auto ret = ApplyActorAnimation(actor, animLibStr, animNameStr, fDelta, loop, lockX, lockY, freeze, time);
+	auto ret = ApplyActorAnimation(actor, animLibStr, animNameStr, fDelta, (bool) loop, (bool) lockX, (bool) lockY, (bool) freeze, time);
 	env->ReleaseStringUTFChars(animLib, animLibStr);
 	env->ReleaseStringUTFChars(animName, animNameStr);
 	return ret;
@@ -4406,25 +4407,25 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_destroyActor(J
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_disableRemoteVehicleCollisions(JNIEnv*, jclass, jint playerid, jint disable)
 {
-	DisableRemoteVehicleCollisions(playerid, disable);
+	DisableRemoteVehicleCollisions(playerid, (bool) disable);
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_enablePlayerCameraTarget(JNIEnv*, jclass, jint playerid, jint enable)
 {
-	return EnablePlayerCameraTarget(playerid, enable);
+	return EnablePlayerCameraTarget(playerid, (bool) enable);
 }
 
 JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorFacingAngle(JNIEnv*, jclass, jint actor)
 {
 	float angle;
-	GetActorFacingAngle(actor, angle);
+	GetActorFacingAngle(actor, &angle);
 	return angle;
 }
 
 JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorHealth(JNIEnv*, jclass, jint actor)
 {
 	float health;
-	GetActorHealth(actor, health);
+	GetActorHealth(actor, &health);
 	return health;
 }
 
@@ -4441,7 +4442,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getActorPos(JN
 	static auto fidZ = env->GetFieldID(cls, "z", "F");
 
 	float x, y, z;
-	GetActorPos(actor, x, y, z);
+	GetActorPos(actor, &x, &y, &z);
 
 	env->SetFloatField(vector3d, fidX, x);
 	env->SetFloatField(vector3d, fidY, y);
@@ -4498,7 +4499,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehiclePara
 	static auto fidBackRight = env->GetFieldID(cls, "backRight", "I");
 
 	int driver, passenger, backleft, backright;
-	GetVehicleParamsCarDoors(vehicle, driver, passenger, backleft, backright);
+	GetVehicleParamsCarDoors(vehicle, &driver, &passenger, &backleft, &backright);
 
 	env->SetIntField(vehicleParams, fidDriver, driver);
 	env->SetIntField(vehicleParams, fidPassenger, passenger);
@@ -4515,7 +4516,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehiclePara
 	static auto fidBackRight = env->GetFieldID(cls, "backRight", "I");
 
 	int driver, passenger, backleft, backright;
-	GetVehicleParamsCarWindows(vehicle, driver, passenger, backleft, backright);
+	GetVehicleParamsCarWindows(vehicle, &driver, &passenger, &backleft, &backright);
 
 	env->SetIntField(vehicleParams, fidDriver, driver);
 	env->SetIntField(vehicleParams, fidPassenger, passenger);
@@ -4580,7 +4581,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectNoCam
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectsDefaultCameraCol(JNIEnv*, jclass, jint disable)
 {
-	SetObjectsDefaultCameraCol(disable);
+	SetObjectsDefaultCameraCol((bool) disable);
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjectNoCameraCol(JNIEnv*, jclass, jint playerid, jint object)
@@ -4590,12 +4591,12 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjec
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setVehicleParamsCarDoors(JNIEnv*, jclass, jint vehicle, jint driver, jint passenger, jint backleft, jint backright)
 {
-	SetVehicleParamsCarDoors(vehicle, driver, passenger, backleft, backright);
+	SetVehicleParamsCarDoors(vehicle, (bool) driver, (bool) passenger, (bool) backleft, (bool) backright);
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setVehicleParamsCarWindows(JNIEnv*, jclass, jint vehicle, jint driver, jint passenger, jint backleft, jint backright)
 {
-	SetVehicleParamsCarWindows(vehicle, driver, passenger, backleft, backright);
+	SetVehicleParamsCarWindows(vehicle, (bool) driver, (bool) passenger, (bool) backleft, (bool) backright);
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createActor(JNIEnv *, jclass, jint modelid, jfloat x, jfloat y, jfloat z, jfloat rotation)
@@ -4614,7 +4615,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unregister
 	auto functionName = env->GetStringUTFChars(name, NULL);
 	auto functionString = std::string(functionName);
 	env->ReleaseStringUTFChars(name, functionName);
-	return AmxInstanceManager::get().unregisterFunction(amx, functionString);
+	return (jboolean) AmxInstanceManager::get().unregisterFunction(amx, functionString);
 }
 
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFunction(JNIEnv* env, jclass, jint amxHandle, jstring name, jobjectArray classes)
@@ -4624,7 +4625,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 	auto functionString = std::string(functionName);
 	env->ReleaseStringUTFChars(name, functionName);
 	if (AmxInstanceManager::get().registeredFunctionExists(amx, functionString))
-		return false;
+		return (jboolean) false;
 	const int arrayLength = env->GetArrayLength(classes);
 	std::vector<std::string> classNames;
 	for (int i = 0; i < arrayLength; i++)
@@ -4641,7 +4642,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 		env->ReleaseStringUTFChars(str, classname);
 	}
 	AmxInstanceManager::get().registerFunction(amx, functionString, classNames);
-	return true;
+	return (jboolean) true;
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarInt(JNIEnv* env, jclass, jstring jVarName, jint jValue)
@@ -4650,10 +4651,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarInt(JNI
 	int len = env->GetStringLength(jVarName);
 
 	char varname[1024];
-	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
 	env->ReleaseStringChars(jVarName, wmsg);
 
-	SetSVarInt(varname, jValue);
+	//TODO: fix SetSVarInt(varname, jValue);
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarFloat(JNIEnv* env, jclass, jstring jVarName, jfloat jValue)
@@ -4662,10 +4663,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarFloat(J
 	int len = env->GetStringLength(jVarName);
 
 	char varname[1024];
-	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
 	env->ReleaseStringChars(jVarName, wmsg);
 
-	SetSVarFloat(varname, jValue);
+	//TODO: fix SetSVarFloat(varname, jValue);
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarString(JNIEnv* env, jclass, jstring jVarName, jstring jValue)
@@ -4677,14 +4678,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarString(
 	int lenValue = env->GetStringLength(jValue);
 
 	char varname[1024];
-	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
 	env->ReleaseStringChars(jVarName, wmsg);
 
 	char value[1024];
-	wcs2mbs(getServerCodepage(), wmsgValue, lenValue, value, sizeof(value));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsgValue, lenValue, value, sizeof(value));
 	env->ReleaseStringChars(jValue, wmsgValue);
 
-	SetSVarString(varname, value);
+	//TODO: fix SetSVarString(varname, value);
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarInt(JNIEnv* env, jclass, jstring jVarName)
@@ -4693,10 +4694,11 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarInt(JNI
 	int len = env->GetStringLength(jVarName);
 
 	char varname[1024];
-	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
 	env->ReleaseStringChars(jVarName, wmsg);
 
-	return GetSVarInt(varname);
+	//TODO: fix return GetSVarInt(varname);
+	return 0;
 }
 
 JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarFloat(JNIEnv* env, jclass, jstring jVarName)
@@ -4705,10 +4707,11 @@ JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarFloat
 	int len = env->GetStringLength(jVarName);
 
 	char varname[1024];
-	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
 	env->ReleaseStringChars(jVarName, wmsg);
 
-	return GetSVarFloat(varname);
+	//TODO: fix return GetSVarFloat(varname);
+	return 0;
 }
 
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarString(JNIEnv* env, jclass, jstring jVarName)
@@ -4717,14 +4720,14 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarStri
 	int len = env->GetStringLength(jVarName);
 
 	char varname[1024];
-	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
 	env->ReleaseStringChars(jVarName, wmsg);
 
 	char value[1024];
 
-	GetSVarString(varname, &value[0], sizeof(value));
+	//TODO: fix GetSVarString(varname, &value[0], sizeof(value));
 
-	if (value)
+	/*if (value)
 	{
 		jchar tempChars[sizeof(value)];
 		for (int i = 0; i < sizeof(tempChars) / sizeof(jchar); i++)
@@ -4732,7 +4735,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarStri
 			tempChars[i] = value[i];
 		}
 		return env->NewString(tempChars, strlen(value));
-	}
+	}*/
 	return NULL;
 }
 
@@ -4742,15 +4745,15 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deleteSVar(JNI
 	int len = env->GetStringLength(jVarName);
 
 	char varname[1024];
-	wcs2mbs(getServerCodepage(), wmsg, len, varname, sizeof(varname));
+	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
 	env->ReleaseStringChars(jVarName, wmsg);
 
-	DeleteSVar(varname);
+	//TODO: fix DeleteSVar(varname);
 }
 
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash(JNIEnv* env, jclass, jstring jPassword, jstring jSalt)
 {
-	auto wmsg = env->GetStringChars(jPassword, NULL);
+	/*auto wmsg = env->GetStringChars(jPassword, NULL);
 	int len = env->GetStringLength(jPassword);
 
 	auto wmsgSalt = env->GetStringChars(jSalt, NULL);
@@ -4765,12 +4768,13 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash(
 	env->ReleaseStringChars(jSalt, wmsgSalt);
 
 	char hash[1024];
-	SHA256_PassHash(password, salt, &hash[0], sizeof(hash));
+	//TODO: fix SHA256_PassHash(password, salt, &hash[0], sizeof(hash));
 
 	jchar tempChars[sizeof(hash)];
 	for (int i = 0; i < sizeof(tempChars) / sizeof(jchar); i++)
 	{
 		tempChars[i] = hash[i];
 	}
-	return env->NewString(tempChars, strlen(hash));
+	return env->NewString(tempChars, strlen(hash));*/
+	return NULL;
 }

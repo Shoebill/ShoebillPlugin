@@ -24,4 +24,5 @@ int jni_jvm_constructObject(JNIEnv *env, jclass jcls, jobject *pjobj);
 int jni_jvm_destroy(JNIEnv *env);
 
 int findAndGenerateClassPath(const char* searchPath, char* classPath);
+
 #endif

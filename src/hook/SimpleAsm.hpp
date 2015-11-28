@@ -50,7 +50,7 @@ public:
         _origin.insert(_origin.end(), _address, _address + 7);
         *(_address++) = 0xC7;
         *(_address++) = 0x45;
-        *(_address++) = offset;
+        *(_address++) = (unsigned char) offset;
         *((void**)_address) = value;
         _address += 4;
     }

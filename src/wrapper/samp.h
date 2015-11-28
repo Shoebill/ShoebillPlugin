@@ -288,5 +288,4 @@
 
 #include "amx/amx.h"
 #include "Callbacks.h"
-#include "Functions.h"
 #endif

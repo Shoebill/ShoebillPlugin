@@ -18,8 +18,7 @@
 #include <string.h>
 
 #include "plugin.h"
-
-typedef void(*logprintf_t)(const char* format, ...);
+#include "sampgdk.h"
 
 typedef int AMXAPI(*amx_Exec_t)(AMX *amx, cell *retval, int index);
 typedef int AMXAPI(*amx_Register_t)(AMX *amx, const AMX_NATIVE_INFO *nativelist, int number);
@@ -27,8 +26,6 @@ typedef int AMXAPI(*amx_FindPublic_t)(AMX *amx, const char *name, int *retval);
 typedef int AMXAPI(*amx_Callback_t)(AMX* amx, cell index, cell* result, cell* params);
 
 extern void *pAMXFunctions;
-extern AMX_NATIVE_INFO CallbackNatives[];
-extern logprintf_t logprintf;
 
 inline AMX_NATIVE amx_FindNative(AMX *amx, const char *func)
 {
@@ -57,7 +54,7 @@ inline char* amx_GetString(AMX *amx, const cell str, char *dest, int size)
     cell *phys;
 
     amx_GetAddr(amx, str, &phys);
-    amx_GetString(dest, phys, 0, size);
+    amx_GetString(dest, phys, 0, (size_t) size);
 
     return dest;
 }
@@ -65,10 +62,10 @@ inline char* amx_GetString(AMX *amx, const cell str, char *dest, int size)
 inline cell amx_NewString(AMX *amx, const char* str, int len = -1)
 {
     cell amx_str, *amx_str_phys;
-    if (len < 0) len = strlen(str) + 1;
+    if (len < 0) len = (int) (strlen(str) + 1);
 
     amx_Allot(amx, len, &amx_str, &amx_str_phys);
-    amx_SetString(amx_str_phys, str, 0, 0, len);
+    amx_SetString(amx_str_phys, str, 0, 0, (size_t) len);
 
     return amx_str;
 }

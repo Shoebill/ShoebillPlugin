@@ -83,7 +83,7 @@ static cell AMX_NATIVE_CALL n_OnAmxSampObjectCreated(AMX* amx, cell* params) {
 	hookedNative->hook->get()->unhook();
 	int ret = hookedNative->originalFunc(amx, params);
 	hookedNative->hook->get()->hook();
-	int paramcount = params[0] / sizeof(cell);
+	int paramcount = (int) (params[0] / sizeof(cell));
 	if (paramcount == 7)
 		OnAmxSampObjectCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]), 0, 0, 0.0);
 	else if (paramcount == 8)
@@ -137,7 +137,7 @@ static cell AMX_NATIVE_CALL n_OnAmxCreatePlayerObject(AMX *amx, cell* params)
 	hookedNative->hook->get()->unhook();
 	int ret = hookedNative->originalFunc(amx, params);
 	hookedNative->hook->get()->hook();
-	int paramcount = params[0] / sizeof(cell);
+	int paramcount = (int) (params[0] / sizeof(cell));
 	if (paramcount == 8) //without drawdistance
 		OnAmxCreatePlayerObject(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]), 0.0, 0, 0, ret);
 	else if (paramcount == 9) //with drawdistance

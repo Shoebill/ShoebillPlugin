@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <functional>
 #include <hook/SimpleInlineHook.hpp>
+#include "sampgdk.h"
 
 #include "AmxHelper.h"
 #include "amx/amx.h"

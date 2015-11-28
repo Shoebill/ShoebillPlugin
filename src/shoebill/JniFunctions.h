@@ -60,7 +60,7 @@ extern "C" {
 	* Signature: (ILjava/lang/String;)I
 	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
-		(JNIEnv *, jclass, jint, jstring);
+		(JNIEnv *, jclass, jstring);
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
