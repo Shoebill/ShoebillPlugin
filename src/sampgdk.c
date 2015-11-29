@@ -208,6 +208,8 @@ void sampgdk_log_error(const char *format, ...);
 #ifndef SAMPGDK_INTERNAL_LOGPRINTF_H
 #define SAMPGDK_INTERNAL_LOGPRINTF_H
 
+#include <stdarg.h>
+
 extern void *sampgdk_logprintf_impl;
 
 void sampgdk_do_vlogprintf(const char *format, va_list va);
@@ -240,6 +242,7 @@ void sampgdk_do_vlogprintf(const char *format, va_list va);
   typedef __int32 int32_t;
   typedef unsigned __int32 uint32_t;
 #else
+  #include <stdint.h>
 #endif
 
 #if SAMPGDK_WINDOWS
@@ -349,6 +352,7 @@ void sampgdk_module_cleanup(void) {
 
 #include <assert.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* #include "array.h" */
@@ -374,7 +378,7 @@ int sampgdk_array_new(struct sampgdk_array *a,
   assert(size > 0);
   assert(elem_size > 0);
 
-  if ((a->data = malloc((size_t) (elem_size * size))) == NULL) {
+  if ((a->data = malloc(elem_size * size)) == NULL) {
     return -ENOMEM;
   }
 
@@ -415,7 +419,7 @@ int sampgdk_array_resize(struct sampgdk_array *a, int new_size) {
   }
 
   if (new_size > 0) {
-    new_data = realloc(a->data, (size_t) (a->elem_size * new_size));
+    new_data = realloc(a->data, a->elem_size * new_size);
 
     if (new_data == NULL) {
       return -errno;
@@ -574,7 +578,7 @@ int sampgdk_array_append(struct sampgdk_array *a, void *elem) {
 
 int sampgdk_array_get_index(struct sampgdk_array *a, void *elem) {
   assert(elem != NULL);
-  return (int) (((unsigned char *)elem - (unsigned char *)a->data) / a->elem_size);
+  return ((unsigned char *)elem - (unsigned char *)a->data) / a->elem_size;
 }
 
 int sampgdk_array_find(struct sampgdk_array *a,
@@ -630,6 +634,13 @@ int sampgdk_array_find_remove(struct sampgdk_array *a,
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <assert.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "sampgdk.h"
 
 /* #include "init.h" */
 /* #include "logprintf.h" */
@@ -792,6 +803,8 @@ void sampgdk_log_error(const char *format, ...) {
 #ifndef SAMPGDK_INTERNAL_PLUGIN_H
 #define SAMPGDK_INTERNAL_PLUGIN_H
 
+#include "sampgdk.h"
+
 int sampgdk_plugin_register(void *plugin);
 int sampgdk_plugin_unregister(void *plugin);
 
@@ -818,7 +831,11 @@ void **sampgdk_plugin_get_plugins(int *number);
  * limitations under the License.
  */
 
+#include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "sampgdk.h"
 
 /* #include "logprintf.h" */
 
@@ -863,11 +880,18 @@ void sampgdk_do_vlogprintf(const char *format, va_list va) {
  * limitations under the License.
  */
 
+#include <errno.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "sampgdk.h"
+
 #if SAMPGDK_WINDOWS
   #include <windows.h>
 #else
-
-#include <unistd.h>
+  #include <stdint.h>
+  #include <unistd.h>
   #include <sys/mman.h>
 #endif
 
@@ -1036,14 +1060,14 @@ static size_t _sampgdk_hook_disasm(uint8_t *code, int *reloc) {
   if (opcodes[i].flags & IMM16) len += 2;
   if (opcodes[i].flags & IMM32) len += 4;
 
-  return (size_t) len;
+  return len;
 }
 
 static void _sampgdk_hook_write_jmp(void *src, void *dst, int32_t offset) {
   struct _sampgdk_hook_jmp jmp;
 
   jmp.opcode = 0xE9;
-  jmp.offset = (int32_t) ((uint8_t *)dst - ((uint8_t *)src + sizeof(jmp)));
+  jmp.offset = (uint8_t *)dst - ((uint8_t *)src + sizeof(jmp));
 
   memcpy((uint8_t *)src + offset, &jmp, sizeof(jmp));
 }
@@ -1086,7 +1110,7 @@ sampgdk_hook_t sampgdk_hook_new(void *src, void *dst) {
   }
 
   if (insn_len > 0) {
-    _sampgdk_hook_write_jmp(hook->trampoline, src, (int32_t) orig_size);
+    _sampgdk_hook_write_jmp(hook->trampoline, src, orig_size);
     _sampgdk_hook_write_jmp(src, dst, 0);
   } else {
     _sampgdk_hook_write_jmp(hook->trampoline, src, 0);
@@ -1118,11 +1142,17 @@ void *sampgdk_hook_trampoline(sampgdk_hook_t hook) {
  * limitations under the License.
  */
 
+#include <assert.h>
+#include <errno.h>
+#include <stdlib.h>
+
+#include "sampgdk.h"
+
 #if SAMPGDK_WINDOWS
   #include <windows.h>
 #else
   #include <dlfcn.h>
-
+  #include <string.h>
 #endif
 
 /* #include "array.h" */
@@ -1229,6 +1259,8 @@ void *sampgdk_plugin_get_handle(void *address) {
 #ifndef SAMPGDK_INTERNAL_PARAM_H
 #define SAMPGDK_INTERNAL_PARAM_H
 
+#include "sampgdk.h"
+
 void sampgdk_param_get_cell(AMX *amx, int index, cell *param);
 void sampgdk_param_get_bool(AMX *amx, int index, bool *param);
 void sampgdk_param_get_float(AMX *amx, int index, float *param);
@@ -1256,6 +1288,8 @@ cell *sampgdk_param_get_start(AMX *amx);
 
 #ifndef SAMPGDK_INTERNAL_FAKEAMX_H
 #define SAMPGDK_INTERNAL_FAKEAMX_H
+
+#include "sampgdk.h"
 
 /* Returns the global fake AMX instance. */
 AMX *sampgdk_fakeamx_amx(void);
@@ -1297,6 +1331,8 @@ void sampgdk_fakeamx_get_string(cell address, char *dest, int size);
 
 #ifndef SAMPGDK_INTERNAL_CALLBACK_H
 #define SAMPGDK_INTERNAL_CALLBACK_H
+
+#include "sampgdk.h"
 
 /* Callback handler function. */
 typedef bool (*sampgdk_callback)(AMX *amx, void *func, cell *retval);
@@ -1343,6 +1379,8 @@ bool sampgdk_callback_invoke(AMX *amx, const char *name,
 
 #ifndef SAMPGDK_INTERNAL_AMX_H
 #define SAMPGDK_INTERNAL_AMX_H
+
+#include "sampgdk.h"
 
 #define AMX_EXEC_GDK (-10000)
 
@@ -1466,6 +1504,10 @@ extern struct sampgdk_amx_api *sampgdk_amx_api_ptr;
 #ifndef SAMPGDK_INTERNAL_NATIVE_H
 #define SAMPGDK_INTERNAL_NATIVE_H
 
+#include <stdarg.h>
+
+#include "sampgdk.h"
+
 /* Register a native function in the internal natives table. */
 int sampgdk_native_register(const char *name, AMX_NATIVE func);
 
@@ -1502,6 +1544,8 @@ cell sampgdk_native_invoke_array(AMX_NATIVE native, const char *format, void **a
 #ifndef SAMPGDK_INTERNAL_TIMER_H
 #define SAMPGDK_INTERNAL_TIMER_H
 
+#include "sampgdk.h"
+
 /* Timer callback function.
  * There's also a public typedef TimerCallback in <sampgdk/types.h>.
  */
@@ -1530,6 +1574,11 @@ void sampgdk_timer_process_timers(void *plugin);
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <assert.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* #include "array.h" */
 /* #include "callback.h" */
@@ -1594,8 +1643,8 @@ static struct _sampgdk_callback_info *_sampgdk_callback_find(const char *name) {
 
   return bsearch(name,
                  _sampgdk_callbacks.data,
-                 (size_t) (_sampgdk_callbacks.count - 1),
-                 (size_t) _sampgdk_callbacks.elem_size,
+                 _sampgdk_callbacks.count - 1,
+                 _sampgdk_callbacks.elem_size,
                  _sampgdk_callback_compare_name);
 }
 
@@ -1688,7 +1737,7 @@ bool sampgdk_callback_invoke(AMX *amx,
     return true;
   }
 
-  params[0] = (cell) (paramcount * sizeof(cell));
+  params[0] = paramcount * sizeof(cell);
   memcpy(&params[1], sampgdk_param_get_start(amx), params[0]);
 
   plugins = sampgdk_plugin_get_plugins(&num_plugins);
@@ -1731,6 +1780,9 @@ bool sampgdk_callback_invoke(AMX *amx,
  * limitations under the License.
  */
 
+#include <assert.h>
+#include <stdlib.h>
+
 /* #include "amx.h" */
 /* #include "param.h" */
 
@@ -1764,7 +1816,7 @@ void sampgdk_param_get_string(AMX *amx, int index, char **param) {
   amx_StrLen(phys_addr, &length);
   string = malloc((length + 1) * sizeof(char));
 
-  if (amx_GetString(string, phys_addr, 0, (size_t) (length + 1)) != AMX_ERR_NONE) {
+  if (amx_GetString(string, phys_addr, 0, length + 1) != AMX_ERR_NONE) {
     free(string);
     return;
   }
@@ -1794,6 +1846,10 @@ cell *sampgdk_param_get_start(AMX *amx) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <assert.h>
+#include <limits.h>
+#include <string.h>
 
 /* #include "amx.h" */
 /* #include "array.h" */
@@ -1835,7 +1891,7 @@ SAMPGDK_MODULE_INIT(fakeamx) {
   _sampgdk_fakeamx.amx.base = (unsigned char *)&_sampgdk_fakeamx.amxhdr;
   _sampgdk_fakeamx.amx.data = (unsigned char *)_sampgdk_fakeamx.heap.data;
   _sampgdk_fakeamx.amx.callback = amx_Callback;
-  _sampgdk_fakeamx.amx.stp = (cell) (_sampgdk_fakeamx.heap.size * sizeof(cell));
+  _sampgdk_fakeamx.amx.stp = _sampgdk_fakeamx.heap.size * sizeof(cell);
   _sampgdk_fakeamx.amx.stk = _sampgdk_fakeamx.amx.stp;
   _sampgdk_fakeamx.amx.flags = AMX_FLAG_NTVREG | AMX_FLAG_RELOC;
 
@@ -1876,8 +1932,8 @@ int sampgdk_fakeamx_resize_heap(int cells) {
   _sampgdk_fakeamx.amx.data = (unsigned char *)_sampgdk_fakeamx.heap.data;
 
   old_stk = _sampgdk_fakeamx.amx.stk;
-  new_stk = (cell) (_sampgdk_fakeamx.amx.stk + (new_size - old_size) * sizeof(cell));
-  new_stp = (cell) (_sampgdk_fakeamx.amx.stp + (new_size - old_size) * sizeof(cell));
+  new_stk = _sampgdk_fakeamx.amx.stk + (new_size - old_size) * sizeof(cell);
+  new_stp = _sampgdk_fakeamx.amx.stp + (new_size - old_size) * sizeof(cell);
 
   /* Shift stack contents. */
   memmove((unsigned char *)_sampgdk_fakeamx.heap.data
@@ -1899,10 +1955,10 @@ int sampgdk_fakeamx_push(int cells, cell *address) {
   assert(cells > 0);
 
   old_hea = _sampgdk_fakeamx.amx.hea;
-  new_hea = (cell) (_sampgdk_fakeamx.amx.hea + cells * sizeof(cell));
+  new_hea = _sampgdk_fakeamx.amx.hea + cells * sizeof(cell);
 
   old_heap_size = _sampgdk_fakeamx.heap.size;
-  new_heap_size = (cell) ((new_hea + _SAMPGDK_FAKEAMX_STACK_SIZE) / sizeof(cell));
+  new_heap_size = (new_hea + _SAMPGDK_FAKEAMX_STACK_SIZE) / sizeof(cell);
 
   if (new_hea >= (cell)(old_heap_size * sizeof(cell))) {
     int error;
@@ -1952,7 +2008,7 @@ int sampgdk_fakeamx_push_array(const cell *src, int size, cell *address) {
     return error;
   }
 
-  dest = sampgdk_array_get(&_sampgdk_fakeamx.heap, (int) (*address / sizeof(cell)));
+  dest = sampgdk_array_get(&_sampgdk_fakeamx.heap, *address / sizeof(cell));
   memcpy(dest, src, size * sizeof(cell));
 
   return 0;
@@ -1971,8 +2027,8 @@ int sampgdk_fakeamx_push_string(const char *src, int *size, cell *address) {
   }
 
   amx_SetString(sampgdk_array_get(&_sampgdk_fakeamx.heap,
-                                  (int) (*address / sizeof(cell))),
-                src, 0, 0, (size_t) src_size);
+                                 *address / sizeof(cell)),
+                src, 0, 0, src_size);
 
   if (size != NULL) {
     *size = src_size;
@@ -1986,7 +2042,7 @@ void sampgdk_fakeamx_get_cell(cell address, cell *value) {
   assert(value != NULL);
 
   *value = *(cell *)sampgdk_array_get(&_sampgdk_fakeamx.heap,
-                                      (int) (address / sizeof(cell)));
+                                      address / sizeof(cell));
 }
 
 void sampgdk_fakeamx_get_bool(cell address, bool *value) {
@@ -2016,7 +2072,7 @@ void sampgdk_fakeamx_get_array(cell address, cell *dest, int size) {
   assert(dest != NULL);
   assert(size > 0);
 
-  src = sampgdk_array_get(&_sampgdk_fakeamx.heap, (int) (address / sizeof(cell)));
+  src = sampgdk_array_get(&_sampgdk_fakeamx.heap, address / sizeof(cell));
   memcpy(dest, src, size * sizeof(cell));
 }
 
@@ -2025,8 +2081,8 @@ void sampgdk_fakeamx_get_string(cell address, char *dest, int size) {
   assert(dest != NULL);
 
   amx_GetString(dest, (cell *)sampgdk_array_get(&_sampgdk_fakeamx.heap,
-                                                (int) (address / sizeof(cell))),
-                0, (size_t) size);
+                                                address / sizeof(cell)),
+                                                0, size);
 }
 
 void sampgdk_fakeamx_pop(cell address) {
@@ -2070,6 +2126,8 @@ struct sampgdk_amx_api *sampgdk_amx_api_ptr;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include "sampgdk.h"
 
 /* #include "internal/native.h" */
 
@@ -2124,6 +2182,11 @@ SAMPGDK_API(cell, sampgdk_InvokeNativeArray(AMX_NATIVE native,
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <assert.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* #include "array.h" */
 /* #include "fakeamx.h" */
@@ -2196,8 +2259,8 @@ AMX_NATIVE sampgdk_native_find(const char *name) {
   }
 
   info = bsearch(name, _sampgdk_natives.data,
-                 (size_t) (_sampgdk_natives.count - 1),
-                 (size_t) _sampgdk_natives.elem_size,
+                       _sampgdk_natives.count - 1,
+                       _sampgdk_natives.elem_size,
                        _sampgdk_native_compare_bsearch);
   if (info == NULL) {
     return NULL;
@@ -2446,7 +2509,7 @@ cell sampgdk_native_invoke_array(AMX_NATIVE native, const char *format,
                         _SAMPGDK_NATIVE_MAX_ARGS);
   }
 
-  params[0] = (cell) (i * sizeof(cell));
+  params[0] = i * sizeof(cell);
   assert(native != NULL);
   retval = native(amx, params);
 
@@ -2487,6 +2550,14 @@ cell sampgdk_native_invoke_array(AMX_NATIVE native, const char *format,
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <assert.h>
+#include <errno.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "sampgdk.h"
 
 /* #include "amx.h" */
 /* #include "array.h" */
@@ -2734,7 +2805,7 @@ static int AMXAPI _sampgdk_amxhooks_Allot(AMX *amx,
    * amount of space, grow the heap and try again.
    */
   if (error == AMX_ERR_MEMORY && amx == sampgdk_fakeamx_amx()) {
-    cell new_size = (cell) (((amx->hea + STKMARGIN) / sizeof(cell)) + cells + 2);
+    cell new_size = ((amx->hea + STKMARGIN) / sizeof(cell)) + cells + 2;
     cell resize;
 
     sampgdk_log_debug("Growing fake AMX heap to %d bytes = %d = %d", new_size);
@@ -2824,6 +2895,11 @@ SAMPGDK_API(const char *, sampgdk_GetVersionString(void)) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <assert.h>
+#include <string.h>
+
+#include "sampgdk.h"
 
 /* #include "internal/amx.h" */
 /* #include "internal/init.h" */
@@ -2943,6 +3019,14 @@ SAMPGDK_API(void, sampgdk_vlogprintf(const char *format, va_list args)) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <assert.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include "sampgdk.h"
 
 #if SAMPGDK_WINDOWS
   #include <windows.h>
