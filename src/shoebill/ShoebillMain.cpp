@@ -798,12 +798,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterVehicle(int playerid, int vehicleid,
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterVehicle", "(III)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterVehicle", "(III)Z");
 	if (!jmid) return 0;
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, ispassenger ? 1 : 0);
+	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid, ispassenger ? 1 : 0);
 	jni_jvm_printExceptionStack(env);
-	return (bool) ret;
+	return ret;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerExitVehicle(int playerid, int vehicleid)
