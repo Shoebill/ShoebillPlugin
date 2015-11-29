@@ -598,10 +598,21 @@ int CallRegisteredFunction(std::string functionName, jobjectArray parameters)
 PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell* params, cell *retval)
 {
 	*retval = invokeCallback(amx, name, params);
-	auto hook = callHookedCallback(amx, name, params);
-	if (hook)
-		*retval = *hook;
-	return true;
+	if (!shouldCancelCallback(name, *retval))
+	{
+		auto hook = callHookedCallback(amx, name, params);
+		if (hook)
+		{
+			auto willCancel = hook[1];
+			*retval = hook[0];
+			delete hook;
+			if (willCancel == 1)
+				return false;
+		}
+		return true;
+	}
+	else
+		return false;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit()
