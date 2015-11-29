@@ -2336,7 +2336,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_gameTextForPla
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setTimer
-  (JNIEnv *, jclass, jint index, jint interval, jint repeating)
+  (JNIEnv *, jclass, jint /* index */, jint interval, jint repeating)
 {
 	return SetTimer(interval, repeating > 0, NULL, NULL);
 }
@@ -4645,110 +4645,112 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 	return (jboolean) true;
 }
 
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarInt(JNIEnv* env, jclass, jstring jVarName, jint jValue)
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPVarInt(JNIEnv *env, jclass jclass1, jint playerid, jstring name,
+                                                           jint value)
 {
-	auto wmsg = env->GetStringChars(jVarName, NULL);
-	int len = env->GetStringLength(jVarName);
-
-	char varname[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
-	env->ReleaseStringChars(jVarName, wmsg);
-
-	//TODO: fix SetSVarInt(varname, jValue);
+	auto varName = env->GetStringUTFChars(name, NULL);
+	SetPVarInt(playerid, varName, value);
+	env->ReleaseStringUTFChars(name, varName);
 }
 
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarFloat(JNIEnv* env, jclass, jstring jVarName, jfloat jValue)
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarInt(JNIEnv *env, jclass jclass1, jint playerid, jstring name)
 {
-	auto wmsg = env->GetStringChars(jVarName, NULL);
-	int len = env->GetStringLength(jVarName);
-
-	char varname[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
-	env->ReleaseStringChars(jVarName, wmsg);
-
-	//TODO: fix SetSVarFloat(varname, jValue);
+	auto varName = env->GetStringUTFChars(name, NULL);
+	auto result = GetPVarInt(playerid, varName);
+	env->ReleaseStringUTFChars(name, varName);
+	return result;
 }
 
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarString(JNIEnv* env, jclass, jstring jVarName, jstring jValue)
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPVarString(JNIEnv *env, jclass jclass1, jint playerid, jstring name,
+                                                              jstring value)
 {
-	auto wmsg = env->GetStringChars(jVarName, NULL);
-	int len = env->GetStringLength(jVarName);
+	auto varName = env->GetStringUTFChars(name, NULL);
+	auto varValue = env->GetStringUTFChars(value, NULL);
+	SetPVarString(playerid, varName, varValue);
+	env->ReleaseStringUTFChars(name, varName);
+	env->ReleaseStringUTFChars(value, varValue);
+}
 
-	auto wmsgValue = env->GetStringChars(jValue, NULL);
-	int lenValue = env->GetStringLength(jValue);
-
-	char varname[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
-	env->ReleaseStringChars(jVarName, wmsg);
-
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarString(JNIEnv *env, jclass jclass1, jint playerid,
+                                                                 jstring name)
+{
+	auto varName = env->GetStringUTFChars(name, NULL);
 	char value[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsgValue, lenValue, value, sizeof(value));
-	env->ReleaseStringChars(jValue, wmsgValue);
-
-	//TODO: fix SetSVarString(varname, value);
+	GetPVarString(playerid, varName, &value[0], sizeof(value));
+	env->ReleaseStringUTFChars(name, varName);
+	auto jniString = env->NewStringUTF(value);
+	return jniString;
 }
 
-JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarInt(JNIEnv* env, jclass, jstring jVarName)
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPVarFloat(JNIEnv *env, jclass jclass1, jint playerid, jstring name,
+                                                             jfloat value)
 {
-	auto wmsg = env->GetStringChars(jVarName, NULL);
-	int len = env->GetStringLength(jVarName);
-
-	char varname[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
-	env->ReleaseStringChars(jVarName, wmsg);
-
-	//TODO: fix return GetSVarInt(varname);
-	return 0;
+	auto varName = env->GetStringUTFChars(name, NULL);
+	SetPVarFloat(playerid, varName, value);
+	env->ReleaseStringUTFChars(name, varName);
 }
 
-JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarFloat(JNIEnv* env, jclass, jstring jVarName)
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarFloat(JNIEnv *env, jclass jclass1, jint playerid,
+                                                               jstring name)
 {
-	auto wmsg = env->GetStringChars(jVarName, NULL);
-	int len = env->GetStringLength(jVarName);
-
-	char varname[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
-	env->ReleaseStringChars(jVarName, wmsg);
-
-	//TODO: fix return GetSVarFloat(varname);
-	return 0;
+	auto varName = env->GetStringUTFChars(name, NULL);
+	auto result = GetPVarFloat(playerid, varName);
+	env->ReleaseStringUTFChars(name, varName);
+	return result;
 }
 
-JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarString(JNIEnv* env, jclass, jstring jVarName)
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deletePVar(JNIEnv *env, jclass jclass1, jint playerid, jstring name)
 {
-	auto wmsg = env->GetStringChars(jVarName, NULL);
-	int len = env->GetStringLength(jVarName);
-
-	char varname[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
-	env->ReleaseStringChars(jVarName, wmsg);
-
-	char value[1024];
-
-	//TODO: fix GetSVarString(varname, &value[0], sizeof(value));
-
-	/*if (value)
-	{
-		jchar tempChars[sizeof(value)];
-		for (int i = 0; i < sizeof(tempChars) / sizeof(jchar); i++)
-		{
-			tempChars[i] = value[i];
-		}
-		return env->NewString(tempChars, strlen(value));
-	}*/
-	return NULL;
+	auto varName = env->GetStringUTFChars(name, NULL);
+	auto result = DeletePVar(playerid, varName);
+	env->ReleaseStringUTFChars(name, varName);
+	return result;
 }
 
-JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deleteSVar(JNIEnv* env, jclass, jstring jVarName)
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarsUpperIndex(JNIEnv *env, jclass jclass1, jint playerid)
 {
-	auto wmsg = env->GetStringChars(jVarName, NULL);
-	int len = env->GetStringLength(jVarName);
+	return GetPVarsUpperIndex(playerid);
+}
 
-	char varname[1024];
-	wcs2mbs((unsigned int) getServerCodepage(), wmsg, len, varname, sizeof(varname));
-	env->ReleaseStringChars(jVarName, wmsg);
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarNameAtIndex(JNIEnv *env, jclass jclass1, jint playerid,
+                                                                      jint index)
+{
+	char varName[1024];
+	GetPVarNameAtIndex(playerid, index, &varName[0], sizeof(varName));
+	return env->NewStringUTF(varName);
+}
 
-	//TODO: fix DeleteSVar(varname);
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarType(JNIEnv *env, jclass jclass1, jint playerid, jstring name)
+{
+	auto varName = env->GetStringUTFChars(name, NULL);
+	auto result = GetPVarType(playerid, varName);
+	env->ReleaseStringUTFChars(name, varName);
+	return result;
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsInt(JNIEnv *env, jclass jclass1, jstring name)
+{
+	auto varName = env->GetStringUTFChars(name, NULL);
+	auto result = GetServerVarAsInt(varName);
+	env->ReleaseStringUTFChars(name, varName);
+	return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsBool(JNIEnv *env, jclass jclass1, jstring name)
+{
+	auto varName = env->GetStringUTFChars(name, NULL);
+	auto result = GetServerVarAsBool(varName);
+	env->ReleaseStringUTFChars(name, varName);
+	return (jboolean) result;
+}
+
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsString(JNIEnv *env, jclass jclass1, jstring name)
+{
+	auto varName = env->GetStringUTFChars(name, NULL);
+	char result[1024];
+	GetServerVarAsString(varName, &result[0], sizeof(result));
+	env->ReleaseStringUTFChars(name, varName);
+	return env->NewStringUTF(result);
 }
 
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash(JNIEnv* env, jclass, jstring jPassword, jstring jSalt)

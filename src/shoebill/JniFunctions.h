@@ -3,6 +3,7 @@
 
 #ifndef _Included_net_gtaun_shoebill_SampNativeFunction
 #define _Included_net_gtaun_shoebill_SampNativeFunction
+
 #include <jni.h>
 #include <string.h>
 #include <vector>
@@ -11,6 +12,7 @@
 #include <wrapper/AmxInstanceManager.hpp>
 #include "NativeFunctionManager.h"
 #include <array>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -57,7 +59,7 @@ extern "C" {
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
 	* Method:    getNative
-	* Signature: (ILjava/lang/String;)I
+	* Signature: (Ljava/lang/String;)I
 	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 		(JNIEnv *, jclass, jstring);
@@ -81,7 +83,7 @@ extern "C" {
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
 	* Method:    hookCallback
-	* Signature: (Ljava/lang/String;[Ljava/lang/Class;)Z
+	* Signature: (Ljava/lang/String;Ljava/lang/String;)Z
 	*/
 	JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallback
 		(JNIEnv *, jclass, jstring, jstring);
@@ -1568,58 +1570,26 @@ extern "C" {
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    setSVarInt
-	* Signature: (Ljava/lang/String;I)V
-	*/
-	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarInt
-		(JNIEnv *, jclass, jstring, jint);
-
-	/*
-	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    setSVarFloat
-	* Signature: (Ljava/lang/String;F)V
-	*/
-	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarFloat
-		(JNIEnv *, jclass, jstring, jfloat);
-
-	/*
-	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    setSVarString
-	* Signature: (Ljava/lang/String;Ljava/lang/String;)V
-	*/
-	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setSVarString
-		(JNIEnv *, jclass, jstring, jstring);
-
-	/*
-	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    getSVarInt
+	* Method:    getConsoleVarAsInt
 	* Signature: (Ljava/lang/String;)I
 	*/
-	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarInt
+	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsInt
 		(JNIEnv *, jclass, jstring);
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    getSVarFloat
+	* Method:    getConsoleVarAsBool
 	* Signature: (Ljava/lang/String;)F
 	*/
-	JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarFloat
+	JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsBool
 		(JNIEnv *, jclass, jstring);
 
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    getSVarString
+	* Method:    getConsoleVarAsString
 	* Signature: (Ljava/lang/String;)Ljava/lang/String;
 	*/
-	JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getSVarString
-		(JNIEnv *, jclass, jstring);
-
-	/*
-	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    deleteSVar
-	* Signature: (Ljava/lang/String;)V
-	*/
-	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deleteSVar
+	JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsString
 		(JNIEnv *, jclass, jstring);
 
 	/*
@@ -1761,7 +1731,7 @@ extern "C" {
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
 	* Method:    addStaticVehicleEx
-	* Signature: (IFFFFIII)I
+	* Signature: (IFFFFIIIZ)I
 	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addStaticVehicleEx
 		(JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jint, jint, jint, jboolean);
@@ -1996,30 +1966,6 @@ extern "C" {
 	* Signature: (Ljava/lang/String;)V
 	*/
 	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendRconCommand
-		(JNIEnv *, jclass, jstring);
-
-	/*
-	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    getServerVarAsString
-	* Signature: (Ljava/lang/String;)Ljava/lang/String;
-	*/
-	JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsString
-		(JNIEnv *, jclass, jstring);
-
-	/*
-	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    getServerVarAsInt
-	* Signature: (Ljava/lang/String;)I
-	*/
-	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsInt
-		(JNIEnv *, jclass, jstring);
-
-	/*
-	* Class:     net_gtaun_shoebill_SampNativeFunction
-	* Method:    getServerVarAsBool
-	* Signature: (Ljava/lang/String;)Z
-	*/
-	JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsBool
 		(JNIEnv *, jclass, jstring);
 
 	/*
@@ -2553,7 +2499,7 @@ extern "C" {
 	/*
 	* Class:     net_gtaun_shoebill_SampNativeFunction
 	* Method:    createVehicle
-	* Signature: (IFFFFIII)I
+	* Signature: (IFFFFIIIZ)I
 	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createVehicle
 		(JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat, jint, jint, jint, jboolean);
@@ -2855,8 +2801,8 @@ extern "C" {
 		(JNIEnv *, jclass, jint, jstring, jstring, jfloat, jint, jint, jint, jint, jint);
 
 	/*
-	* Class:	net_gtaun_shoebill_SampNativeFunction
-	* Method:	createActor
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    createActor
 	* Signature: (IFFFF)I
 	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createActor
@@ -3126,6 +3072,11 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setVehicleParamsCarWindows
 		(JNIEnv *, jclass, jint, jint, jint, jint, jint);
 
+	/*
+	* Class:     net_gtaun_shoebill_SampNativeFunction
+	* Method:    getPlayerPoolSize
+	* Signature: ()I
+	*/
 	JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerPoolSize
 		(JNIEnv *, jclass);
 
