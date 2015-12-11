@@ -39,7 +39,7 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE")
   endif()
 else()
-  add_definitions(-DLINUX)
+  add_definitions("-DLINUX")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -O3 -Wall -ansi -std=c++11 -fPIC -fno-strict-aliasing -Wno-write-strings -fshort-wchar -static-libstdc++")
 endif()
 

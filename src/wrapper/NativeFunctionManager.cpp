@@ -769,7 +769,7 @@ static cell AMX_NATIVE_CALL n_SpawnPlayer(AMX* amx, cell* params)
 	hookedNative->hook->get()->unhook();
 	int ret = hookedNative->originalFunc(amx, params);
 	hookedNative->hook->get()->hook();
-	OnPlayerSpawn(params[1]);
+	n_OnPlayerSpawn(amx, params);
 	return ret;
 }
 

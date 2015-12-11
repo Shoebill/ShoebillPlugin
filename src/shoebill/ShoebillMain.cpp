@@ -35,12 +35,11 @@ const char CREATE_SHOEBILL_METHOD_NAME[] = "createShoebill";
 const char CREATE_SHOEBILL_METHOD_SIGN[] = "(Ljava/lang/Object;[I)Ljava/lang/Object;";
 
 jclass shoebillLauncherClass = NULL;
+jclass callbackHandlerClass = NULL;
+jobject callbackHandlerObject = NULL;
 
 jclass shoebillClass = NULL;
 jobject shoebillObject = NULL;
-
-jclass callbackHandlerClass = NULL;
-jobject callbackHandlerObject = NULL;
 
 jclass integerClass = NULL;
 jclass floatClass = NULL;
@@ -597,14 +596,17 @@ int CallRegisteredFunction(std::string functionName, jobjectArray parameters)
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell* params, cell *retval)
 {
-	*retval = invokeCallback(amx, name, params);
-	if (!shouldCancelCallback(name, *retval))
+	auto result = invokeCallback(amx, name, params);
+	if (retval)
+		*retval = result;
+	if (!shouldCancelCallback(name, result))
 	{
 		auto hook = callHookedCallback(amx, name, params);
 		if (hook)
 		{
 			auto willCancel = hook[1];
-			*retval = hook[0];
+			if (retval)
+				*retval = hook[0];
 			delete hook;
 			if (willCancel == 1)
 				return false;
@@ -615,9 +617,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell* pa
 		return false;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit()
+cell AMX_NATIVE_CALL n_OnGameModeInit(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env = NULL;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -630,9 +632,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit()
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeExit()
+cell n_OnGameModeExit(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -645,9 +647,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeExit()
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
+cell n_OnPlayerConnect(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -655,16 +657,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerConnect", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
+cell n_OnPlayerDisconnect(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
-
-	playerCodepage[playerid] = 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -672,14 +674,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerDisconnect", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], reason = params[2];
+	setPlayerCodepage(playerid, 0);
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, reason);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid)
+cell n_OnPlayerSpawn(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -687,14 +692,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerSpawn", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int reason)
+cell n_OnPlayerDeath(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -702,14 +709,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerDeath", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], killerid = params[2], reason = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, killerid, reason);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleSpawn(int vehicleid)
+cell n_OnVehicleSpawn(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -717,14 +726,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleSpawn(int vehicleid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleSpawn", "(I)Z");
 	if (!jmid) return 0;
 
+	int vehicleid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, vehicleid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleDeath(int vehicleid, int killerid)
+cell n_OnVehicleDeath(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
@@ -732,20 +743,25 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleDeath(int vehicleid, int killerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleDeath", "(II)Z");
 	if (!jmid) return 0;
 
+	int vehicleid = params[1], killerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, vehicleid, killerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char* text)
+cell n_OnPlayerText(AMX* amx, cell* params)
 {
-	if (!callbackHandlerObject) return 0;
+	if (!callbackHandlerObject) return false;
 
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerText", "(ILjava/lang/String;)I");
 	if (!jmid) return 0;
+
+	char text[1024]; int playerid = params[1];
+	amx_GetString(amx, params[2], text, sizeof(text));
 
 	jchar wtext[1024];
 	int len = mbs2wcs((unsigned int) getPlayerCodepage(playerid), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
@@ -756,7 +772,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char* text)
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char* cmdtext)
+cell n_OnPlayerCommandText(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -765,6 +781,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char* cmd
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerCommandText", "(ILjava/lang/String;)I");
 	if (!jmid) return 0;
+
+	int playerid = params[1];
+	char cmdtext[1024];
+	amx_GetString(amx, params[2], cmdtext, sizeof(cmdtext));
 
 	jchar wtext[1024];
 	int len = mbs2wcs((unsigned int) getPlayerCodepage(playerid), cmdtext, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
@@ -776,7 +796,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char* cmd
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid)
+cell n_OnPlayerRequestClass(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -786,12 +806,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerRequestClass", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], classid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, classid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterVehicle(int playerid, int vehicleid, bool ispassenger)
+cell n_OnPlayerEnterVehicle(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -801,12 +823,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterVehicle(int playerid, int vehicleid,
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterVehicle", "(III)Z");
 	if (!jmid) return 0;
 
-	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid, ispassenger ? 1 : 0);
+	int playerid = params[1], vehicleid = params[2], isPassenger = params[3];
+
+	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid, isPassenger);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerExitVehicle(int playerid, int vehicleid)
+cell n_OnPlayerExitVehicle(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -816,12 +840,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerExitVehicle(int playerid, int vehicleid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerExitVehicle", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], vehicleid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStateChange(int playerid, int newstate, int oldstate)
+cell n_OnPlayerStateChange(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -831,12 +857,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStateChange(int playerid, int newstate, i
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerStateChange", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], newstate = params[2], oldstate = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, newstate, oldstate);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterCheckpoint(int playerid)
+cell n_OnPlayerEnterCheckpoint(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -846,12 +874,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterCheckpoint(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterCheckpoint", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveCheckpoint(int playerid)
+cell n_OnPlayerLeaveCheckpoint(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -861,12 +891,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveCheckpoint(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerLeaveCheckpoint", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid)
+cell n_OnPlayerEnterRaceCheckpoint(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -876,12 +908,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEnterRaceCheckpoint", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveRaceCheckpoint(int playerid)
+cell n_OnPlayerLeaveRaceCheckpoint(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -891,12 +925,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveRaceCheckpoint(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerLeaveRaceCheckpoint", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnRconCommand(const char* cmd)
+cell n_OnRconCommand(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -906,7 +942,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnRconCommand(const char* cmd)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRconCommand", "(Ljava/lang/String;)I");
 	if (!jmid) return 0;
 
-	jchar wtext[1024];
+	char cmd[1024];
+	amx_GetString(amx, params[1], cmd, sizeof(cmd));
+
+	jchar wtext[sizeof cmd];
 	int len = mbs2wcs((unsigned int) getServerCodepage(), cmd, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 
 	jstring str = env->NewString(wtext, len);
@@ -915,7 +954,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnRconCommand(const char* cmd)
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid)
+cell n_OnPlayerRequestSpawn(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -925,12 +964,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerRequestSpawn", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnObjectMoved(int objectid)
+cell n_OnObjectMoved(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -940,12 +981,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnObjectMoved(int objectid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onObjectMoved", "(I)Z");
 	if (!jmid) return 0;
 
+	int objectid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, objectid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerObjectMoved(int playerid, int objectid)
+cell n_OnPlayerObjectMoved(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -955,12 +998,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerObjectMoved(int playerid, int objectid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerObjectMoved", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], objectid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, objectid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid)
+cell n_OnPlayerPickUpPickup(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -970,12 +1015,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerPickUpPickup", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], pickupid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, pickupid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleMod(int playerid, int vehicleid, int componentid)
+cell n_OnVehicleMod(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -985,12 +1032,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleMod(int playerid, int vehicleid, int com
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleMod", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], vehicleid = params[2], componentid = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid, componentid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnEnterExitModShop(int playerid, int enterexit, int interiorid)
+cell n_OnEnterExitModShop(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1000,12 +1049,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnEnterExitModShop(int playerid, int enterexit, i
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onEnterExitModShop", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], enterexit = params[2], interiorid = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, enterexit, interiorid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehiclePaintjob(int playerid, int vehicleid, int paintjobid)
+cell n_OnVehiclePaintjob(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1015,12 +1066,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehiclePaintjob(int playerid, int vehicleid, in
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehiclePaintjob", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], vehicleid = params[2], paintjobid = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid, paintjobid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleRespray(int playerid, int vehicleid, int color1, int color2)
+cell n_OnVehicleRespray(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1030,12 +1083,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleRespray(int playerid, int vehicleid, int
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleRespray", "(IIII)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], vehicleid = params[2], color1 = params[3], color2 = params[4];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid, color1, color2);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleDamageStatusUpdate(int vehicleid, int playerid)
+cell n_OnVehicleDamageStatusUpdate(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1045,12 +1100,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleDamageStatusUpdate(int vehicleid, int pl
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleDamageStatusUpdate", "(II)Z");
 	if (!jmid) return 0;
 
+	int vehicleid = params[1], playerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, vehicleid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnUnoccupiedVehicleUpdate(int vehicleid, int playerid, int passenger_seat, float new_x, float new_y, float new_z, float vel_x, float vel_y, float vel_z)
+cell n_OnUnoccupiedVehicleUpdate(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1060,12 +1117,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnUnoccupiedVehicleUpdate(int vehicleid, int play
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onUnoccupiedVehicleUpdate", "(IIIFFFFFF)Z");
 	if (!jmid) return 0;
 
+	int vehicleid = params[1], playerid = params[2], passenger_seat = params[3];
+	float new_x = amx_ctof(params[4]), new_y = amx_ctof(params[5]), new_z = amx_ctof(params[6]), vel_x = amx_ctof(params[7]), vel_y = amx_ctof(params[8]), vel_z = amx_ctof(params[9]);
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, vehicleid, playerid, passenger_seat, new_x, new_y, new_z, vel_x, vel_y, vel_z);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSelectedMenuRow(int playerid, int row)
+cell n_OnPlayerSelectedMenuRow(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1075,12 +1135,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSelectedMenuRow(int playerid, int row)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerSelectedMenuRow", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], row = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, row);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerExitedMenu(int playerid)
+cell n_OnPlayerExitedMenu(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1090,12 +1152,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerExitedMenu(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerExitedMenu", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerInteriorChange(int playerid, int newinteriorid, int oldinteriorid)
+cell n_OnPlayerInteriorChange(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1105,12 +1169,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerInteriorChange(int playerid, int newinter
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerInteriorChange", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], newinteriorid = params[2], oldinteriorid = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, newinteriorid, oldinteriorid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys, int oldkeys)
+cell n_OnPlayerKeyStateChange(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1120,12 +1186,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys,
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerKeyStateChange", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], newkeys = params[2], oldkeys = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, newkeys, oldkeys);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnRconLoginAttempt(const char* ip, const char* password, bool success)
+cell n_OnRconLoginAttempt(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1135,18 +1203,24 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnRconLoginAttempt(const char* ip, const char* pa
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRconLoginAttempt", "(Ljava/lang/String;Ljava/lang/String;I)I");
 	if (!jmid) return 0;
 
+	char ip[16], password[64];
+	amx_GetString(amx, params[1], ip, sizeof ip);
+	amx_GetString(amx, params[2], password, sizeof password);
+
+	int success = params[3];
+
 	jstring iptext = env->NewStringUTF(ip);
 
 	jchar wtext[1024];
 	int len = mbs2wcs((unsigned int) getServerCodepage(), password, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 	jstring str = env->NewString(wtext, len);
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, iptext, str, success ? 1 : 0);
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, iptext, str, success);
 	jni_jvm_printExceptionStack(env);
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerUpdate(int playerid)
+cell n_OnPlayerUpdate(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1156,12 +1230,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerUpdate(int playerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerUpdate", "(I)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStreamIn(int playerid, int forplayerid)
+cell n_OnPlayerStreamIn(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1171,12 +1247,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStreamIn(int playerid, int forplayerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerStreamIn", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], forplayerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, forplayerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStreamOut(int playerid, int forplayerid)
+cell n_OnPlayerStreamOut(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1186,12 +1264,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStreamOut(int playerid, int forplayerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerStreamOut", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], forplayerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, forplayerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleStreamIn(int vehicleid, int forplayerid)
+cell n_OnVehicleStreamIn(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1201,12 +1281,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleStreamIn(int vehicleid, int forplayerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleStreamIn", "(II)Z");
 	if (!jmid) return 0;
 
+	int vehicleid = params[1], forplayerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, vehicleid, forplayerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleStreamOut(int vehicleid, int forplayerid)
+cell n_OnVehicleStreamOut(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1216,12 +1298,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleStreamOut(int vehicleid, int forplayerid
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleStreamOut", "(II)Z");
 	if (!jmid) return 0;
 
+	int vehicleid = params[1], forplayerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, vehicleid, forplayerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char *inputtext)
+cell n_OnDialogResponse(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1230,6 +1314,11 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int 
 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onDialogResponse", "(IIIILjava/lang/String;)I");
 	if (!jmid) return 0;
+
+	char inputtext[1024];
+	amx_GetString(amx, params[5], inputtext, sizeof inputtext);
+
+	int playerid = params[1], dialogid = params[2], response = params[3], listitem = params[4];
 
 	jchar wtext[1024];
 	int len = mbs2wcs((unsigned int) getPlayerCodepage(playerid), inputtext, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
@@ -1240,7 +1329,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int 
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerTakeDamage(int playerid, int issuerid, float amount, int weaponid, int bodypart)
+cell n_OnPlayerTakeDamage(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1250,12 +1339,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerTakeDamage(int playerid, int issuerid, fl
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerTakeDamage", "(IIFII)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], issuerid = params[2], amount = params[3], weaponid = params[4], bodypart = params[5];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, issuerid, amount, weaponid, bodypart);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerGiveDamage(int playerid, int damagedid, float amount, int weaponid, int bodypart)
+cell n_OnPlayerGiveDamage(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1265,12 +1356,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerGiveDamage(int playerid, int damagedid, f
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerGiveDamage", "(IIFII)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], damagedid = params[2], weaponid = params[4], bodypart = params[5];
+	float amount = amx_ctof(params[3]);
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, damagedid, amount, weaponid, bodypart);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float x, float y, float z)
+cell n_OnPlayerClickMap(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1280,12 +1374,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float x, float y, 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickMap", "(IFFF)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1];
+	float x = amx_ctof(params[2]), y = amx_ctof(params[3]), z = amx_ctof(params[4]);
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, x, y, z);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickTextDraw(int playerid, int clickedid)
+cell n_OnPlayerClickTextDraw(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1295,12 +1392,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickTextDraw(int playerid, int clickedid
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickTextDraw", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], clickedid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, clickedid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayerTextDraw(int playerid, int playertextid)
+cell n_OnPlayerClickPlayerTextDraw(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1310,12 +1409,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayerTextDraw(int playerid, int pla
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickPlayerTextDraw", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], playertextid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, playertextid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplayerid, int source)
+cell n_OnPlayerClickPlayer(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1325,12 +1426,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplay
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerClickPlayer", "(III)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], clickedplayerid = params[2], source = params[3];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, clickedplayerid, source);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditObject(int playerid, bool playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ)
+cell n_OnPlayerEditObject(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1340,12 +1443,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditObject(int playerid, bool playerobjec
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEditObject", "(IIIIFFFFFF)I");
 	if (!jmid) return 0;
 
-	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, playerobject ? 1 : 0, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
+	int playerid = params[1], playerobject = params[2], objectid = params[3], response = params[4];
+	float fX = amx_ctof(params[5]), fY = amx_ctof(params[6]), fZ = amx_ctof(params[7]), fRotX = amx_ctof(params[8]), fRotY = amx_ctof(params[9]), fRotZ = amx_ctof(params[10]);
+
+	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
 	jni_jvm_printExceptionStack(env);
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditAttachedObject(int playerid, int response, int index, int modelid, int boneid, float fOffsetX, float fOffsetY, float fOffsetZ, float fRotX, float fRotY, float fRotZ, float fScaleX, float fScaleY, float fScaleZ)
+cell n_OnPlayerEditAttachedObject(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1355,12 +1461,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditAttachedObject(int playerid, int resp
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerEditAttachedObject", "(IIIIIFFFFFFFFF)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], response = params[2], index = params[3], modelid = params[4], boneid = params[5];
+	float fOffsetX = amx_ctof(params[6]), fOffsetY = amx_ctof(params[7]), fOffsetZ = amx_ctof(params[8]), fRotX = amx_ctof(params[9]), fRotY = amx_ctof(params[10]), fRotZ = amx_ctof(params[11]), fScaleX = amx_ctof(params[12]), fScaleY = amx_ctof(params[13]), fScaleZ = amx_ctof(params[14]);
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float fX, float fY, float fZ)
+cell n_OnPlayerSelectObject(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1370,12 +1479,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSelectObject(int playerid, int type, int 
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerSelectObject", "(IIIIFFF)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], type = params[2], objectid = params[3], modelid = params[4];
+	float fX = amx_ctof(params[5]), fY = amx_ctof(params[6]), fZ = amx_ctof(params[7]);
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, type, objectid, modelid, fX, fY, fZ);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float fX, float fY, float fZ)
+cell n_OnPlayerWeaponShot(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1385,12 +1497,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerWeaponShot(int playerid, int weaponid, in
 		static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerWeaponShot", "(IIIIFFF)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], weaponid = params[2], hittype = params[3], hitid = params[4];
+	float fX = amx_ctof(params[5]), fY = amx_ctof(params[6]), fZ = amx_ctof(params[7]);
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, weaponid, hittype, hitid, fX, fY, fZ);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnIncomingConnection(int playerid, const char* ip_address, int port)
+cell n_OnIncomingConnection(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1400,12 +1515,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnIncomingConnection(int playerid, const char* ip
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onIncomingConnection", "(ILjava/lang/String;I)I");
 	if (!jmid) return 0;
 
+	int playerid = params[1], port = params[3];
+	char ip_address[24];
+	amx_GetString(amx, params[2], ip_address, sizeof ip_address);
+
 	jint ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, env->NewStringUTF(ip_address), port);
 	jni_jvm_printExceptionStack(env);
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnTrailerUpdate(int playerid, int vehicleid)
+cell n_OnTrailerUpdate(AMX *amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1415,12 +1534,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnTrailerUpdate(int playerid, int vehicleid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onTrailerUpdate", "(II)Z");
 	if (!jmid) return 0;
 
+	int playerid = params[1], vehicleid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, vehicleid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnActorStreamIn(int actorid, int forplayerid)
+cell n_OnActorStreamIn(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -1429,12 +1550,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnActorStreamIn(int actorid, int forplayerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onActorStreamIn", "(II)Z");
 	if (!jmid) return 0;
 
+	int actorid = params[1], forplayerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, actorid, forplayerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnActorStreamOut(int actorid, int forplayerid)
+cell n_OnActorStreamOut(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -1443,12 +1566,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnActorStreamOut(int actorid, int forplayerid)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onActorStreamOut", "(II)Z");
 	if (!jmid) return 0;
 
+	int actorid = params[1], forplayerid = params[2];
+
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, actorid, forplayerid);
 	jni_jvm_printExceptionStack(env);
 	return ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerGiveDamageActor(int playerid, int damaged_actor, float amount, int weapon, int bodypart)
+cell n_OnPlayerGiveDamageActor(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -1457,12 +1582,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerGiveDamageActor(int playerid, int damaged
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerGiveDamageActor", "(IIIII)I");
 	if (!jmid) return 0;
 
-	int ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, damaged_actor, (int)amount, weapon, bodypart);
+	int playerid = params[1], damaged_actor = params[2], amount = (int)amx_ctof(params[3]), weapon = params[4], bodypart = params[5];
+
+	int ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, damaged_actor, amount, weapon, bodypart);
 	jni_jvm_printExceptionStack(env);
 	return (bool) ret;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleSirenStateChange(int playerid, int vehicleid, bool newstate)
+cell n_OnVehicleSirenStateChange(AMX* amx, cell* params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -1471,7 +1598,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleSirenStateChange(int playerid, int vehic
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onVehicleSirenStateChange", "(III)I");
 	if (!jmid) return 0;
 
-	int ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, newstate ? 1 : 0);
+	int playerid = params[1], vehicleid = params[2], newstate = params[3];
+
+	int ret = env->CallIntMethod(callbackHandlerObject, jmid, playerid, vehicleid, newstate);
 	jni_jvm_printExceptionStack(env);
 	return (bool) ret;
 }
