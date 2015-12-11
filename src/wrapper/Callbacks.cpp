@@ -78,7 +78,6 @@ cell invokeCallback(AMX *amx, std::string name, cell *params) {
     };
     auto it = callbackMap.find(name);
     if (it != callbackMap.end()) {
-	    sampgdk_logprintf("Calling native function %s", name.c_str());
 		return it->second(amx, params);
     }
     return 0;
