@@ -88,7 +88,7 @@ cell n_OnVehicleSirenStateChange(AMX* amx, cell* params);
 
 // AMX Callbacks
 
-int CallRegisteredFunction(std::string functionName, jobjectArray parameters);
+int CallRegisteredFunction(AMX* amx, std::string functionName, jobjectArray parameters);
 int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid, int color1, int color2, int respawn_delay, int addsiren);
 int OnAmxDestroyVehicle(int vehicleid);
 int OnAmxSampObjectCreated(int objectId, int modelid, float x, float y, float z, float rX, float rY, float rZ, int worldid, int interiorid, float render_distance);

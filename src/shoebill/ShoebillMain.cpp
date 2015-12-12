@@ -197,7 +197,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX* amx, cell* params)
 			lastArrayIndex += 1;
 		}
 	}
-	auto result = CallRegisteredFunction(std::string(functionName), objectArray);
+	auto result = CallRegisteredFunction(amx, std::string(functionName), objectArray);
 	for (auto i = 0; i < referenceValues.size(); i++)
 	{
 		if (referenceValues[i].second == "java.lang.String")
@@ -577,19 +577,19 @@ void OnProcessTick()
 	jni_jvm_printExceptionStack(env);
 }
 
-int CallRegisteredFunction(std::string functionName, jobjectArray parameters)
+int CallRegisteredFunction(AMX* amx, std::string functionName, jobjectArray parameters)
 {
 	if (!callbackHandlerObject) return -1;
 
 	JNIEnv *env = NULL;
 	jvm->AttachCurrentThread((void**)&env, NULL);
 
-	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRegisteredFunctionCall", "(Ljava/lang/String;[Ljava/lang/Object;)I");
+	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRegisteredFunctionCall", "(ILjava/lang/String;[Ljava/lang/Object;)I");
 	if (!jmid) return -1;
 
 	auto jstr = env->NewStringUTF(functionName.c_str());
 
-	int result = env->CallIntMethod(callbackHandlerObject, jmid, jstr, parameters);
+	int result = env->CallIntMethod(callbackHandlerObject, jmid, amx, jstr, parameters);
 	jni_jvm_printExceptionStack(env);
 	return result;
 }
