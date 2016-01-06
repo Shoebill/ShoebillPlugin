@@ -15,9 +15,8 @@
  */
 #include "ShoebillMain.h"
 #include "Callbacks.h"
-#include "JniUtils.h"
 
-cell invokeCallback(AMX *amx, std::string name, cell *params) {
+cell invokeCallback(AMX *amx, std::string name, cell *params, bool& foundFunction) {
     static std::map<std::string, AMX_NATIVE> callbackMap = {
         { "OnGameModeInit", n_OnGameModeInit },
         { "OnGameModeExit", n_OnGameModeExit },
@@ -78,9 +77,11 @@ cell invokeCallback(AMX *amx, std::string name, cell *params) {
     };
     auto it = callbackMap.find(name);
     if (it != callbackMap.end()) {
+		foundFunction = true;
 		return it->second(amx, params);
-    }
-    return 0;
+	}
+	foundFunction = false;
+	return 0;
 }
 
 bool shouldCancelCallback(std::string callbackName, cell returnValue) {

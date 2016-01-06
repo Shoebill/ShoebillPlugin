@@ -3795,7 +3795,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setVehiclePara
   (JNIEnv *, jclass, jint vehicleid, jint engine, jint lights,
   jint alarm, jint doors, jint bonnet, jint boot, jint objective)
 {
-	SetVehicleParamsEx(vehicleid, (bool) engine, (bool) lights, (bool) alarm, (bool) doors, (bool) bonnet, (bool) boot, (bool) objective);
+	//-1 is == true eventhough it should be false. Workaround:
+	SetVehicleParamsEx(vehicleid, engine == 1 ? true : false, lights == 1 ? true : false, alarm == 1 ? true : false, doors == 1 ? true : false,
+	                   bonnet == 1 ? true : false, boot == 1 ? true : false, objective == 1 ? true : false);
 }
 
 /*

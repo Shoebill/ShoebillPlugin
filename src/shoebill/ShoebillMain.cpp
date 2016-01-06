@@ -596,25 +596,23 @@ int CallRegisteredFunction(AMX* amx, std::string functionName, jobjectArray para
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell* params, cell *retval)
 {
-	auto result = invokeCallback(amx, name, params);
-	if (retval)
-		*retval = result;
-	if (!shouldCancelCallback(name, result))
+	bool foundFunction = false;
+	auto result = invokeCallback(amx, name, params, foundFunction); //call Java function if there is any to execute
+	if (foundFunction)
 	{
-		auto hook = callHookedCallback(amx, name, params);
-		if (hook)
-		{
-			auto willCancel = hook[1];
-			if (retval)
-				*retval = hook[0];
-			delete hook;
-			if (willCancel == 1)
-				return false;
-		}
-		return true;
+		if (retval) *retval = result; //Set returnvalue
+		if (shouldCancelCallback(name, result)) return false;
 	}
-	else
-		return false;
+	auto hook = callHookedCallback(amx, name, params); //Execute custom hook
+	if (hook)
+	{
+		auto willCancel = hook[1];
+		if (retval) *retval = hook[0];
+		delete hook;
+		if (willCancel == 1)
+			return false;
+	}
+	return true;
 }
 
 cell AMX_NATIVE_CALL n_OnGameModeInit(AMX* amx, cell* params)

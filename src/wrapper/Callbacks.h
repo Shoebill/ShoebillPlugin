@@ -172,7 +172,7 @@ int OnAmxDestroyActor(int actorid);
 
 int RestartShoebill();
 
-cell invokeCallback(AMX*, std::string, cell*);
+cell invokeCallback(AMX*, std::string, cell*, bool&);
 void overridePointer(AMX*, const AMX_NATIVE_INFO *, int);
 int StartShoebill();
 bool shouldCancelCallback(std::string, cell);
