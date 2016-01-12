@@ -85,7 +85,7 @@ static cell AMX_NATIVE_CALL n_OnAmxSampObjectCreated(AMX* amx, cell* params) {
 	hookedNative->hook->get()->hook();
 	int paramcount = (int) (params[0] / sizeof(cell));
 	if (paramcount == 7)
-		OnAmxSampObjectCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]), 0, 0, 0.0);
+		OnAmxSampObjectCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]), 0, 0, 0);
 	else if (paramcount == 8)
 		OnAmxSampObjectCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]), 0, 0, amx_ctof(params[8]));
 	return ret;
@@ -769,7 +769,6 @@ static cell AMX_NATIVE_CALL n_SpawnPlayer(AMX* amx, cell* params)
 	hookedNative->hook->get()->unhook();
 	int ret = hookedNative->originalFunc(amx, params);
 	hookedNative->hook->get()->hook();
-	n_OnPlayerSpawn(amx, params);
 	return ret;
 }
 
