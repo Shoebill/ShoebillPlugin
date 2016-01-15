@@ -4163,8 +4163,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 	return reinterpret_cast<int>(native);
 }
 
-JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction
-(JNIEnv *env, jclass, jint pAmx, jint index, jobjectArray args)
+JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction(JNIEnv *env, jclass, jint pAmx, jint index, jint returnType, jobjectArray args)
 {
 	AMX* amx = (AMX*)pAmx;
 	cell retval;
@@ -4253,13 +4252,31 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 	for (auto str : stringCells) amx_Release(amx, str);
 	stringCells.clear();
 	references.clear();
-	auto cls = env->FindClass("java/lang/Integer");
-	auto methodID = env->GetMethodID(cls, "<init>", "(I)V");
-	return env->NewObject(cls, methodID, retval);
+	if(returnType == 0) //If returnType == Integer
+	{
+		auto cls = env->FindClass("java/lang/Integer");
+		auto methodID = env->GetMethodID(cls, "<init>", "(I)V");
+		return env->NewObject(cls, methodID, retval);
+	}
+	else if(returnType == 1) //If returnType == Float
+	{
+		auto cls = env->FindClass("java/lang/Float");
+		auto methodID = env->GetMethodID(cls, "<init>", "(F)V");
+		return env->NewObject(cls, methodID, amx_ctof(retval));
+	}
+	else if(returnType == 2) //If returnType == String
+	{
+		char result[1024];
+		amx_GetString(amx, retval, &result[0], strlen(result));
+		auto cls = env->FindClass("java/lang/String");
+		auto methodID = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;)V");
+		//TODO: test
+		return env->NewObject(cls, methodID, result);
+	}
 }
 
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
-(JNIEnv *env, jclass, jint pAmx, jint idx, jobjectArray args)
+(JNIEnv *env, jclass, jint pAmx, jint idx, jint returnType, jobjectArray args)
 {
 	auto amx = reinterpret_cast<AMX*>(pAmx);
 	cell retval;
@@ -4344,9 +4361,27 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 	for (auto it : stringCells) amx_Release(amx, it);
 	stringCells.clear();
 	references.clear();
-	auto cls = env->FindClass("java/lang/Integer");
-	auto methodID = env->GetMethodID(cls, "<init>", "(I)V");
-	return env->NewObject(cls, methodID, retval);
+	if (returnType == 0) //If returnType == Integer
+	{
+		auto cls = env->FindClass("java/lang/Integer");
+		auto methodID = env->GetMethodID(cls, "<init>", "(I)V");
+		return env->NewObject(cls, methodID, retval);
+	}
+	else if (returnType == 1) //If returnType == Float
+	{
+		auto cls = env->FindClass("java/lang/Float");
+		auto methodID = env->GetMethodID(cls, "<init>", "(F)V");
+		return env->NewObject(cls, methodID, amx_ctof(retval));
+	}
+	else if (returnType == 2) //If returnType == String
+	{
+		char result[1024];
+		amx_GetString(amx, retval, &result[0], strlen(result));
+		auto cls = env->FindClass("java/lang/String");
+		auto methodID = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;)V");
+		//TODO: test
+		return env->NewObject(cls, methodID, result);
+	}
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_restartShoebill
@@ -4620,7 +4655,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unregister
 	return (jboolean) AmxInstanceManager::get().unregisterFunction(amx, functionString);
 }
 
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFunction(JNIEnv* env, jclass, jint amxHandle, jstring name, jobjectArray classes)
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFunction(JNIEnv *env, jclass, jint amxHandle, jstring name, jobjectArray classes)
 {
 	AMX* amx = (AMX*)amxHandle;
 	auto functionName = env->GetStringUTFChars(name, NULL);
@@ -4637,10 +4672,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 		auto mid = env->GetMethodID(objectclass, "getName", "()Ljava/lang/String;");
 		auto str = static_cast<jstring>(env->CallObjectMethod(object, mid));
 		auto classname = env->GetStringUTFChars(str, false);
-		auto classNameString = std::string(classname);
-		classNames.push_back(classNameString);
-		if (classNameString.find("[L") == 0) //array
-			classNames.push_back("java.lang.Integer"); //sizeof()
+		classNames.push_back(std::string(classname));
 		env->ReleaseStringUTFChars(str, classname);
 	}
 	AmxInstanceManager::get().registerFunction(amx, functionString, classNames);
