@@ -2723,12 +2723,17 @@ int* callHookedCallback(AMX *amx, std::string name, cell* params)
 		jvm->AttachCurrentThread((void**)&env, NULL);
 		if (!env) return 0;
 		std::string types = it->second;
+		int count = (int) (params[0] / sizeof(cell));
+		if (count != types.length()) {
+			sampgdk_logprintf("%s did not equal count! Correct: %i wrong: %i", name.c_str(), count, types.length());
+			return nullptr;
+		}
 		jclass objectClass = env->FindClass("java/lang/Object");
 		jclass integerClass = env->FindClass("java/lang/Integer");
 		jclass floatClass = env->FindClass("java/lang/Float");
 		jmethodID integerMethodID = env->GetMethodID(integerClass, "<init>", "(I)V");
 		jmethodID floatMethodID = env->GetMethodID(floatClass, "<init>", "(F)V");
-		jobjectArray objectArray = (jobjectArray)env->NewObjectArray(types.size(), objectClass, 0);
+		jobjectArray objectArray = (jobjectArray)env->NewObjectArray(count, objectClass, 0);
 		for (std::string::size_type i = 0; i < types.size(); ++i)
 		{
 			char paramType = types[i];
