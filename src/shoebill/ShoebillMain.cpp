@@ -89,7 +89,11 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX* amx, cell* params)
 			cell* phys_addr = NULL;
 			amx_GetString(amx, iterationCell, parameterString, sizeof(parameterString));
 			amx_GetAddr(amx, iterationCell, &phys_addr);
-			auto string = env->NewStringUTF(parameterString);
+
+			jchar wstr[sizeof parameterString];
+			auto len = mbs2wcs((unsigned int)getServerCodepage(), parameterString, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
+
+			auto string = env->NewString(wstr, len);
 			env->SetObjectArrayElement(objectArray, i, string);
 			referenceValues.push_back(std::pair<cell*, std::string>(phys_addr, definedParameters[i]));
 		}
@@ -203,9 +207,14 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX* amx, cell* params)
 		if (referenceValues[i].second == "java.lang.String")
 		{
 			auto string = (jstring)env->GetObjectArrayElement(objectArray, i);
-			auto stringObject = env->GetStringUTFChars(string, NULL);
-			amx_SetString(referenceValues[i].first, stringObject, NULL, NULL, strlen(stringObject)+1);
-			env->ReleaseStringUTFChars(string, stringObject);
+			auto stringObject = env->GetStringChars(string, NULL);
+			int len = env->GetStringLength(string);
+
+			char str[1024];
+			wcs2mbs((unsigned int)getServerCodepage(), stringObject, len, str, sizeof(str));
+			env->ReleaseStringChars(string, stringObject);
+
+			amx_SetString(referenceValues[i].first, str, NULL, NULL, strlen(str)+1);
 		}
 		else if (referenceValues[i].second == "java.lang.Integer")
 		{

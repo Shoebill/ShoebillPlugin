@@ -17,5 +17,3 @@ FOR /r /d %%d IN (release,debug) DO (
 )
 
 pause
-
-
