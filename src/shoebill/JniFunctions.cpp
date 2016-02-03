@@ -4185,12 +4185,17 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 			if (!strcmp(classname, "class java.lang.String"))
 			{
 				auto string = static_cast<jstring>(object);
-				auto content = env->GetStringUTFChars(string, false);
+				auto wmsg = env->GetStringChars(string, NULL);
+				auto len = env->GetStringLength(string);
+
+				char str[1024];
+				wcs2mbs((unsigned int)getServerCodepage(), wmsg, len, str, sizeof(str));
+				env->ReleaseStringChars(string, wmsg);
+
 				cell strCel;
-				amx_PushString(amx, &strCel, NULL, content, 0, 0);
+				amx_PushString(amx, &strCel, NULL, str, 0, 0);
 				params[i + 1] = strCel;
 				stringCells.push_back(strCel);
-				env->ReleaseStringUTFChars(string, content);
 			}
 			else if (!strcmp(classname, "class java.lang.Integer"))
 			{
@@ -4243,7 +4248,11 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 			auto methodId = env->GetMethodID(type, "setValue", "(Ljava/lang/String;)V");
 			char *text = NULL;
 			amx_StrParam(amx, iterator->second.second, text);
-			auto newText = env->NewStringUTF(text);
+
+			jchar wstr[1024];
+			auto len = mbs2wcs((unsigned int)getServerCodepage(), text, -1, wstr, sizeof(wstr) / sizeof(wstr[0]));
+
+			auto newText = env->NewString(wstr, len);
 			env->CallVoidMethod(object, methodId, newText);
 		}
 		amx_Release(amx, iterator->second.second);
