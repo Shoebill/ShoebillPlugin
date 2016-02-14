@@ -25,7 +25,7 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 {
-	if (sampgdk::Load(ppData)) 
+	if (sampgdk::Load(ppData))
 	{
 		pluginInit(ppData);
 		return OnLoadPlugin();
@@ -37,7 +37,7 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 {
 	OnUnloadPlugin();
 	sampgdk::Unload();
-	
+
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)

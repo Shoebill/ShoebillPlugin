@@ -15,16 +15,18 @@
 */
 #ifndef __AMXINSTANCEMANAGER__
 #define __AMXINSTANCEMANAGER__
+
 #include <unordered_set>
 #include "amx/amx.h"
 #include <map>
 #include "sampgdk.h"
 #include <vector>
+#include <string>
 
 class AmxInstanceManager
 {
 public:
-	static AmxInstanceManager& get()
+	static AmxInstanceManager &get()
 	{
 		static AmxInstanceManager instance;
 		return instance;
@@ -42,7 +44,8 @@ public:
 
 	void registerAmx(AMX *amx)
 	{
-		if (!isVaild(amx)) {
+		if (!isVaild(amx))
+		{
 			amxInstances.insert(amx);
 			registeredFunctions[amx] = std::map<std::string, std::vector<std::string>>();
 		}
@@ -69,12 +72,12 @@ public:
 		mainAmx = amx;
 	}
 
-	inline bool registeredFunctionExists(AMX* amx, std::string functionName)
+	inline bool registeredFunctionExists(AMX *amx, std::string functionName)
 	{
 		return registeredFunctions[amx].find(functionName) != registeredFunctions[amx].end();
 	}
 
-	inline bool registerFunction(AMX* amx, std::string functionName, std::vector<std::string> classes)
+	inline bool registerFunction(AMX *amx, std::string functionName, std::vector<std::string> classes)
 	{
 		if (registeredFunctionExists(amx, functionName))
 			return false;
@@ -82,14 +85,14 @@ public:
 		return true;
 	}
 
-	inline std::vector<std::string> getRegisteredParamters(AMX* amx, std::string functionName)
+	inline std::vector<std::string> getRegisteredParamters(AMX *amx, std::string functionName)
 	{
 		if (!registeredFunctionExists(amx, functionName))
 			return std::vector<std::string>();
 		return registeredFunctions[amx][functionName];
 	}
 
-	inline bool unregisterFunction(AMX* amx, std::string functionName)
+	inline bool unregisterFunction(AMX *amx, std::string functionName)
 	{
 		if (!registeredFunctionExists(amx, functionName))
 			return false;
@@ -97,33 +100,36 @@ public:
 		return true;
 	}
 
-	inline AMX* getMainAmx()
+	inline AMX *getMainAmx()
 	{
 		return mainAmx;
 	}
 
-	inline AMX* getAvailableAmx()
+	inline AMX *getAvailableAmx()
 	{
 		if (mainAmx != nullptr) return mainAmx;
 		if (amxInstances.empty()) return nullptr;
 		return *amxInstances.begin();
 	}
 
-	inline std::unordered_set<AMX*> getInstances()
+	inline std::unordered_set<AMX *> getInstances()
 	{
-		std::unordered_set<AMX*> copyOfInstances;
-		for (std::unordered_set<AMX*>::iterator it = amxInstances.begin(); it != amxInstances.end(); ++it) {
+		std::unordered_set<AMX *> copyOfInstances;
+		for (std::unordered_set<AMX *>::iterator it = amxInstances.begin(); it != amxInstances.end(); ++it)
+		{
 			copyOfInstances.insert(*it);
 		}
 		return copyOfInstances;
 	}
 
 private:
-	std::unordered_set<AMX*> amxInstances;
+	std::unordered_set<AMX *> amxInstances;
 	AMX *mainAmx;
-	std::map<AMX*, std::map<std::string, std::vector<std::string>>> registeredFunctions;
+	std::map<AMX *, std::map<std::string, std::vector<std::string>>> registeredFunctions;
 
-	AmxInstanceManager(const AmxInstanceManager&) = delete;
-	AmxInstanceManager& operator= (const AmxInstanceManager&) = delete;
+	AmxInstanceManager(const AmxInstanceManager &) = delete;
+
+	AmxInstanceManager &operator=(const AmxInstanceManager &) = delete;
 };
+
 #endif

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-char* strlwr(char* str);
+char *strlwr(char *str);

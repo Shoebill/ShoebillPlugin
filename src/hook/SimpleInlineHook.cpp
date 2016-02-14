@@ -32,16 +32,15 @@ void SimpleInlineHook::removePageProtect(void* address, size_t size)
 #else
 
 #include <sys/mman.h>
-#include <unistd.h>
 
-void SimpleInlineHook::removePageProtect(void* address, size_t size)
+void SimpleInlineHook::removePageProtect(void *address, size_t size)
 {
-    long pagesize;
+	long pagesize;
 
-    pagesize = sysconf(_SC_PAGESIZE);
-    address = (void *)((long)address & ~(pagesize - 1));
+	pagesize = sysconf(_SC_PAGESIZE);
+	address = (void *) ((long) address & ~(pagesize - 1));
 
-    mprotect(address, size, PROT_READ | PROT_WRITE | PROT_EXEC);
+	mprotect(address, size, PROT_READ | PROT_WRITE | PROT_EXEC);
 }
 
 #endif

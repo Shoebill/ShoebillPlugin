@@ -18,11 +18,14 @@
 #define __JNIUTILS_H__
 extern JavaVM *jvm;
 
-int jni_jvm_create(JNIEnv** env, const char* clspath, const char* jvmOptionPath);
+int jni_jvm_create(JNIEnv **env, const char *clspath, const char *jvmOptionPath);
+
 int jni_jvm_printExceptionStack(JNIEnv *env);
+
 int jni_jvm_constructObject(JNIEnv *env, jclass jcls, jobject *pjobj);
+
 int jni_jvm_destroy(JNIEnv *env);
 
-int findAndGenerateClassPath(const char* searchPath, char* classPath);
+int findAndGenerateClassPath(const char *searchPath, char *classPath);
 
 #endif

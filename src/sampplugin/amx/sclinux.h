@@ -16,14 +16,14 @@
  */
 #include "getch.h"
 
-#define	stricmp(a,b)    strcasecmp(a,b)
-#define	strnicmp(a,b,c) strncasecmp(a,b,c)
+#define    stricmp(a, b)    strcasecmp(a,b)
+#define    strnicmp(a, b, c) strncasecmp(a,b,c)
 
 /*
  * WinWorld wants '\'. Unices do not.
  */
-#define	DIRECTORY_SEP_CHAR      '/'
-#define	DIRECTORY_SEP_STR       "/"
+#define    DIRECTORY_SEP_CHAR      '/'
+#define    DIRECTORY_SEP_STR       "/"
 
 /*
  * SC assumes that a computer is Little Endian unless told otherwise. It uses
@@ -31,7 +31,9 @@
  * For Linux, we must overrule these settings with those defined in glibc.
  */
 #if !defined __BYTE_ORDER
+
 # include <stdlib.h>
+
 #endif
 
 #if defined __OpenBSD__ || defined __FreeBSD__

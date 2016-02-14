@@ -30,6 +30,7 @@
 #include <Callbacks.h>
 
 #if defined(LINUX)
+
 #include "linux.h"
 #include <map>
 #include <fstream>
@@ -63,4 +64,5 @@ inline void setPlayerCodepage(int playerid, int codepage)
 	extern int playerCodepage[];
 	playerCodepage[playerid] = codepage;
 }
+
 #endif

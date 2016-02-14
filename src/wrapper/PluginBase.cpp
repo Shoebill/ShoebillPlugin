@@ -2,5 +2,5 @@
 
 void pluginInit(void **ppData)
 {
-    pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
+	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
 }

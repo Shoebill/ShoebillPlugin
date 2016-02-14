@@ -16,12 +16,12 @@
 
 #include "linux.h"
 
-char* strlwr(char* str)
+char *strlwr(char *str)
 {
 	char *p;
-	for(p=str;*p;p++)
+	for (p = str; *p; p++)
 	{
-		if(*p >= 'A' && *p <= 'Z')
+		if (*p >= 'A' && *p <= 'Z')
 			*p = *p - 'A' + 'a';
 	}
 	return str;

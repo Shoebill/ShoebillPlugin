@@ -36,9 +36,11 @@
 #endif
 
 #if defined __FreeBSD__
-   #include <sys/endian.h>
+#include <sys/endian.h>
 #elif defined LINUX
-   #include <endian.h>
+
+#include <endian.h>
+
 #endif
 
 /* Linux NOW has these */
@@ -52,16 +54,16 @@
 /* educated guess, BYTE_ORDER is undefined, i386 is common => little endian */
 #if !defined BYTE_ORDER
 #if defined UCLINUX
-    #define BYTE_ORDER BIG_ENDIAN
-  #else
+#define BYTE_ORDER BIG_ENDIAN
+#else
 #define BYTE_ORDER LITTLE_ENDIAN
 #endif
 #endif
 
 #if defined __MSDOS__ || defined __WIN32__ || defined _Windows
-  #define DIRSEP_CHAR '\\'
+#define DIRSEP_CHAR '\\'
 #elif defined macintosh
-  #define DIRSEP_CHAR ':'
+#define DIRSEP_CHAR ':'
 #else
 #define DIRSEP_CHAR '/'   /* directory separator character */
 #endif
@@ -72,11 +74,14 @@
 #if !defined _MAX_PATH
 /* not defined, perhaps stdio.h was not included */
 #if !defined PATH_MAX
+
 #include <stdio.h>
+
 #endif
 #if !defined _MAX_PATH && !defined PATH_MAX
 /* no _MAX_PATH and no MAX_PATH, perhaps it is in limits.h */
 #include <limits.h>
+
 #endif
 #if !defined _MAX_PATH && !defined PATH_MAX
 /* no _MAX_PATH and no MAX_PATH, perhaps it is in stdlib.h */
@@ -85,10 +90,10 @@
 /* if _MAX_PATH is undefined, try common alternative names */
 #if !defined _MAX_PATH
 #if defined MAX_PATH
-      #define _MAX_PATH    MAX_PATH
-    #elif defined _POSIX_PATH_MAX
-      #define _MAX_PATH  _POSIX_PATH_MAX
-    #else
+#define _MAX_PATH    MAX_PATH
+#elif defined _POSIX_PATH_MAX
+#define _MAX_PATH  _POSIX_PATH_MAX
+#else
 /* everything failed, actually we have a problem here... */
 #define _MAX_PATH  1024
 #endif

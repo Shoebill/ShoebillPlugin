@@ -33,23 +33,23 @@
 
 JavaVM *jvm = NULL;
 
-int jni_jvm_create(JNIEnv** env, const char* clspath, const char* jvmOptionPath)
+int jni_jvm_create(JNIEnv **env, const char *clspath, const char *jvmOptionPath)
 {
 	if (jvm != NULL) return -1;
 
 	char classPathOptions[2048] = "-Djava.class.path=";
 	strcat(classPathOptions, clspath);
 
-	std::vector<char*> optionStrings;
+	std::vector<char *> optionStrings;
 	std::ifstream optionStream(jvmOptionPath, std::ifstream::in);
 	if (optionStream.is_open())
 	{
 		optionStrings.reserve(20);
 		while (optionStream.good())
 		{
-			char* option = new char[128];
+			char *option = new char[128];
 			optionStream.getline(option, 128);
-			char* p = option + strlen(option) - 1;
+			char *p = option + strlen(option) - 1;
 			if (p >= option && *p == '\r') *p = 0;
 			if (strlen(option) < 1) continue;
 			optionStrings.push_back(option);
@@ -57,7 +57,7 @@ int jni_jvm_create(JNIEnv** env, const char* clspath, const char* jvmOptionPath)
 		optionStream.close();
 	}
 
-	JavaVMOption* options = new JavaVMOption[optionStrings.size() + 2];
+	JavaVMOption *options = new JavaVMOption[optionStrings.size() + 2];
 	options[0].optionString = classPathOptions;
 	options[1].optionString = "-Djava.library.path=./plugins";
 	for (unsigned int i = 0; i < optionStrings.size(); i++)
@@ -71,7 +71,7 @@ int jni_jvm_create(JNIEnv** env, const char* clspath, const char* jvmOptionPath)
 	vm_args.nOptions = (jint) (optionStrings.size() + 2);
 	vm_args.ignoreUnrecognized = JNI_FALSE;
 
-	jint res = JNI_CreateJavaVM(&jvm, (void**)env, &vm_args);
+	jint res = JNI_CreateJavaVM(&jvm, (void **) env, &vm_args);
 	for (unsigned int i = 0; i < optionStrings.size(); i++)
 	{
 		delete[] optionStrings.at(i);
@@ -155,9 +155,10 @@ int findAndGenerateClassPath(const char* searchPath, char* classPath)
 }
 
 #else
+
 #include <glob.h>
 
-int findAndGenerateClassPath(const char* searchPath, char* classPath)
+int findAndGenerateClassPath(const char *searchPath, char *classPath)
 {
 	glob_t globdata;
 	glob(searchPath, 0, 0, &globdata);
@@ -166,15 +167,15 @@ int findAndGenerateClassPath(const char* searchPath, char* classPath)
 	if (files < 1) return -1;
 
 	char **p = globdata.gl_pathv;
-	for (size_t i=0; i<files; i++)
+	for (size_t i = 0; i < files; i++)
 	{
-		strcat( classPath, *p );
-		strcat( classPath, ":" );
+		strcat(classPath, *p);
+		strcat(classPath, ":");
 		p++;
 	}
 	globfree(&globdata);
 
-	classPath[ strlen(classPath)-1 ] = 0;
+	classPath[strlen(classPath) - 1] = 0;
 	return 0;
 }
 

@@ -29,9 +29,10 @@
 #include "amx/amx.h"
 #include "Callbacks.h"
 
-struct hookedNative {
+struct hookedNative
+{
 	AMX_NATIVE originalFunc;
-	std::shared_ptr<SimpleInlineHook>* hook;
+	std::shared_ptr<SimpleInlineHook> *hook;
 	std::string funcName;
 };
 
@@ -39,31 +40,43 @@ class NativeFunctionManager
 {
 public:
 
-	static NativeFunctionManager& get();
+	static NativeFunctionManager &get();
 
 	NativeFunctionManager();
+
 	~NativeFunctionManager();
 
-	void registerFunction(AMX* amx, std::string name, AMX_NATIVE functionAddr, int index);
-	std::map<std::string, hookedNative*> getNatives();
+	void registerFunction(AMX *amx, std::string name, AMX_NATIVE functionAddr, int index);
+
+	std::map<std::string, hookedNative *> getNatives();
+
 	AMX_NATIVE findFunction(char const *name);
+
 	std::string getFunctionName(int index);
-	void hookFunction(AMX* amx, AMX_NATIVE function, const char *name);
+
+	void hookFunction(AMX *amx, AMX_NATIVE function, const char *name);
+
 	void clearFunctions();
 
-	void setCurrentFunctionName(std::string name) {
+	void setCurrentFunctionName(std::string name)
+	{
 		currentFunctionName = name;
 	}
 
-	std::string getCurrentFunctionName() {
+	std::string getCurrentFunctionName()
+	{
 		return currentFunctionName;
 	}
 
 private:
 	std::unordered_map<std::string, AMX_NATIVE> functions;
 	std::unordered_map<int, std::string> functionNames;
-	NativeFunctionManager(const NativeFunctionManager&) = delete;
-	NativeFunctionManager& operator= (const NativeFunctionManager&) = delete;
+
+	NativeFunctionManager(const NativeFunctionManager &) = delete;
+
+	NativeFunctionManager &operator=(const NativeFunctionManager &) = delete;
+
 	std::string currentFunctionName;
 };
+
 #endif

@@ -58,22 +58,22 @@ int wcs2mbs(unsigned int codepage, const unsigned short* src, int srclen, char* 
 std::map<unsigned int, std::string> codepages;
 std::map<unsigned int, std::string> codepageCaches;
 
-int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short* dst, int dstlen )
+int mbs2wcs(unsigned int codepage, const char *src, int srclen, unsigned short *dst, int dstlen)
 {
-	if( srclen == -1 ) srclen = (int) strlen(src);
+	if (srclen == -1) srclen = (int) strlen(src);
 
-	size_t inbytesleft = (size_t) srclen, outbytesleft = (dstlen-1)*sizeof(unsigned short);
-	char *in = (char*)src, *out = (char*)dst;
+	size_t inbytesleft = (size_t) srclen, outbytesleft = (dstlen - 1) * sizeof(unsigned short);
+	char *in = (char *) src, *out = (char *) dst;
 
 	int value = 1;
 	iconv_t cd;
-	if( codepageCaches.find( codepage ) != codepageCaches.end() )
+	if (codepageCaches.find(codepage) != codepageCaches.end())
 	{
 		cd = iconv_open("UTF-16LE", codepageCaches[codepage].c_str());
 	}
 	else
 	{
-		if( codepages.find( codepage ) != codepages.end() )
+		if (codepages.find(codepage) != codepages.end())
 		{
 			cd = iconv_open("UTF-16LE", codepages[codepage].c_str());
 			codepageCaches[codepage] = codepages[codepage];
@@ -83,32 +83,32 @@ int mbs2wcs( unsigned int codepage, const char* src, int srclen, unsigned short*
 			cd = iconv_open("UTF-16LE", "CP1252");
 		}
 	}
-	iconvctl( cd, ICONV_SET_TRANSLITERATE, &value);
-	iconvctl( cd, ICONV_SET_DISCARD_ILSEQ, &value);
-	iconv( cd, &in, &inbytesleft, &out, &outbytesleft );
-	iconv_close( cd );
+	iconvctl(cd, ICONV_SET_TRANSLITERATE, &value);
+	iconvctl(cd, ICONV_SET_DISCARD_ILSEQ, &value);
+	iconv(cd, &in, &inbytesleft, &out, &outbytesleft);
+	iconv_close(cd);
 
-	int len = (int) ((dstlen-1)-(outbytesleft/sizeof(unsigned short)));
+	int len = (int) ((dstlen - 1) - (outbytesleft / sizeof(unsigned short)));
 	dst[len] = 0;
 	return len;
 }
 
 int wcs2mbs(unsigned int codepage, const unsigned short *src, int srclen, char *dst, int dstlen)
 {
-	if( srclen == -1 ) srclen = (int) wcslen((wchar_t*)src);
+	if (srclen == -1) srclen = (int) wcslen((wchar_t *) src);
 
-	size_t inbytesleft = srclen*sizeof(unsigned short), outbytesleft = (size_t) (dstlen-1);
-	char *in = (char*)src, *out = dst;
+	size_t inbytesleft = srclen * sizeof(unsigned short), outbytesleft = (size_t) (dstlen - 1);
+	char *in = (char *) src, *out = dst;
 
 	int value = 1;
 	iconv_t cd;
-	if( codepageCaches.find( codepage ) != codepageCaches.end() )
+	if (codepageCaches.find(codepage) != codepageCaches.end())
 	{
 		cd = iconv_open(codepageCaches[codepage].c_str(), "UTF-16LE");
 	}
 	else
 	{
-		if( codepages.find( codepage ) != codepages.end() )
+		if (codepages.find(codepage) != codepages.end())
 		{
 			cd = iconv_open(codepages[codepage].c_str(), "UTF-16LE");
 			codepageCaches[codepage] = codepages[codepage];
@@ -118,12 +118,12 @@ int wcs2mbs(unsigned int codepage, const unsigned short *src, int srclen, char *
 			cd = iconv_open("CP1252", "UTF-16LE");
 		}
 	}
-	iconvctl( cd, ICONV_SET_TRANSLITERATE, &value);
-	iconvctl( cd, ICONV_SET_DISCARD_ILSEQ, &value);
-	iconv( cd, &in, &inbytesleft, &out, &outbytesleft );
-	iconv_close( cd );
+	iconvctl(cd, ICONV_SET_TRANSLITERATE, &value);
+	iconvctl(cd, ICONV_SET_DISCARD_ILSEQ, &value);
+	iconv(cd, &in, &inbytesleft, &out, &outbytesleft);
+	iconv_close(cd);
 
-	int len = (int) ((dstlen-1)-outbytesleft);
+	int len = (int) ((dstlen - 1) - outbytesleft);
 	dst[len] = 0;
 	return len;
 }
