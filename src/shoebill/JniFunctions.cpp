@@ -4102,7 +4102,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getVehicleDama
 	static auto fidPanels = env->GetFieldID(cls, "panels", "I");
 	static auto fidDoors = env->GetFieldID(cls, "doors", "I");
 	static auto fidLights = env->GetFieldID(cls, "lights", "I");
-	static auto fidTires = env->GetFieldID(cls, "lights", "I");
+	static auto fidTires = env->GetFieldID(cls, "tires", "I");
 
 	int panels, doors, lights, tires;
 	GetVehicleDamageStatus(vehicleid, &panels, &doors, &lights, &tires);
