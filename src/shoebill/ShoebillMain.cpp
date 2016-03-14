@@ -1374,7 +1374,8 @@ cell n_OnPlayerTakeDamage(AMX *amx, cell *params)
 	static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onPlayerTakeDamage", "(IIFII)Z");
 	if (!jmid) return 0;
 
-	int playerid = params[1], issuerid = params[2], amount = params[3], weaponid = params[4], bodypart = params[5];
+	float amount = amx_ctof(params[3]);
+	int playerid = params[1], issuerid = params[2], weaponid = params[4], bodypart = params[5];
 
 	jboolean ret = env->CallBooleanMethod(callbackHandlerObject, jmid, playerid, issuerid, amount, weaponid, bodypart);
 	jni_jvm_printExceptionStack(env);
