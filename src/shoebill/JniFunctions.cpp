@@ -3169,10 +3169,14 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerMenu
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawCreate
 		(JNIEnv *env, jclass, jfloat x, jfloat y, jstring text)
 {
-	auto str = env->GetStringUTFChars(text, NULL);
-	auto ret = TextDrawCreate(x, y, str);
-	env->ReleaseStringUTFChars(text, str);
-	return ret;
+	auto wmsg = env->GetStringChars(text, NULL);
+	int len = env->GetStringLength(text);
+
+	char _string[1024];
+	wcs2mbs((unsigned int)getServerCodepage(), wmsg, len, _string, sizeof(_string));
+	env->ReleaseStringChars(text, wmsg);
+
+	return TextDrawCreate(x, y, _string);
 }
 
 /*
@@ -3370,11 +3374,14 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawHideFo
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetString
 		(JNIEnv *env, jclass, jint textid, jstring string)
 {
-	auto str = env->GetStringUTFChars(string, NULL);
+	auto wmsg = env->GetStringChars(string, NULL);
+	int len = env->GetStringLength(string);
 
-	TextDrawSetString(textid, str);
+	char _string[1024];
+	wcs2mbs((unsigned int)getServerCodepage(), wmsg, len, _string, sizeof(_string));
+	env->ReleaseStringChars(string, wmsg);
 
-	env->ReleaseStringUTFChars(string, str);
+	TextDrawSetString(textid, _string);
 }
 
 /*
