@@ -5,6 +5,7 @@
 #define _Included_net_gtaun_shoebill_SampNativeFunction
 
 #include <jni.h>
+#include <JniUtils.h>
 #include <string.h>
 #include <vector>
 #include "ShoebillMain.h"

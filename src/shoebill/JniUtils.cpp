@@ -154,6 +154,52 @@ int findAndGenerateClassPath(const char* searchPath, char* classPath)
 	return 0;
 }
 
+void pushJavaString(JNIEnv* env, AMX* amx, jobject object, std::vector<cell>& stringCells)
+{
+	auto string = static_cast<jstring>(object);
+	auto content = env->GetStringUTFChars(string, false);
+	cell strCell;
+	amx_PushString(amx, &strCell, NULL, content, 0, 0);
+	stringCells.push_back(strCell);
+	env->ReleaseStringUTFChars(string, content);
+}
+
+void pushJavaInteger(JNIEnv* env, AMX* amx, jobject object)
+{
+	static auto integerClass = env->FindClass("java/lang/Integer");
+	static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
+	auto value = env->CallIntMethod(object, methodId);
+	amx_Push(amx, static_cast<cell>(value));
+}
+
+void pushJavaFloat(JNIEnv* env, AMX* amx, jobject object)
+{
+	static auto floatClass = env->FindClass("java/lang/Float");
+	static auto methodId = env->GetMethodID(floatClass, "floatValue", "()F");
+	auto value = env->CallFloatMethod(object, methodId);
+	amx_Push(amx, amx_ftoc(value));
+}
+
+void pushJavaReferenceFloatInt(JNIEnv* env, AMX* amx, jobject object, std::map<std::pair<jobject, std::string>, std::pair<cell*, cell>>& references, std::string className)
+{
+	cell amx_addr, *phys_addr;
+	amx_Allot(amx, 1, &amx_addr, &phys_addr);
+	amx_Push(amx, amx_addr);
+	references[std::pair<jobject, std::string>(object, className)] = std::pair<cell *, cell>(
+		phys_addr, amx_addr);
+}
+
+void pushJavaReferenceString(JNIEnv* env, AMX* amx, jobject object, std::map<std::pair<jobject, std::string>, std::pair<cell*, cell>>& references, std::string className)
+{
+	auto objectClass = env->GetObjectClass(object);
+	auto lengthMethodId = env->GetMethodID(objectClass, "getLength", "()I");
+	auto length = env->CallIntMethod(object, lengthMethodId);
+	cell amx_str, *amx_str_phys;
+	amx_Allot(amx, length, &amx_str, &amx_str_phys);
+	amx_Push(amx, amx_str);
+	references[std::pair<jobject, std::string>(object, className)] = std::pair<cell *, cell>(
+		amx_str_phys, amx_str);
+}
 #else
 
 #include <glob.h>

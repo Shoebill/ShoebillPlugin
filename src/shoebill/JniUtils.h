@@ -16,6 +16,9 @@
 
 #ifndef __JNIUTILS_H__
 #define __JNIUTILS_H__
+#include <sampplugin/amx/amx.h>
+#include <map>
+#include <vector>
 extern JavaVM *jvm;
 
 int jni_jvm_create(JNIEnv **env, const char *clspath, const char *jvmOptionPath);
@@ -28,4 +31,10 @@ int jni_jvm_destroy(JNIEnv *env);
 
 int findAndGenerateClassPath(const char *searchPath, char *classPath);
 
+void pushJavaString(JNIEnv* env, AMX* amx, jobject object, std::vector<cell>& stringCells);
+void pushJavaInteger(JNIEnv* env, AMX* amx, jobject object);
+void pushJavaFloat(JNIEnv* env, AMX* amx, jobject object);
+void pushJavaReferenceFloatInt(JNIEnv* env, AMX* amx, jobject object, 
+	std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>>& references, std::string className);
+void pushJavaReferenceString(JNIEnv* env, AMX* amx, jobject object, std::map<std::pair<jobject, std::string>, std::pair<cell*, cell>>& references, std::string className);
 #endif

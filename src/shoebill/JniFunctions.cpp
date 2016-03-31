@@ -4330,6 +4330,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 	auto amx = reinterpret_cast<AMX *>(pAmx);
 	cell retval;
 	std::vector<cell> stringCells;
+	std::vector<std::pair<cell*, int>> cellArrays;
 	std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> references;
 	int arrayLength = env->GetArrayLength(args);
 	amx->paramcount = 0;
@@ -4341,48 +4342,74 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 		if (mid)
 		{
 			auto str = static_cast<jstring>(env->CallObjectMethod(objectclass, mid));
-			auto classname = env->GetStringUTFChars(str, false);
-			if (!strcmp(classname, "class java.lang.String"))
+			auto className = std::string(env->GetStringUTFChars(str, false));
+			if (className == "class java.lang.String")
 			{
-				auto string = static_cast<jstring>(object);
-				auto content = env->GetStringUTFChars(string, false);
-				cell strCell;
-				amx_PushString(amx, &strCell, NULL, content, 0, 0);
-				stringCells.push_back(strCell);
-				env->ReleaseStringUTFChars(string, content);
+				pushJavaString(env, amx, object, stringCells);
 			}
-			else if (!strcmp(classname, "class java.lang.Integer"))
+			else if (className == "class java.lang.Integer")
 			{
-				auto ajf = env->GetMethodID(objectclass, "intValue", "()I");
-				auto integer = env->CallIntMethod(object, ajf);
-				amx_Push(amx, static_cast<cell>(integer));
+				pushJavaInteger(env, amx, object);
 			}
-			else if (!strcmp(classname, "class java.lang.Float"))
+			else if (className == "class java.lang.Float")
 			{
-				auto bjf = env->GetMethodID(objectclass, "floatValue", "()F");
-				auto ffloat = env->CallFloatMethod(object, bjf);
-				amx_Push(amx, amx_ftoc(ffloat));
+				pushJavaFloat(env, amx, object);
 			}
-			else if (!strcmp(classname, "class net.gtaun.shoebill.amx.types.ReferenceInt") ||
-			         !strcmp(classname, "class net.gtaun.shoebill.amx.types.ReferenceFloat"))
+			else if (className == "class net.gtaun.shoebill.amx.types.ReferenceInt" ||
+			         className == "class net.gtaun.shoebill.amx.types.ReferenceFloat")
 			{
-				cell amx_addr, *phys_addr;
-				amx_Allot(amx, 1, &amx_addr, &phys_addr);
-				amx_Push(amx, amx_addr);
-				references[std::pair<jobject, std::string>(object, std::string(classname))] = std::pair<cell *, cell>(
-						phys_addr, amx_addr);
+				pushJavaReferenceFloatInt(env, amx, object, references, className);
 			}
-			else if (!strcmp(classname, "class net.gtaun.shoebill.amx.types.ReferenceString"))
+			else if (className == "class net.gtaun.shoebill.amx.types.ReferenceString")
 			{
-				auto lengthMethodId = env->GetMethodID(objectclass, "getLength", "()I");
-				auto length = env->CallIntMethod(object, lengthMethodId);
-				cell amx_str, *amx_str_phys;
-				amx_Allot(amx, length, &amx_str, &amx_str_phys);
-				amx_Push(amx, amx_str);
-				references[std::pair<jobject, std::string>(object, std::string(classname))] = std::pair<cell *, cell>(
-						amx_str_phys, amx_str);
+				pushJavaReferenceString(env, amx, object, references, className);
 			}
-			env->ReleaseStringUTFChars(str, classname);
+			else if (className.find("class [") != std::string::npos) //Array
+			{
+				auto javaArray = static_cast<jobjectArray>(object);
+				auto javaArrayLength = env->GetArrayLength(javaArray);
+				cell* array = new cell[javaArrayLength];
+				if (className == "class [Ljava.lang.Integer;") //If Integer Array is present
+				{
+					static auto integerMethodId = env->GetMethodID(env->FindClass("java/lang/Integer"), "intValue", "()I");
+					for (int a = 0; a < javaArrayLength; a++)
+					{
+						array[a] = env->CallIntMethod(env->GetObjectArrayElement(javaArray, a), integerMethodId);
+					}
+					cellArrays.push_back(std::pair<cell*, int>(array, javaArrayLength));
+				}
+				else if (className == "class [Ljava.lang.Float;") //If Float Array is present
+				{
+					static auto floatMethodId = env->GetMethodID(env->FindClass("java/lang/Float"), "floatValue", "()F");
+					for (int a = 0; a < javaArrayLength; a++)
+					{
+						auto value = env->CallFloatMethod(env->GetObjectArrayElement(javaArray, a), floatMethodId);
+						array[a] = amx_ftoc(value);
+					}
+					cellArrays.push_back(std::pair<cell*, int>(array, javaArrayLength));
+				}
+				else if (className == "class [Ljava.lang.String;") //If String Array is present
+				{
+					for (int a = 0; a < javaArrayLength; a++)
+					{
+						auto jstr = static_cast<jstring>(env->GetObjectArrayElement(javaArray, a));
+						auto wmsg = env->GetStringChars(jstr, NULL);
+						auto len = env->GetStringLength(jstr);
+
+						char text[1024];
+						wcs2mbs((unsigned int)getServerCodepage(), wmsg, len, text, sizeof(text));
+						env->ReleaseStringChars(jstr, wmsg);
+
+						auto amxString = amx_NewString(amx, text);
+						array[a] = amxString;
+						stringCells.push_back(amxString);
+					}
+				}
+				cell tmpAddress;
+				amx_Push(amx, javaArrayLength); //Push array length to the stack
+				amx_PushArray(amx, &tmpAddress, NULL, array, javaArrayLength); //Push array to the stack (reverse order)
+			}
+			env->ReleaseStringUTFChars(str, className.c_str());
 		}
 	}
 	amx_Exec(amx, &retval, idx);
@@ -4415,8 +4442,10 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 		++iterator;
 	}
 	for (auto it : stringCells) amx_Release(amx, it);
+	for (auto it : cellArrays) delete[] it.first;
 	stringCells.clear();
 	references.clear();
+	cellArrays.clear();
 	if (returnType == 0) //If returnType == Integer
 	{
 		auto cls = env->FindClass("java/lang/Integer");
