@@ -18,9 +18,6 @@
 
 #pragma comment (lib, "jvm.lib")
 #pragma comment (lib, "jawt.lib")
-
-#define _CRT_SECURE_NO_WARNINGS
-
 #endif
 
 
@@ -125,6 +122,32 @@ int jni_jvm_destroy(JNIEnv *env)
 	env = NULL;
 	jvm = NULL;
 	return 0;
+}
+
+jobject makeObjectFromReturnType(JNIEnv *env, jint returnType, AMX *amx, cell retval)
+{
+	if (returnType == 0) //If returnType == Integer
+	{
+		auto cls = env->FindClass("java/lang/Integer");
+		auto methodID = env->GetMethodID(cls, "<init>", "(I)V");
+		return env->NewObject(cls, methodID, retval);
+	}
+	else if (returnType == 1) //If returnType == Float
+	{
+		auto cls = env->FindClass("java/lang/Float");
+		auto methodID = env->GetMethodID(cls, "<init>", "(F)V");
+		return env->NewObject(cls, methodID, amx_ctof(retval));
+	}
+	else if (returnType == 2) //If returnType == String
+	{
+		char result[1024];
+		amx_GetString(amx, retval, &result[0], sizeof result);
+		auto cls = env->FindClass("java/lang/String");
+		auto methodID = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;)V");
+		//TODO: test
+		return env->NewObject(cls, methodID, result);
+	}
+	return nullptr;
 }
 
 #if defined(WIN32)

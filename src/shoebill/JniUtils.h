@@ -19,6 +19,7 @@
 #include <sampplugin/amx/amx.h>
 #include <map>
 #include <vector>
+#include "AmxHelper.h"
 extern JavaVM *jvm;
 
 int jni_jvm_create(JNIEnv **env, const char *clspath, const char *jvmOptionPath);
@@ -37,4 +38,5 @@ void pushJavaFloat(JNIEnv* env, AMX* amx, jobject object);
 void pushJavaReferenceFloatInt(JNIEnv* env, AMX* amx, jobject object, 
 	std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>>& references, std::string className);
 void pushJavaReferenceString(JNIEnv* env, AMX* amx, jobject object, std::map<std::pair<jobject, std::string>, std::pair<cell*, cell>>& references, std::string className);
+jobject makeObjectFromReturnType(JNIEnv *env, jint returnType, AMX *amx, cell retval);
 #endif

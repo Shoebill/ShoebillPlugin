@@ -14,8 +14,6 @@
 * limitations under the License.
 */
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnusedImportStatement"
 #ifndef __SIMEPLINLINEHOOK_CPP__
 #define __SIMEPLINLINEHOOK_CPP__
 
@@ -48,4 +46,3 @@ void SimpleInlineHook::removePageProtect(void *address, size_t size)
 
 #endif
 #endif
-#pragma clang diagnostic pop

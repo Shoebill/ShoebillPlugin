@@ -15,10 +15,6 @@
  */
 #include "ShoebillMain.h"
 
-#if defined(_MSC_VER)
-#pragma warning(disable: C4800) // jboolean -> bool conversion
-#endif
-
 const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
 const char JVM_OPTION_FILE_PATH[] = "./shoebill/jvm_options.txt";
 
@@ -86,17 +82,17 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void **) &env, NULL);
 	static auto objectClass = env->FindClass("java/lang/Object");
-	jobjectArray objectArray = env->NewObjectArray(definedParameters.size(), objectClass, NULL);
+	auto objectArray = env->NewObjectArray(definedParameters.size(), objectClass, NULL);
 	env->NewGlobalRef(objectArray);
 	std::vector<std::pair<cell *, std::string>> referenceValues;
 	std::map<cell *, int> arrayLengths;
 	for (auto i = 0, pawnIndex = 0; i < definedParameters.size(); i++, pawnIndex++)
 	{
-		cell iterationCell = params[pawnIndex + 2];
+		auto iterationCell = params[pawnIndex + 2];
 		if (definedParameters[i] == "java.lang.String")
 		{
 			char parameterString[1024];
-			cell *phys_addr = NULL;
+			cell *phys_addr = nullptr;
 			amx_GetString(amx, iterationCell, parameterString, sizeof(parameterString));
 			amx_GetAddr(amx, iterationCell, &phys_addr);
 
@@ -156,13 +152,13 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 			}*/
 		else if (definedParameters[i] == "[Ljava.lang.Boolean;")
 		{
-			cell *phys_addr = NULL;
+			cell *phys_addr = nullptr;
 			amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
 			auto arrayLength = *phys_addr;
-			cell *array = NULL;
+			cell *array = nullptr;
 			amx_GetAddr(amx, iterationCell, &array);
 			arrayLengths[array] = arrayLength;
-			auto javaArray = env->NewObjectArray(arrayLength, boolClass, NULL);
+			auto javaArray = env->NewObjectArray(arrayLength, boolClass, nullptr);
 			static auto methodId = env->GetMethodID(boolClass, "<init>", "(Z)V");
 			for (auto a = 0; a < arrayLength; a++)
 			{
@@ -174,13 +170,13 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 		}
 		else if (definedParameters[i] == "[Ljava.lang.Integer;")
 		{
-			cell *phys_addr = NULL;
+			cell *phys_addr = nullptr;
 			amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
 			auto arrayLength = *phys_addr;
-			cell *array = NULL;
+			cell *array = nullptr;
 			amx_GetAddr(amx, iterationCell, &array);
 			arrayLengths[array] = arrayLength;
-			auto javaArray = env->NewObjectArray(arrayLength, integerClass, NULL);
+			auto javaArray = env->NewObjectArray(arrayLength, integerClass, nullptr);
 			static auto methodId = env->GetMethodID(integerClass, "<init>", "(I)V");
 			for (auto a = 0; a < arrayLength; a++)
 			{
@@ -192,13 +188,13 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 		}
 		else if (definedParameters[i] == "[Ljava.lang.Float;")
 		{
-			cell *phys_addr = NULL;
+			cell *phys_addr = nullptr;
 			amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
 			auto arrayLength = *phys_addr;
-			cell *array = NULL;
+			cell *array = nullptr;
 			amx_GetAddr(amx, iterationCell, &array);
 			arrayLengths[array] = arrayLength;
-			auto javaArray = env->NewObjectArray(arrayLength, floatClass, NULL);
+			auto javaArray = env->NewObjectArray(arrayLength, floatClass, nullptr);
 			static auto methodId = env->GetMethodID(floatClass, "<init>", "(F)V");
 			for (auto a = 0; a < arrayLength; a++)
 			{
@@ -214,7 +210,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 	{
 		if (referenceValues[i].second == "java.lang.String")
 		{
-			auto string = (jstring) env->GetObjectArrayElement(objectArray, i);
+			auto string = static_cast<jstring>(env->GetObjectArrayElement(objectArray, i));
 			auto stringObject = env->GetStringChars(string, NULL);
 			int len = env->GetStringLength(string);
 
@@ -241,7 +237,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 		{
 			auto boolObject = env->GetObjectArrayElement(objectArray, i);
 			static auto methodId = env->GetMethodID(boolClass, "booleanValue", "()Z");
-			*referenceValues[i].first = (int) env->CallBooleanMethod(boolObject, methodId);
+			*referenceValues[i].first = static_cast<int>(env->CallBooleanMethod(boolObject, methodId));
 		}
 			/*else if (referenceValues[i].second == "[Ljava.lang.String;")
 			{

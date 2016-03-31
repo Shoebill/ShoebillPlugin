@@ -34,7 +34,7 @@ endif()
 # old CPUs on their home PCs that do not support SSE2 and hosts typically use
 # modern CPUs and mostly run Linux.
 if(WIN32)
-  add_definitions(-DWIN32)
+  add_definitions(-DWIN32 -D_UNICODE "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4800 /wd4503 /wd4018 /MT")
   if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE")
   endif()
