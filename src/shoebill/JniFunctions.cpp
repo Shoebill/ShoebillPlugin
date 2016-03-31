@@ -4342,7 +4342,8 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 		if (mid)
 		{
 			auto str = static_cast<jstring>(env->CallObjectMethod(objectclass, mid));
-			auto className = std::string(env->GetStringUTFChars(str, false));
+			auto cstr = env->GetStringUTFChars(str, false);
+			auto className = std::string(cstr);
 			if (className == "class java.lang.String")
 			{
 				pushJavaString(env, amx, object, stringCells);
@@ -4366,33 +4367,63 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 			}
 			else if (className.find("class [") != std::string::npos) //Array
 			{
-				auto javaArray = static_cast<jobjectArray>(object);
-				auto javaArrayLength = env->GetArrayLength(javaArray);
-				cell* array = new cell[javaArrayLength];
+				cell* array = nullptr;
+				int javaArrayLength = 0;
 				if (className == "class [Ljava.lang.Integer;") //If Integer Array is present
 				{
+					auto integerArray = static_cast<jobjectArray>(object);
+					javaArrayLength = env->GetArrayLength(integerArray);
+					array = new cell[javaArrayLength];
 					static auto integerMethodId = env->GetMethodID(env->FindClass("java/lang/Integer"), "intValue", "()I");
 					for (int a = 0; a < javaArrayLength; a++)
 					{
-						array[a] = env->CallIntMethod(env->GetObjectArrayElement(javaArray, a), integerMethodId);
+						array[a] = env->CallIntMethod(env->GetObjectArrayElement(integerArray, a), integerMethodId);
 					}
-					cellArrays.push_back(std::pair<cell*, int>(array, javaArrayLength));
+				}
+				else if(className == "class [I") //If Primitive Integer Array is present
+				{
+					auto integerArray = static_cast<jintArray>(object);
+					javaArrayLength = env->GetArrayLength(integerArray);
+					array = new cell[javaArrayLength];
+					auto integerData = env->GetIntArrayElements(integerArray, NULL);
+					for (int a = 0; i < javaArrayLength; a++)
+					{
+						array[a] = integerData[a];
+					}
+					env->ReleaseIntArrayElements(integerArray, integerData, NULL);
 				}
 				else if (className == "class [Ljava.lang.Float;") //If Float Array is present
 				{
+					auto floatArray = static_cast<jobjectArray>(object);
+					javaArrayLength = env->GetArrayLength(floatArray);
+					array = new cell[javaArrayLength];
 					static auto floatMethodId = env->GetMethodID(env->FindClass("java/lang/Float"), "floatValue", "()F");
 					for (int a = 0; a < javaArrayLength; a++)
 					{
-						auto value = env->CallFloatMethod(env->GetObjectArrayElement(javaArray, a), floatMethodId);
+						auto value = env->CallFloatMethod(env->GetObjectArrayElement(floatArray, a), floatMethodId);
 						array[a] = amx_ftoc(value);
 					}
-					cellArrays.push_back(std::pair<cell*, int>(array, javaArrayLength));
+				}
+				else if (className == "class [F") //If Primitive Float Array is present
+				{
+					auto floatArray = static_cast<jfloatArray>(object);
+					javaArrayLength = env->GetArrayLength(floatArray);
+					array = new cell[javaArrayLength];
+					auto floatData = env->GetFloatArrayElements(floatArray, NULL);
+					for (int a = 0; a < javaArrayLength; a++)
+					{
+						array[a] = amx_ftoc(floatData[a]);
+					}
+					env->ReleaseFloatArrayElements(floatArray, floatData, NULL);
 				}
 				else if (className == "class [Ljava.lang.String;") //If String Array is present
 				{
+					auto stringArray = static_cast<jobjectArray>(object);
+					javaArrayLength = env->GetArrayLength(stringArray);
+					array = new cell[javaArrayLength];
 					for (int a = 0; a < javaArrayLength; a++)
 					{
-						auto jstr = static_cast<jstring>(env->GetObjectArrayElement(javaArray, a));
+						auto jstr = static_cast<jstring>(env->GetObjectArrayElement(stringArray, a));
 						auto wmsg = env->GetStringChars(jstr, NULL);
 						auto len = env->GetStringLength(jstr);
 
@@ -4405,11 +4436,12 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 						stringCells.push_back(amxString);
 					}
 				}
+				cellArrays.push_back(std::pair<cell*, int>(array, javaArrayLength));
 				cell tmpAddress;
 				amx_Push(amx, javaArrayLength); //Push array length to the stack
 				amx_PushArray(amx, &tmpAddress, NULL, array, javaArrayLength); //Push array to the stack (reverse order)
 			}
-			env->ReleaseStringUTFChars(str, className.c_str());
+			env->ReleaseStringUTFChars(str, cstr);
 		}
 	}
 	amx_Exec(amx, &retval, idx);
