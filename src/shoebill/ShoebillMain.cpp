@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2013 MK124
+ * Copyright (C) 2011-2016 MK124, 123marvin123
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,6 @@ jobject callbackHandlerObject = NULL;
 jclass shoebillClass = NULL;
 jobject shoebillObject = NULL;
 
-jclass integerClass = NULL;
-jclass floatClass = NULL;
-jclass stringClass = NULL;
-jclass boolClass = NULL;
-
 int serverCodepage = 1252;
 int playerCodepage[MAX_PLAYERS] = {0};
 
@@ -67,7 +62,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 		return -1;
 	}
 	auto definedParameters = AmxInstanceManager::get().getRegisteredParamters(amx, functionName);
-	int shouldHaveParameterCount = definedParameters.size();
+	signed int shouldHaveParameterCount = definedParameters.size();
 	for(auto string : definedParameters)
 	{
 		if(string.find("[") == 0)
@@ -81,12 +76,17 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 	}
 	JNIEnv *env;
 	jvm->AttachCurrentThread((void **) &env, NULL);
+
+	static auto integerClass = env->FindClass("java/lang/Integer");
+	static auto floatClass = env->FindClass("java/lang/Float");
+	static auto boolClass = env->FindClass("java/lang/Boolean");
 	static auto objectClass = env->FindClass("java/lang/Object");
+
 	auto objectArray = env->NewObjectArray(definedParameters.size(), objectClass, NULL);
 	env->NewGlobalRef(objectArray);
 	std::vector<std::pair<cell *, std::string>> referenceValues;
 	std::map<cell *, int> arrayLengths;
-	for (auto i = 0, pawnIndex = 0; i < definedParameters.size(); i++, pawnIndex++)
+	for (unsigned int i = 0, pawnIndex = 0; i < definedParameters.size(); i++, pawnIndex++)
 	{
 		auto iterationCell = params[pawnIndex + 2];
 		if (definedParameters[i] == "java.lang.String")
@@ -206,7 +206,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 		}
 	}
 	auto result = CallRegisteredFunction(amx, std::string(function), objectArray);
-	for (auto i = 0; i < referenceValues.size(); i++)
+	for (unsigned int i = 0; i < referenceValues.size(); i++)
 	{
 		if (referenceValues[i].second == "java.lang.String")
 		{
@@ -218,7 +218,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 			wcs2mbs((unsigned int) getServerCodepage(), stringObject, len, str, sizeof(str));
 			env->ReleaseStringChars(string, stringObject);
 
-			amx_SetString(referenceValues[i].first, str, NULL, NULL, strlen(str) + 1);
+			amx_SetString(referenceValues[i].first, str, 0, 0, strlen(str) + 1);
 		}
 		else if (referenceValues[i].second == "java.lang.Integer")
 		{
@@ -438,11 +438,6 @@ int Initialize(JNIEnv *env)
 	shoebillLauncherClass = (jclass) (env->NewGlobalRef(shoebillLauncherClass));
 	jvm->AttachCurrentThread((void **) &env, NULL);
 
-	integerClass = env->FindClass("java/lang/Integer");
-	floatClass = env->FindClass("java/lang/Float");
-	stringClass = env->FindClass("java/lang/String");
-	boolClass = env->FindClass("java/lang/Boolean");
-
 	StartShoebill();
 	initialized = true;
 	return 0;
@@ -643,7 +638,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell *pa
 	return true;
 }
 
-cell AMX_NATIVE_CALL n_OnGameModeInit(AMX *amx, cell *params)
+cell AMX_NATIVE_CALL n_OnGameModeInit(AMX *, cell *)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -658,7 +653,7 @@ cell AMX_NATIVE_CALL n_OnGameModeInit(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnGameModeExit(AMX *amx, cell *params)
+cell n_OnGameModeExit(AMX *, cell *)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -673,7 +668,7 @@ cell n_OnGameModeExit(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerConnect(AMX *amx, cell *params)
+cell n_OnPlayerConnect(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -690,7 +685,7 @@ cell n_OnPlayerConnect(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerDisconnect(AMX *amx, cell *params)
+cell n_OnPlayerDisconnect(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -708,7 +703,7 @@ cell n_OnPlayerDisconnect(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerSpawn(AMX *amx, cell *params)
+cell n_OnPlayerSpawn(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -725,7 +720,7 @@ cell n_OnPlayerSpawn(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerDeath(AMX *amx, cell *params)
+cell n_OnPlayerDeath(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -742,7 +737,7 @@ cell n_OnPlayerDeath(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehicleSpawn(AMX *amx, cell *params)
+cell n_OnVehicleSpawn(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -759,7 +754,7 @@ cell n_OnVehicleSpawn(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehicleDeath(AMX *amx, cell *params)
+cell n_OnVehicleDeath(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return false;
 
@@ -823,7 +818,7 @@ cell n_OnPlayerCommandText(AMX *amx, cell *params)
 	return (bool) ret;
 }
 
-cell n_OnPlayerRequestClass(AMX *amx, cell *params)
+cell n_OnPlayerRequestClass(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -840,7 +835,7 @@ cell n_OnPlayerRequestClass(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerEnterVehicle(AMX *amx, cell *params)
+cell n_OnPlayerEnterVehicle(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -857,7 +852,7 @@ cell n_OnPlayerEnterVehicle(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerExitVehicle(AMX *amx, cell *params)
+cell n_OnPlayerExitVehicle(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -874,7 +869,7 @@ cell n_OnPlayerExitVehicle(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerStateChange(AMX *amx, cell *params)
+cell n_OnPlayerStateChange(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -891,7 +886,7 @@ cell n_OnPlayerStateChange(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerEnterCheckpoint(AMX *amx, cell *params)
+cell n_OnPlayerEnterCheckpoint(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -908,7 +903,7 @@ cell n_OnPlayerEnterCheckpoint(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerLeaveCheckpoint(AMX *amx, cell *params)
+cell n_OnPlayerLeaveCheckpoint(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -925,7 +920,7 @@ cell n_OnPlayerLeaveCheckpoint(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerEnterRaceCheckpoint(AMX *amx, cell *params)
+cell n_OnPlayerEnterRaceCheckpoint(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -942,7 +937,7 @@ cell n_OnPlayerEnterRaceCheckpoint(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerLeaveRaceCheckpoint(AMX *amx, cell *params)
+cell n_OnPlayerLeaveRaceCheckpoint(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -981,7 +976,7 @@ cell n_OnRconCommand(AMX *amx, cell *params)
 	return (bool) ret;
 }
 
-cell n_OnPlayerRequestSpawn(AMX *amx, cell *params)
+cell n_OnPlayerRequestSpawn(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -998,7 +993,7 @@ cell n_OnPlayerRequestSpawn(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnObjectMoved(AMX *amx, cell *params)
+cell n_OnObjectMoved(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1015,7 +1010,7 @@ cell n_OnObjectMoved(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerObjectMoved(AMX *amx, cell *params)
+cell n_OnPlayerObjectMoved(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1032,7 +1027,7 @@ cell n_OnPlayerObjectMoved(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerPickUpPickup(AMX *amx, cell *params)
+cell n_OnPlayerPickUpPickup(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1049,7 +1044,7 @@ cell n_OnPlayerPickUpPickup(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehicleMod(AMX *amx, cell *params)
+cell n_OnVehicleMod(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1066,7 +1061,7 @@ cell n_OnVehicleMod(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnEnterExitModShop(AMX *amx, cell *params)
+cell n_OnEnterExitModShop(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1083,7 +1078,7 @@ cell n_OnEnterExitModShop(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehiclePaintjob(AMX *amx, cell *params)
+cell n_OnVehiclePaintjob(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1100,7 +1095,7 @@ cell n_OnVehiclePaintjob(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehicleRespray(AMX *amx, cell *params)
+cell n_OnVehicleRespray(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1117,7 +1112,7 @@ cell n_OnVehicleRespray(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehicleDamageStatusUpdate(AMX *amx, cell *params)
+cell n_OnVehicleDamageStatusUpdate(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1134,7 +1129,7 @@ cell n_OnVehicleDamageStatusUpdate(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnUnoccupiedVehicleUpdate(AMX *amx, cell *params)
+cell n_OnUnoccupiedVehicleUpdate(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1154,7 +1149,7 @@ cell n_OnUnoccupiedVehicleUpdate(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerSelectedMenuRow(AMX *amx, cell *params)
+cell n_OnPlayerSelectedMenuRow(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1171,7 +1166,7 @@ cell n_OnPlayerSelectedMenuRow(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerExitedMenu(AMX *amx, cell *params)
+cell n_OnPlayerExitedMenu(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1188,7 +1183,7 @@ cell n_OnPlayerExitedMenu(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerInteriorChange(AMX *amx, cell *params)
+cell n_OnPlayerInteriorChange(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1205,7 +1200,7 @@ cell n_OnPlayerInteriorChange(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerKeyStateChange(AMX *amx, cell *params)
+cell n_OnPlayerKeyStateChange(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1250,7 +1245,7 @@ cell n_OnRconLoginAttempt(AMX *amx, cell *params)
 	return (bool) ret;
 }
 
-cell n_OnPlayerUpdate(AMX *amx, cell *params)
+cell n_OnPlayerUpdate(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1267,7 +1262,7 @@ cell n_OnPlayerUpdate(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerStreamIn(AMX *amx, cell *params)
+cell n_OnPlayerStreamIn(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1284,7 +1279,7 @@ cell n_OnPlayerStreamIn(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerStreamOut(AMX *amx, cell *params)
+cell n_OnPlayerStreamOut(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1301,7 +1296,7 @@ cell n_OnPlayerStreamOut(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehicleStreamIn(AMX *amx, cell *params)
+cell n_OnVehicleStreamIn(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1318,7 +1313,7 @@ cell n_OnVehicleStreamIn(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnVehicleStreamOut(AMX *amx, cell *params)
+cell n_OnVehicleStreamOut(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1360,7 +1355,7 @@ cell n_OnDialogResponse(AMX *amx, cell *params)
 	return (bool) ret;
 }
 
-cell n_OnPlayerTakeDamage(AMX *amx, cell *params)
+cell n_OnPlayerTakeDamage(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1378,7 +1373,7 @@ cell n_OnPlayerTakeDamage(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerGiveDamage(AMX *amx, cell *params)
+cell n_OnPlayerGiveDamage(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1396,7 +1391,7 @@ cell n_OnPlayerGiveDamage(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerClickMap(AMX *amx, cell *params)
+cell n_OnPlayerClickMap(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1414,7 +1409,7 @@ cell n_OnPlayerClickMap(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerClickTextDraw(AMX *amx, cell *params)
+cell n_OnPlayerClickTextDraw(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1431,7 +1426,7 @@ cell n_OnPlayerClickTextDraw(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerClickPlayerTextDraw(AMX *amx, cell *params)
+cell n_OnPlayerClickPlayerTextDraw(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1448,7 +1443,7 @@ cell n_OnPlayerClickPlayerTextDraw(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerClickPlayer(AMX *amx, cell *params)
+cell n_OnPlayerClickPlayer(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1465,7 +1460,7 @@ cell n_OnPlayerClickPlayer(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerEditObject(AMX *amx, cell *params)
+cell n_OnPlayerEditObject(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1485,7 +1480,7 @@ cell n_OnPlayerEditObject(AMX *amx, cell *params)
 	return (bool) ret;
 }
 
-cell n_OnPlayerEditAttachedObject(AMX *amx, cell *params)
+cell n_OnPlayerEditAttachedObject(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1506,7 +1501,7 @@ cell n_OnPlayerEditAttachedObject(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerSelectObject(AMX *amx, cell *params)
+cell n_OnPlayerSelectObject(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1524,7 +1519,7 @@ cell n_OnPlayerSelectObject(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerWeaponShot(AMX *amx, cell *params)
+cell n_OnPlayerWeaponShot(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1561,7 +1556,7 @@ cell n_OnIncomingConnection(AMX *amx, cell *params)
 	return (bool) ret;
 }
 
-cell n_OnTrailerUpdate(AMX *amx, cell *params)
+cell n_OnTrailerUpdate(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 
@@ -1578,7 +1573,7 @@ cell n_OnTrailerUpdate(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnActorStreamIn(AMX *amx, cell *params)
+cell n_OnActorStreamIn(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -1594,7 +1589,7 @@ cell n_OnActorStreamIn(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnActorStreamOut(AMX *amx, cell *params)
+cell n_OnActorStreamOut(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -1610,7 +1605,7 @@ cell n_OnActorStreamOut(AMX *amx, cell *params)
 	return ret;
 }
 
-cell n_OnPlayerGiveDamageActor(AMX *amx, cell *params)
+cell n_OnPlayerGiveDamageActor(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -1627,7 +1622,7 @@ cell n_OnPlayerGiveDamageActor(AMX *amx, cell *params)
 	return (bool) ret;
 }
 
-cell n_OnVehicleSirenStateChange(AMX *amx, cell *params)
+cell n_OnVehicleSirenStateChange(AMX *, cell *params)
 {
 	if (!callbackHandlerObject) return 0;
 	JNIEnv *env;
@@ -2792,7 +2787,7 @@ int *callHookedCallback(AMX *amx, std::string name, cell *params)
 		jvm->AttachCurrentThread((void **) &env, NULL);
 		if (!env) return 0;
 		std::string types = it->second;
-		int count = (int) (params[0] / sizeof(cell));
+		unsigned int count = params[0] / sizeof(cell);
 		if (count != types.length())
 		{
 			sampgdk_logprintf("%s did not equal count! Correct: %i | Wrong: %i", name.c_str(), count, types.length());
@@ -2838,7 +2833,7 @@ int *callHookedCallback(AMX *amx, std::string name, cell *params)
 		jintArray event = (jintArray) env->CallObjectMethod(callbackHandlerObject, jmid, env->NewString(wtext, len),
 		                                                    objectArray);
 		jni_jvm_printExceptionStack(env);
-		jint *values = env->GetIntArrayElements(event, false);
+		jint *values = env->GetIntArrayElements(event, NULL);
 		int *returnObject = new int[2]{values[0], values[1]};
 		env->ReleaseIntArrayElements(event, values, 0);
 		return returnObject;

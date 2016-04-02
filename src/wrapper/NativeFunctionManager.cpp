@@ -1,6 +1,6 @@
 #include "NativeFunctionManager.h"
 
-static std::map<std::string, hookedNative *> natives;
+static std::map<std::string, HookedNative *> natives;
 
 NativeFunctionManager::NativeFunctionManager()
 {
@@ -20,12 +20,10 @@ NativeFunctionManager &NativeFunctionManager::get()
 
 void NativeFunctionManager::registerFunction(AMX *amx, std::string name, AMX_NATIVE functionAddr, int index)
 {
-	functions[name] = functionAddr;
-	functionNames[index] = name;
-	hookFunction(amx, functionAddr, name.c_str());
+	hookFunction(amx, functionAddr, name.c_str(), index);
 }
 
-std::string NativeFunctionManager::getFunctionName(int index)
+/*std::string NativeFunctionManager::getFunctionName(int index)
 {
 	std::unordered_map<int, std::string>::iterator it = functionNames.find(index);
 	return (it == functionNames.end()) ? "" : it->second;
@@ -37,16 +35,16 @@ AMX_NATIVE NativeFunctionManager::findFunction(char const *name)
 	return it != functions.end() ? it->second : nullptr;
 }
 
-std::map<std::string, hookedNative *> NativeFunctionManager::getNatives()
+std::map<std::string, HookedNative *> NativeFunctionManager::getNatives()
 {
 	return natives;
-}
+}*/
 
 static cell AMX_NATIVE_CALL n_OnAmxCreateVehicle(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreateVehicle"];
+    static HookedNative *hookedNative = natives["CreateVehicle"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]),
 	                    amx_ctof(params[5]), 0, 0, params[6], params[7], params[8], params[9]);
@@ -55,9 +53,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreateVehicle(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAddStaticVehicle(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["AddStaticVehicle"];
+	static HookedNative *hookedNative = natives["AddStaticVehicle"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]),
 	                    amx_ctof(params[5]), 0, 0, params[6], params[7], params[8], params[9]);
@@ -66,9 +64,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAddStaticVehicle(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAddStaticVehicleEx(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["AddStaticVehicleEx"];
+	static HookedNative *hookedNative = natives["AddStaticVehicleEx"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxVehicleCreated(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]),
 	                    amx_ctof(params[5]), 0, 0, params[6], params[7], params[8], params[9]);
@@ -77,9 +75,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAddStaticVehicleEx(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDestroyVehicle(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DestroyVehicle"];
+	static HookedNative *hookedNative = natives["DestroyVehicle"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDestroyVehicle(params[1]);
 	return ret;
@@ -87,9 +85,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDestroyVehicle(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSampObjectCreated(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreateObject"];
+	static HookedNative *hookedNative = natives["CreateObject"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	int paramcount = (int) (params[0] / sizeof(cell));
 	if (paramcount == 7)
@@ -104,9 +102,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSampObjectCreated(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSampObjectDestroyed(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DestroyObject"];
+	static HookedNative *hookedNative = natives["DestroyObject"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxSampObjectDestroyed(params[1]);
 	return ret;
@@ -114,9 +112,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSampObjectDestroyed(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAttachObjectToVehicle(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["AttachObjectToVehicle"];
+	static HookedNative *hookedNative = natives["AttachObjectToVehicle"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxAttachObjectToVehicle(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]),
 	                           amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]));
@@ -125,9 +123,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAttachObjectToVehicle(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAttachObjectToPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["AttachObjectToPlayer"];
+	static HookedNative *hookedNative = natives["AttachObjectToPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxAttachObjectToPlayer(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]),
 	                          amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]));
@@ -136,9 +134,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAttachObjectToPlayer(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAttachObjectToObject(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["AttachObjectToObject"];
+	static HookedNative *hookedNative = natives["AttachObjectToObject"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxAttachObjectToObject(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]),
 	                          amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]));
@@ -147,9 +145,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAttachObjectToObject(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxCreatePlayerObject(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreatePlayerObject"];
+	static HookedNative *hookedNative = natives["CreatePlayerObject"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	int paramcount = (int) (params[0] / sizeof(cell));
 	if (paramcount == 8) //without drawdistance
@@ -164,9 +162,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreatePlayerObject(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDestroyPlayerObject(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DestroyPlayerObject"];
+	static HookedNative *hookedNative = natives["DestroyPlayerObject"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDestroyPlayerObject(params[1], params[2]);
 	return ret;
@@ -174,9 +172,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDestroyPlayerObject(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSetPlayerAttachedObject(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetPlayerAttachedObject"];
+	static HookedNative *hookedNative = natives["SetPlayerAttachedObject"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxSetPlayerAttachedObject(params[1], params[2], params[3], params[4], amx_ctof(params[5]), amx_ctof(params[6]),
 	                             amx_ctof(params[7]), amx_ctof(params[8]), amx_ctof(params[9]), amx_ctof(params[10]),
@@ -187,9 +185,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetPlayerAttachedObject(AMX *amx, cell *param
 
 static cell AMX_NATIVE_CALL n_OnAmxRemovePlayerAttachedObject(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["RemovePlayerAttachedObject"];
+	static HookedNative *hookedNative = natives["RemovePlayerAttachedObject"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxRemovePlayerAttachedObject(params[1], params[2]);
 	return ret;
@@ -197,9 +195,9 @@ static cell AMX_NATIVE_CALL n_OnAmxRemovePlayerAttachedObject(AMX *amx, cell *pa
 
 static cell AMX_NATIVE_CALL n_OnAmxDestroyPickup(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DestroyPickup"];
+	static HookedNative *hookedNative = natives["DestroyPickup"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDestroyPickup(params[1]);
 	return ret;
@@ -207,9 +205,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDestroyPickup(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxCreatePickup(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreatePickup"];
+	static HookedNative *hookedNative = natives["CreatePickup"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxCreatePickup(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]), params[6],
 	                  ret);
@@ -218,9 +216,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreatePickup(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAddStaticPickup(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["AddStaticPickup"];
+	static HookedNative *hookedNative = natives["AddStaticPickup"];
 	hookedNative->hook->get()->unhook();
-	hookedNative->originalFunc(amx, params);
+	hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxAddStaticPickup(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]),
 	                     params[6]);
@@ -229,9 +227,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAddStaticPickup(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxCreateLabel(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["Create3DTextLabel"];
+	static HookedNative *hookedNative = natives["Create3DTextLabel"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[1], text, sizeof(text));
@@ -242,9 +240,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreateLabel(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDeleteLabel(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["Delete3DTextLabel"];
+	static HookedNative *hookedNative = natives["Delete3DTextLabel"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDeleteLabel(params[1]);
 	return ret;
@@ -252,9 +250,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDeleteLabel(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAttachLabelToPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["Attach3DTextLabelToPlayer"];
+	static HookedNative *hookedNative = natives["Attach3DTextLabelToPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxAttachLabelToPlayer(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]));
 	return ret;
@@ -262,9 +260,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAttachLabelToPlayer(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAttachLabelToVehicle(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["Attach3DTextLabelToVehicle"];
+	static HookedNative *hookedNative = natives["Attach3DTextLabelToVehicle"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxAttachLabelToVehicle(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]));
 	return ret;
@@ -272,9 +270,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAttachLabelToVehicle(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxLabelUpdateText(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["Update3DTextLabelText"];
+	static HookedNative *hookedNative = natives["Update3DTextLabelText"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[3], text, sizeof(text));
@@ -284,9 +282,9 @@ static cell AMX_NATIVE_CALL n_OnAmxLabelUpdateText(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxCreatePlayerLabel(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreatePlayer3DTextLabel"];
+	static HookedNative *hookedNative = natives["CreatePlayer3DTextLabel"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[2], text, sizeof(text));
@@ -297,9 +295,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreatePlayerLabel(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDeletePlayerLabel(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DeletePlayer3DTextLabel"];
+	static HookedNative *hookedNative = natives["DeletePlayer3DTextLabel"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDeletePlayerLabel(params[1], params[2]);
 	return ret;
@@ -307,9 +305,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDeletePlayerLabel(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxUpdatePlayerLabel(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["UpdatePlayer3DTextLabelText"];
+	static HookedNative *hookedNative = natives["UpdatePlayer3DTextLabelText"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[4], text, sizeof(text));
@@ -319,9 +317,9 @@ static cell AMX_NATIVE_CALL n_OnAmxUpdatePlayerLabel(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxCreateMenu(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreateMenu"];
+	static HookedNative *hookedNative = natives["CreateMenu"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[32];
 	amx_GetString(amx, params[1], text, sizeof(text));
@@ -332,9 +330,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreateMenu(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSetMenuColumnHeader(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetMenuColumnHeader"];
+	static HookedNative *hookedNative = natives["SetMenuColumnHeader"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[32];
 	amx_GetString(amx, params[3], text, sizeof(text));
@@ -344,9 +342,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetMenuColumnHeader(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDestroyMenu(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DestroyMenu"];
+	static HookedNative *hookedNative = natives["DestroyMenu"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDestroyMenu(params[1]);
 	return ret;
@@ -354,9 +352,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDestroyMenu(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneCreate(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneCreate"];
+	static HookedNative *hookedNative = natives["GangZoneCreate"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneCreate(amx_ctof(params[1]), amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]), ret);
 	return ret;
@@ -364,9 +362,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneCreate(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneDestroy(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneDestroy"];
+	static HookedNative *hookedNative = natives["GangZoneDestroy"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneDestroy(params[1]);
 	return ret;
@@ -374,9 +372,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneDestroy(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneShowForPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneShowForPlayer"];
+	static HookedNative *hookedNative = natives["GangZoneShowForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneShowForPlayer(params[1], params[2], params[3]);
 	return ret;
@@ -384,9 +382,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneShowForPlayer(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneShowForAll(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneShowForAll"];
+	static HookedNative *hookedNative = natives["GangZoneShowForAll"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneShowForAll(params[1], params[2]);
 	return ret;
@@ -394,9 +392,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneShowForAll(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneHideForPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneHideForPlayer"];
+	static HookedNative *hookedNative = natives["GangZoneHideForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneHideForPlayer(params[1], params[2]);
 	return ret;
@@ -404,9 +402,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneHideForPlayer(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneHideForAll(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneHideForAll"];
+	static HookedNative *hookedNative = natives["GangZoneHideForAll"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneHideForAll(params[1]);
 	return ret;
@@ -414,9 +412,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneHideForAll(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneFlashForPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneFlashForPlayer"];
+	static HookedNative *hookedNative = natives["GangZoneFlashForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneFlashForPlayer(params[1], params[2], params[3]);
 	return ret;
@@ -424,9 +422,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneFlashForPlayer(AMX *amx, cell *params
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneFlashForAll(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneFlashForAll"];
+	static HookedNative *hookedNative = natives["GangZoneFlashForAll"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneFlashForAll(params[1], params[2]);
 	return ret;
@@ -434,9 +432,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneFlashForAll(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneStopFlashForPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneStopFlashForPlayer"];
+	static HookedNative *hookedNative = natives["GangZoneStopFlashForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneStopFlashForPlayer(params[1], params[2]);
 	return ret;
@@ -445,9 +443,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneStopFlashForPlayer(AMX *amx, cell *pa
 
 static cell AMX_NATIVE_CALL n_OnAmxGangZoneStopFlashForAll(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["GangZoneStopFlashForAll"];
+	static HookedNative *hookedNative = natives["GangZoneStopFlashForAll"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxGangZoneStopFlashForAll(params[1]);
 	return ret;
@@ -455,9 +453,9 @@ static cell AMX_NATIVE_CALL n_OnAmxGangZoneStopFlashForAll(AMX *amx, cell *param
 
 static cell AMX_NATIVE_CALL n_OnAmxSetSkillLevel(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetPlayerSkillLevel"];
+	static HookedNative *hookedNative = natives["SetPlayerSkillLevel"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxSetSkillLevel(params[1], params[2], params[3]);
 	return ret;
@@ -465,9 +463,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetSkillLevel(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSetPlayerMapIcon(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetPlayerMapIcon"];
+	static HookedNative *hookedNative = natives["SetPlayerMapIcon"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	if (ret == 1)
 		OnAmxSetPlayerMapIcon(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]),
@@ -477,9 +475,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetPlayerMapIcon(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxRemovePlayerMapIcon(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["RemovePlayerMapIcon"];
+	static HookedNative *hookedNative = natives["RemovePlayerMapIcon"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	if (ret == 1) OnAmxRemovePlayerMapIcon(params[1], params[2]);
 	return ret;
@@ -487,9 +485,9 @@ static cell AMX_NATIVE_CALL n_OnAmxRemovePlayerMapIcon(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxShowPlayerDialog(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["ShowPlayerDialog"];
+	static HookedNative *hookedNative = natives["ShowPlayerDialog"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char caption[64], info[2048], button1[32], button2[32];
 	amx_GetString(amx, params[4], caption, sizeof(caption));
@@ -502,9 +500,9 @@ static cell AMX_NATIVE_CALL n_OnAmxShowPlayerDialog(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSetPlayerWorldBounds(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetPlayerWorldBounds"];
+	static HookedNative *hookedNative = natives["SetPlayerWorldBounds"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxSetPlayerWorldBounds(params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]),
 	                          amx_ctof(params[5]));
@@ -513,9 +511,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetPlayerWorldBounds(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSetPlayerWeather(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetPlayerWeather"];
+	static HookedNative *hookedNative = natives["SetPlayerWeather"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxSetPlayerWeather(params[1], params[2]);
 	return ret;
@@ -523,9 +521,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetPlayerWeather(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxSetPlayerCheckpoint(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetPlayerCheckpoint"];
+	static HookedNative *hookedNative = natives["SetPlayerCheckpoint"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxSetPlayerCheckpoint(params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]),
 	                         amx_ctof(params[5]));
@@ -534,9 +532,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetPlayerCheckpoint(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDisablePlayerCheckpoint(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DisablePlayerCheckpoint"];
+	static HookedNative *hookedNative = natives["DisablePlayerCheckpoint"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDisablePlayerCheckpoint(params[1]);
 	return ret;
@@ -544,9 +542,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDisablePlayerCheckpoint(AMX *amx, cell *param
 
 static cell AMX_NATIVE_CALL n_OnAmxSetPlayerRaceCheckpoint(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SetPlayerRaceCheckpoint"];
+	static HookedNative *hookedNative = natives["SetPlayerRaceCheckpoint"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxSetPlayerRaceCheckpoint(params[1], params[2], amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]),
 	                             amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]), amx_ctof(params[9]));
@@ -555,9 +553,9 @@ static cell AMX_NATIVE_CALL n_OnAmxSetPlayerRaceCheckpoint(AMX *amx, cell *param
 
 static cell AMX_NATIVE_CALL n_OnAmxDisablePlayerRaceCheckpoint(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DisablePlayerRaceCheckpoint"];
+	static HookedNative *hookedNative = natives["DisablePlayerRaceCheckpoint"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDisablePlayerRaceCheckpoint(params[1]);
 	return ret;
@@ -565,9 +563,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDisablePlayerRaceCheckpoint(AMX *amx, cell *p
 
 static cell AMX_NATIVE_CALL n_OnAmxTogglePlayerSpectating(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TogglePlayerSpectating"];
+	static HookedNative *hookedNative = natives["TogglePlayerSpectating"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxTogglePlayerSpectating(params[1], params[2]);
 	return ret;
@@ -575,9 +573,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTogglePlayerSpectating(AMX *amx, cell *params
 
 static cell AMX_NATIVE_CALL n_OnAmxPlayerSpectatePlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["PlayerSpectatePlayer"];
+	static HookedNative *hookedNative = natives["PlayerSpectatePlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxPlayerSpectatePlayer(params[1], params[2], params[3]);
 	return ret;
@@ -585,9 +583,9 @@ static cell AMX_NATIVE_CALL n_OnAmxPlayerSpectatePlayer(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxPlayerSpectateVehicle(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["PlayerSpectateVehicle"];
+	static HookedNative *hookedNative = natives["PlayerSpectateVehicle"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxPlayerSpectateVehicle(params[1], params[2], params[3]);
 	return ret;
@@ -595,9 +593,9 @@ static cell AMX_NATIVE_CALL n_OnAmxPlayerSpectateVehicle(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxEnableStuntBonusForPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["EnableStuntBonusForPlayer"];
+	static HookedNative *hookedNative = natives["EnableStuntBonusForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxEnableStuntBonusForPlayer(params[1], params[2]);
 	return ret;
@@ -605,9 +603,9 @@ static cell AMX_NATIVE_CALL n_OnAmxEnableStuntBonusForPlayer(AMX *amx, cell *par
 
 static cell AMX_NATIVE_CALL n_OnAmxStartRecording(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["StartRecordingPlayerData"];
+	static HookedNative *hookedNative = natives["StartRecordingPlayerData"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char recordName[128];
 	amx_GetString(amx, params[3], recordName, sizeof(recordName));
@@ -617,9 +615,9 @@ static cell AMX_NATIVE_CALL n_OnAmxStartRecording(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxStopRecording(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["StopRecordingPlayerData"];
+	static HookedNative *hookedNative = natives["StopRecordingPlayerData"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxStopRecording(params[1]);
 	return ret;
@@ -627,9 +625,9 @@ static cell AMX_NATIVE_CALL n_OnAmxStopRecording(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxTogglePlayerControllable(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TogglePlayerControllable"];
+	static HookedNative *hookedNative = natives["TogglePlayerControllable"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxToggleControllabel(params[1], params[2]);
 	return ret;
@@ -637,9 +635,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTogglePlayerControllable(AMX *amx, cell *para
 
 static cell AMX_NATIVE_CALL n_OnAmxTextDrawCreate(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TextDrawCreate"];
+	static HookedNative *hookedNative = natives["TextDrawCreate"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[3], text, sizeof(text));
@@ -649,9 +647,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTextDrawCreate(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxTextDrawDestroy(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TextDrawShowForPlayer"];
+	static HookedNative *hookedNative = natives["TextDrawShowForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxTextDrawDestroy(params[1]);
 	return ret;
@@ -659,9 +657,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTextDrawDestroy(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxTextDrawSetString(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TextDrawSetString"];
+	static HookedNative *hookedNative = natives["TextDrawSetString"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[2], text, sizeof(text));
@@ -671,9 +669,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTextDrawSetString(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxTextDrawShowForPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TextDrawShowForPlayer"];
+	static HookedNative *hookedNative = natives["TextDrawShowForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxTextDrawShowForPlayer(params[1], params[2]);
 	return ret;
@@ -681,9 +679,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTextDrawShowForPlayer(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxTextDrawHideForPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TextDrawHideForPlayer"];
+	static HookedNative *hookedNative = natives["TextDrawHideForPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxTextDrawHideForPlayer(params[1], params[2]);
 	return ret;
@@ -691,9 +689,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTextDrawHideForPlayer(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxTextDrawShowForAll(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TextDrawShowForAll"];
+	static HookedNative *hookedNative = natives["TextDrawShowForAll"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxTextDrawShowForAll(params[1]);
 	return ret;
@@ -701,9 +699,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTextDrawShowForAll(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxTextDrawHideForAll(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["TextDrawHideForAll"];
+	static HookedNative *hookedNative = natives["TextDrawHideForAll"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxTextDrawHideForAll(params[1]);
 	return ret;
@@ -711,9 +709,9 @@ static cell AMX_NATIVE_CALL n_OnAmxTextDrawHideForAll(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxCreatePlayerTextDraw(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreatePlayerTextDraw"];
+	static HookedNative *hookedNative = natives["CreatePlayerTextDraw"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[4], text, sizeof(text));
@@ -723,9 +721,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreatePlayerTextDraw(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDestroyPlayerTextDraw(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["PlayerTextDrawDestroy"];
+	static HookedNative *hookedNative = natives["PlayerTextDrawDestroy"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxPlayerTextDrawDestroy(params[1], params[2]);
 	return ret;
@@ -733,9 +731,9 @@ static cell AMX_NATIVE_CALL n_OnAmxDestroyPlayerTextDraw(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxPlayerTextDrawSetString(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["PlayerTextDrawSetString"];
+	static HookedNative *hookedNative = natives["PlayerTextDrawSetString"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	char text[1024];
 	amx_GetString(amx, params[3], text, sizeof(text));
@@ -745,9 +743,9 @@ static cell AMX_NATIVE_CALL n_OnAmxPlayerTextDrawSetString(AMX *amx, cell *param
 
 static cell AMX_NATIVE_CALL n_OnAmxPlayerTextDrawShow(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["PlayerTextDrawShow"];
+	static HookedNative *hookedNative = natives["PlayerTextDrawShow"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxPlayerTextDrawShow(params[1], params[2]);
 	return ret;
@@ -755,9 +753,9 @@ static cell AMX_NATIVE_CALL n_OnAmxPlayerTextDrawShow(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxPlayerTextDrawHide(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["PlayerTextDrawHide"];
+	static HookedNative *hookedNative = natives["PlayerTextDrawHide"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxPlayerTextDrawHide(params[1], params[2]);
 	return ret;
@@ -765,9 +763,9 @@ static cell AMX_NATIVE_CALL n_OnAmxPlayerTextDrawHide(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxAddVehicleComponent(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["AddVehicleComponent"];
+	static HookedNative *hookedNative = natives["AddVehicleComponent"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxAddVehicleComponent(params[1], params[2]);
 	return ret;
@@ -775,9 +773,9 @@ static cell AMX_NATIVE_CALL n_OnAmxAddVehicleComponent(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxLinkVehicleToInterior(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["LinkVehicleToInterior"];
+	static HookedNative *hookedNative = natives["LinkVehicleToInterior"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxLinkVehicleToInterior(params[1], params[2]);
 	return ret;
@@ -785,9 +783,9 @@ static cell AMX_NATIVE_CALL n_OnAmxLinkVehicleToInterior(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxChangeVehicleColor(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["ChangeVehicleColor"];
+	static HookedNative *hookedNative = natives["ChangeVehicleColor"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxChangeVehicleColor(params[1], params[2], params[3]);
 	return ret;
@@ -795,18 +793,18 @@ static cell AMX_NATIVE_CALL n_OnAmxChangeVehicleColor(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_SpawnPlayer(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["SpawnPlayer"];
+	static HookedNative *hookedNative = natives["SpawnPlayer"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	return ret;
 }
 
 static cell AMX_NATIVE_CALL n_OnAmxCreateActor(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["CreateActor"];
+	static HookedNative *hookedNative = natives["CreateActor"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxCreateActor(ret, params[1], amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]),
 	                 amx_ctof(params[5]));
@@ -815,9 +813,9 @@ static cell AMX_NATIVE_CALL n_OnAmxCreateActor(AMX *amx, cell *params)
 
 static cell AMX_NATIVE_CALL n_OnAmxDestroyActor(AMX *amx, cell *params)
 {
-	static hookedNative *hookedNative = natives["DestroyActor"];
+	static HookedNative *hookedNative = natives["DestroyActor"];
 	hookedNative->hook->get()->unhook();
-	int ret = hookedNative->originalFunc(amx, params);
+	int ret = hookedNative->function(amx, params);
 	hookedNative->hook->get()->hook();
 	OnAmxDestroyActor(ret);
 	return ret;
@@ -899,22 +897,22 @@ AMX_NATIVE_INFO FunctionNatives[] =
 				{"SpawnPlayer",                 n_SpawnPlayer}
 		};
 
-void NativeFunctionManager::hookFunction(AMX *amx, AMX_NATIVE function, const char *name)
+void NativeFunctionManager::hookFunction(AMX *, AMX_NATIVE function, const char *name, int index)
 {
-	for (int i = 0; i < sizeof(FunctionNatives) / sizeof(AMX_NATIVE_INFO); i++)
+	for (unsigned int i = 0; i < sizeof(FunctionNatives) / sizeof(AMX_NATIVE_INFO); i++)
 	{
 		if (!strcmp(name, FunctionNatives[i].name))
 		{
-			std::map<std::string, hookedNative *>::iterator it = natives.find(name);
-			if (it != natives.end()) return;
-			hookedNative *hook = new hookedNative();
-			hook->funcName = std::string(name);
-			hook->originalFunc = function;
+			if (natives.find(name) != natives.end()) return;
+			HookedNative *hook = new HookedNative();
+			hook->function = function;
+			hook->name = std::string(name);
+			hook->index = index;
 			hook->hook = new std::shared_ptr<SimpleInlineHook>(new SimpleInlineHook);
 			hook->hook->get()->init((void *) function, (void *) FunctionNatives[i].func);
 			hook->hook->get()->hook();
 			//amx_SetNativeAddress(amx, list[b].name, FunctionNatives[i].func);
-			natives[hook->funcName] = hook;
+			natives[hook->name] = hook;
 			return;
 		}
 	}

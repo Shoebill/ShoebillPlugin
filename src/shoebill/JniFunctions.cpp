@@ -4180,7 +4180,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPublic
 {
 	auto amx = reinterpret_cast<AMX *>(pAmx);
 	int index;
-	auto functionName = env->GetStringUTFChars(name, false);
+	auto functionName = env->GetStringUTFChars(name, NULL);
 	amx_FindPublic(amx, functionName, &index);
 	env->ReleaseStringUTFChars(name, functionName);
 	return index;
@@ -4189,7 +4189,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPublic
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 		(JNIEnv *env, jclass, jstring name)
 {
-	auto functionName = env->GetStringUTFChars(name, false);
+	auto functionName = env->GetStringUTFChars(name, NULL);
 	auto native = sampgdk_FindNative(functionName);
 	env->ReleaseStringUTFChars(name, functionName);
 	return reinterpret_cast<int>(native);
@@ -4218,7 +4218,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 			return nullptr;
 		}
 		auto classNameString = static_cast<jstring>(env->CallObjectMethod(objectClass, mid));
-		auto cstr = env->GetStringUTFChars(classNameString, false);
+		auto cstr = env->GetStringUTFChars(classNameString, NULL);
 		auto className = std::string(cstr);
 		if (className == "class java.lang.String")
 		{
@@ -4329,7 +4329,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 			return nullptr;
 		}
 		auto str = static_cast<jstring>(env->CallObjectMethod(objectClass, mid));
-		auto cstr = env->GetStringUTFChars(str, false);
+		auto cstr = env->GetStringUTFChars(str, NULL);
 		auto className = std::string(cstr);
 		if (className == "class java.lang.String")
 		{
@@ -4377,7 +4377,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 				{
 					array[a] = integerData[a];
 				}
-				env->ReleaseIntArrayElements(integerArray, integerData, NULL);
+				env->ReleaseIntArrayElements(integerArray, integerData, 0);
 			}
 			else if (className == "class [Ljava.lang.Float;") //If Float Array is present
 			{
@@ -4401,7 +4401,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 				{
 					array[a] = amx_ftoc(floatData[a]);
 				}
-				env->ReleaseFloatArrayElements(floatArray, floatData, NULL);
+				env->ReleaseFloatArrayElements(floatArray, floatData, 0);
 			}
 			else if (className == "class [Ljava.lang.String;") //If String Array is present
 			{
@@ -4791,7 +4791,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 		auto objectClass = env->GetObjectClass(object);
 		auto mid = env->GetMethodID(objectClass, "getName", "()Ljava/lang/String;");
 		auto str = static_cast<jstring>(env->CallObjectMethod(object, mid));
-		auto className = env->GetStringUTFChars(str, false);
+		auto className = env->GetStringUTFChars(str, NULL);
 		classNames.push_back(std::string(className));
 		env->ReleaseStringUTFChars(str, className);
 	}

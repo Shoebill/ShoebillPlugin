@@ -29,11 +29,12 @@
 #include "amx/amx.h"
 #include "Callbacks.h"
 
-struct hookedNative
+struct HookedNative
 {
-	AMX_NATIVE originalFunc;
+	AMX_NATIVE function;
+	std::string name;
 	std::shared_ptr<SimpleInlineHook> *hook;
-	std::string funcName;
+	int index;
 };
 
 class NativeFunctionManager
@@ -48,35 +49,19 @@ public:
 
 	void registerFunction(AMX *amx, std::string name, AMX_NATIVE functionAddr, int index);
 
-	std::map<std::string, hookedNative *> getNatives();
+	/*std::map<std::string, HookedNative *> getNatives();
 
 	AMX_NATIVE findFunction(char const *name);
 
-	std::string getFunctionName(int index);
+	std::string getFunctionName(int index);*/
 
-	void hookFunction(AMX *amx, AMX_NATIVE function, const char *name);
+	void hookFunction(AMX *amx, AMX_NATIVE function, const char *name, int index);
 
 	void clearFunctions();
 
-	void setCurrentFunctionName(std::string name)
-	{
-		currentFunctionName = name;
-	}
-
-	std::string getCurrentFunctionName()
-	{
-		return currentFunctionName;
-	}
-
 private:
-	std::unordered_map<std::string, AMX_NATIVE> functions;
-	std::unordered_map<int, std::string> functionNames;
-
 	NativeFunctionManager(const NativeFunctionManager &) = delete;
-
 	NativeFunctionManager &operator=(const NativeFunctionManager &) = delete;
-
-	std::string currentFunctionName;
 };
 
 #endif
