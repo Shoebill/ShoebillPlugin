@@ -1,3 +1,5 @@
+#include <jni.h>
+
 /**
  * Copyright (C) 2011 MK124
  *

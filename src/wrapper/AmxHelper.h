@@ -33,59 +33,59 @@ extern void *pAMXFunctions;
 
 inline AMX_NATIVE amx_FindNative(AMX *amx, const char *func)
 {
-	if (!amx) return NULL;
+    if (!amx) return NULL;
 
-	int index;
-	amx_FindNative(amx, func, &index);
-	if (index == 0x7FFFFFFF) return NULL;
+    int index;
+    amx_FindNative(amx, func, &index);
+    if (index == 0x7FFFFFFF) return NULL;
 
-	AMX_HEADER *hdr = (AMX_HEADER *) amx->base;
-	AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
+    AMX_HEADER *hdr = (AMX_HEADER *) amx->base;
+    AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
 
-	return (AMX_NATIVE) funcstub->address;
+    return (AMX_NATIVE) funcstub->address;
 }
 
 inline cell amx_Allot(AMX *amx, int len, cell **phys)
 {
-	cell amx_str;
-	amx_Allot(amx, len, &amx_str, phys);
+    cell amx_str;
+    amx_Allot(amx, len, &amx_str, phys);
 
-	return amx_str;
+    return amx_str;
 }
 
 inline char *amx_GetString(AMX *amx, const cell str, char *dest, int size)
 {
-	cell *phys;
+    cell *phys;
 
-	amx_GetAddr(amx, str, &phys);
-	amx_GetString(dest, phys, 0, (size_t) size);
+    amx_GetAddr(amx, str, &phys);
+    amx_GetString(dest, phys, 0, (size_t) size);
 
-	return dest;
+    return dest;
 }
 
 inline cell amx_NewString(AMX *amx, const char *str, int len = -1)
 {
-	cell amx_str, *amx_str_phys;
-	if (len < 0) len = (int) (strlen(str) + 1);
+    cell amx_str, *amx_str_phys;
+    if (len < 0) len = (int) (strlen(str) + 1);
 
-	amx_Allot(amx, len, &amx_str, &amx_str_phys);
-	amx_SetString(amx_str_phys, str, 0, 0, (size_t) len);
+    amx_Allot(amx, len, &amx_str, &amx_str_phys);
+    amx_SetString(amx_str_phys, str, 0, 0, (size_t) len);
 
-	return amx_str;
+    return amx_str;
 }
 
 inline bool amx_SetNativeAddress(AMX *amx, const char *func, void *addr)
 {
-	if (!amx) return false;
+    if (!amx) return false;
 
-	int index;
-	amx_FindNative(amx, func, &index);
-	if (index == 0x7FFFFFFF) return false;
+    int index;
+    amx_FindNative(amx, func, &index);
+    if (index == 0x7FFFFFFF) return false;
 
-	AMX_HEADER *hdr = (AMX_HEADER *) amx->base;
-	AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
-	funcstub->address = (ucell) addr;
-	return true;
+    AMX_HEADER *hdr = (AMX_HEADER *) amx->base;
+    AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
+    funcstub->address = (ucell) addr;
+    return true;
 }
 
 #endif

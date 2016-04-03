@@ -16,44 +16,63 @@
 #include "AmxHelper.h"
 #include "Callbacks.h"
 
-#include "PluginBase.h"
-
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 {
-	return sampgdk::Supports() | SUPPORTS_VERSION | SUPPORTS_AMX_NATIVES | SUPPORTS_PROCESS_TICK;
+    return sampgdk::Supports() | SUPPORTS_VERSION | SUPPORTS_AMX_NATIVES | SUPPORTS_PROCESS_TICK;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 {
-	if (sampgdk::Load(ppData))
-	{
-		pluginInit(ppData);
-		return OnLoadPlugin();
-	}
-	return false;
+    if (sampgdk::Load(ppData))
+    {
+        pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
+        return Shoebill::GetInstance().OnPluginLoad();
+    }
+    return false;
 }
 
 PLUGIN_EXPORT void PLUGIN_CALL Unload()
 {
-	OnUnloadPlugin();
-	sampgdk::Unload();
+    Shoebill::GetInstance().OnPluginUnload();
+    sampgdk::Unload();
 
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 {
-	OnAmxLoad(amx);
-	return AMX_ERR_NONE;
+    Shoebill::GetInstance().OnAmxLoad(amx);
+    return AMX_ERR_NONE;
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX *amx)
 {
-	OnAmxUnload(amx);
-	return AMX_ERR_NONE;
+    Shoebill::GetInstance().OnAmxUnload(amx);
+    return AMX_ERR_NONE;
 }
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
 {
-	sampgdk::ProcessTick();
-	OnProcessTick();
+    sampgdk::ProcessTick();
+    Shoebill::GetInstance().OnProcessTick();
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell *params, cell *retval)
+{
+    bool foundFunction = false;
+    auto result = InvokeCallback(amx, name, params, foundFunction); //call Java function if there is any to execute
+    if (foundFunction)
+    {
+        if (retval) *retval = result; //Set returnvalue
+        if (ShouldCancelCallback(name, result)) return false;
+    }
+    auto hook = CallHookedCallback(amx, name, params); //Execute custom hook
+    if (hook)
+    {
+        auto willCancel = hook[1];
+        if (retval) *retval = hook[0];
+        delete hook;
+        if (willCancel == 1)
+            return false;
+    }
+    return true;
 }

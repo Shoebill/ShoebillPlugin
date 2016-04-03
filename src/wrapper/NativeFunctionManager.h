@@ -31,37 +31,37 @@
 
 struct HookedNative
 {
-	AMX_NATIVE function;
-	std::string name;
-	std::shared_ptr<SimpleInlineHook> *hook;
-	int index;
+    AMX_NATIVE function;
+    std::string name;
+    std::shared_ptr<SimpleInlineHook> *hook;
 };
 
 class NativeFunctionManager
 {
 public:
 
-	static NativeFunctionManager &get();
+    static NativeFunctionManager &GetInstance();
 
-	NativeFunctionManager();
+    NativeFunctionManager();
 
-	~NativeFunctionManager();
+    ~NativeFunctionManager();
 
-	void registerFunction(AMX *amx, std::string name, AMX_NATIVE functionAddr, int index);
+    void RegisterFunction(AMX *amx, std::string name, AMX_NATIVE functionAddr, int index);
 
-	/*std::map<std::string, HookedNative *> getNatives();
+    /*std::map<std::string, HookedNative *> getNatives();
 
-	AMX_NATIVE findFunction(char const *name);
+    AMX_NATIVE findFunction(char const *name);
 
-	std::string getFunctionName(int index);*/
+    std::string getFunctionName(int index);*/
 
-	void hookFunction(AMX *amx, AMX_NATIVE function, const char *name, int index);
+    void HookFunction(AMX *amx, AMX_NATIVE function, const char *name, int index);
 
-	void clearFunctions();
+    void ClearFunctions();
 
 private:
-	NativeFunctionManager(const NativeFunctionManager &) = delete;
-	NativeFunctionManager &operator=(const NativeFunctionManager &) = delete;
+    NativeFunctionManager(const NativeFunctionManager &) = delete;
+
+    NativeFunctionManager &operator=(const NativeFunctionManager &) = delete;
 };
 
 #endif

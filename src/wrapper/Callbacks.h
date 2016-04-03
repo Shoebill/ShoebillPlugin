@@ -17,21 +17,17 @@
 #ifndef __CALLBACKS_H__
 #define __CALLBACKS_H__
 
-#include <map>
-#include <iostream>
-#include "samp.h"
-#include <jni.h>
+#include "Shoebill.h"
 
-// Plugin Callbacks
-bool OnLoadPlugin();
+int *CallHookedCallback(AMX *amx, std::string name, cell *params);
 
-void OnUnloadPlugin();
+cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params);
 
-void OnAmxLoad(AMX *amx);
-
-void OnAmxUnload(AMX *amx);
-
-void OnProcessTick();
+const static AMX_NATIVE_INFO PluginExports[]
+        {
+                {"CallShoebillFunction", CallShoebillFunction},
+                {NULL, NULL}
+        };
 
 // SA:MP Callbacks
 cell n_OnGameModeInit(AMX *amx, cell *params);
@@ -147,8 +143,6 @@ cell n_OnPlayerGiveDamageActor(AMX *amx, cell *params);
 cell n_OnVehicleSirenStateChange(AMX *amx, cell *params);
 
 // AMX Callbacks
-
-int CallRegisteredFunction(AMX *amx, std::string functionName, jobjectArray parameters);
 
 int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid,
                         int color1, int color2, int respawn_delay, int addsiren);
@@ -298,22 +292,16 @@ int OnAmxCreateActor(int actorid, int modelid, float x, float y, float z, float 
 
 int OnAmxDestroyActor(int actorid);
 
-int RestartShoebill();
+cell InvokeCallback(AMX *, std::string, cell *, bool &);
 
-cell invokeCallback(AMX *, std::string, cell *, bool &);
+bool ShouldCancelCallback(std::string, cell);
 
-int StartShoebill();
+bool HookCallback(std::string name, std::string types);
 
-bool shouldCancelCallback(std::string, cell);
-
-bool hookCallback(std::string name, std::string types);
-
-bool unhookCallback(std::string name);
+bool UnhookCallback(std::string name);
 
 std::map<std::string, std::string>::iterator getIterator(std::string name);
 
 std::map<std::string, std::string>::const_iterator getEnd();
-
-int *callHookedCallback(AMX *amx, std::string name, cell *params);
 
 #endif

@@ -4,6 +4,8 @@ include(Plugin)
 find_package(JNI REQUIRED)
 add_definitions(-DSAMPGDK_AMALGAMATION)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-DSHOEBILL_DEBUG")
+
 if (UNIX)
     find_package(Iconv REQUIRED)
 endif ()
@@ -38,9 +40,9 @@ endif ()
 include_directories(shoebill wrapper sampplugin hook)
 
 set(SHOEBILL_SOURCES shoebill/EncodingUtils.cpp shoebill/EncodingUtils.h shoebill/JniUtils.cpp shoebill/JniUtils.h
-        shoebill/linux.cpp shoebill/linux.h shoebill/ShoebillMain.cpp shoebill/ShoebillMain.h shoebill/JniFunctions.h shoebill/JniFunctions.cpp
-        wrapper/AmxHelper.h wrapper/AmxInstanceManager.hpp wrapper/Callbacks.cpp wrapper/Callbacks.h wrapper/exports.def wrapper/NativeFunctionManager.cpp wrapper/NativeFunctionManager.h wrapper/PluginBase.cpp wrapper/PluginBase.h
-        wrapper/PluginMain.cpp wrapper/samp.h sampgdk.c sampgdk.h)
+        shoebill/JniFunctions.h shoebill/JniFunctions.cpp wrapper/AmxHelper.h wrapper/AmxInstanceManager.hpp
+        wrapper/Callbacks.cpp wrapper/Callbacks.h wrapper/exports.def wrapper/NativeFunctionManager.cpp wrapper/NativeFunctionManager.h
+        wrapper/PluginMain.cpp sampgdk.c sampgdk.h shoebill/Shoebill.cpp shoebill/Shoebill.h)
 
 add_subdirectory(sampplugin)
 add_subdirectory(hook)

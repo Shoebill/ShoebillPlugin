@@ -86,6 +86,7 @@
 #if !defined _MAX_PATH && !defined PATH_MAX
 /* no _MAX_PATH and no MAX_PATH, perhaps it is in stdlib.h */
 #include <stdlib.h>
+
 #endif
 /* if _MAX_PATH is undefined, try common alternative names */
 #if !defined _MAX_PATH
