@@ -83,7 +83,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
- * Method:    HookCallback
+ * Method:    hookCallback
  * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallback
@@ -91,7 +91,7 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallba
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
- * Method:    UnhookCallback
+ * Method:    unhookCallback
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unhookCallback
@@ -99,15 +99,15 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unhookCall
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
- * Method:    RegisterFunction
- * Signature: (ILjava/lang/String;Ljava/lang/String;)Z
+ * Method:    registerFunction
+ * Signature: (ILjava/lang/String;[Ljava/lang/Class;)Z
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFunction
         (JNIEnv *, jclass, jint, jstring, jobjectArray);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
- * Method:    UnregisterFunction
+ * Method:    unregisterFunction
  * Signature: (ILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unregisterFunction
@@ -290,7 +290,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerObjec
         (JNIEnv *, jclass, jint, jint, jobject);
 
 /*
- * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Class:     net_gtaun_shoebfill_SampNativeFunction
  * Method:    setPlayerObjectRot
  * Signature: (IIFFF)V
  */
@@ -903,8 +903,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerLastS
  * Signature: (IIIIFFFFFFFFFII)Z
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerAttachedObject
-        (JNIEnv *, jclass, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat,
-         jfloat, jint, jint);
+        (JNIEnv *, jclass, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jint);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
@@ -1601,6 +1600,86 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleV
  */
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash
         (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    setServerVarInt
+ * Signature: (Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarInt
+        (JNIEnv *, jclass, jstring, jint);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerVarAsInt
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsInt
+        (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    setServerVarString
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarString
+        (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerVarAsString
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsString
+        (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    setServerVarFloat
+ * Signature: (Ljava/lang/String;F)V
+ */
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarFloat
+        (JNIEnv *, jclass, jstring, jfloat);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerVarAsFloat
+ * Signature: (Ljava/lang/String;)F
+ */
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsFloat
+        (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    deleteServerVar
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deleteServerVar
+        (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerVarsUpperIndex
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarsUpperIndex
+        (JNIEnv *, jclass);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerVarType
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarType
+        (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_gtaun_shoebill_SampNativeFunction
+ * Method:    getServerVarNameAtIndex
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarNameAtIndex
+        (JNIEnv *, jclass, jint);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction

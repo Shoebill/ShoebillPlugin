@@ -2230,6 +2230,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createExplosio
     CreateExplosionForPlayer(playerid, x, y, z, type, radius);
 }
 
+
+JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarNameAtIndex
+        (JNIEnv *env, jclass, jint index)
+{
+    char* varname = NULL;
+    int len = 0;
+    GetSVarNameAtIndex(index, varname, len);
+
+    return env->NewStringUTF(varname);
+}
+
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    sendClientMessage
@@ -2836,6 +2847,24 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVa
     return env->NewString(wstr, len);
 }
 
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarFloat
+        (JNIEnv *env, jclass, jstring varname, jfloat value)
+{
+    auto str_varname = env->GetStringUTFChars(varname, NULL);
+
+    SetSVarFloat(str_varname, value);
+
+    env->ReleaseStringUTFChars(varname, str_varname);
+}
+
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarInt
+        (JNIEnv *env, jclass, jstring varname, jint value)
+{
+    auto str_varname = env->GetStringUTFChars(varname, NULL);
+    SetSVarInt(str_varname, value);
+    env->ReleaseStringUTFChars(varname, str_varname);
+}
+
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getServerVarAsInt
@@ -2852,20 +2881,60 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAs
     return ret;
 }
 
+JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarString
+        (JNIEnv *env, jclass, jstring varname, jstring value)
+{
+    auto str_varname = env->GetStringUTFChars(varname, NULL);
+    auto str_value = env->GetStringUTFChars(value, NULL);
+
+    SetSVarString(str_varname, str_value);
+
+    env->ReleaseStringUTFChars(varname, str_varname);
+    env->ReleaseStringUTFChars(value, str_value);
+}
+
 /*
  * Class:     net_gtaun_shoebill_samp_SampNativeFunction
  * Method:    getServerVarAsBool
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsBool
+JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsFloat
         (JNIEnv *env, jclass, jstring varname)
 {
     auto str_varname = env->GetStringUTFChars(varname, NULL);
 
-    auto ret = GetServerVarAsBool(str_varname);
+    auto ret = GetSVarFloat(str_varname);
 
     env->ReleaseStringUTFChars(varname, str_varname);
-    return (jboolean) ret;
+    return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deleteServerVar
+        (JNIEnv *env, jclass, jstring varname)
+{
+    auto str_varname = env->GetStringUTFChars(varname, NULL);
+
+    auto result = DeleteSVar(str_varname);
+
+    env->ReleaseStringUTFChars(varname, str_varname);
+    return (jboolean) result;
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarsUpperIndex
+        (JNIEnv *env, jclass)
+{
+    return GetSVarsUpperIndex();
+}
+
+JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarType
+        (JNIEnv *env, jclass, jstring varname)
+{
+    auto str_varname = env->GetStringUTFChars(varname, NULL);
+
+    auto result = GetSVarType(str_varname);
+
+    env->ReleaseStringUTFChars(varname, str_varname);
+    return result;
 }
 
 /*
@@ -4937,28 +5006,23 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleV
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash(JNIEnv *env, jclass, jstring jPassword,
                                                                                 jstring jSalt)
 {
-    /*auto wmsg = env->GetStringChars(jPassword, NULL);
+    auto wmsg = env->GetStringChars(jPassword, NULL);
     int len = env->GetStringLength(jPassword);
 
     auto wmsgSalt = env->GetStringChars(jSalt, NULL);
     int saltLen = env->GetStringLength(jSalt);
 
     char password[1024];
-    wcs2mbs(getServerCodepage(), wmsg, len, password, sizeof(password));
+    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, password, sizeof(password));
     env->ReleaseStringChars(jPassword, wmsg);
 
     char salt[1024];
-    wcs2mbs(getServerCodepage(), wmsgSalt, saltLen, salt, sizeof(salt));
+    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsgSalt, saltLen, salt, sizeof(salt));
     env->ReleaseStringChars(jSalt, wmsgSalt);
 
     char hash[1024];
-    //TODO: fix SHA256_PassHash(password, salt, &hash[0], sizeof(hash));
+    int hash_len = 0;
+    SHA256_PassHash(password, salt, hash, hash_len);
 
-    jchar tempChars[sizeof(hash)];
-    for (int i = 0; i < sizeof(tempChars) / sizeof(jchar); i++)
-    {
-        tempChars[i] = hash[i];
-    }
-    return env->NewString(tempChars, strlen(hash));*/
-    return NULL;
+    return env->NewStringUTF(hash);
 }
