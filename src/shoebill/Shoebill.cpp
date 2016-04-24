@@ -229,7 +229,7 @@ void Shoebill::OnShoebillLoad()
 
 bool Shoebill::OnPluginLoad()
 {
-    sampgdk_logprintf("  > Shoebill 1.2 NativePlugin for SA-MP 0.3.7 by MK124, JoJLlmAn & 123marvin123");
+    sampgdk_logprintf("  > Shoebill 1.3 NativePlugin for SA-MP 0.3.7 by MK124, JoJLlmAn & 123marvin123");
 
     char classpath[2048] = {0};
     if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
