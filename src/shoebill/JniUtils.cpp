@@ -33,7 +33,7 @@ int jni_jvm_create(JNIEnv **env, const char *clspath, const char *jvmOptionPath)
 {
     if (jvm != NULL) return -1;
 
-    char* classPathOptions = (char *) "-Djava.class.path=";
+    char classPathOptions[2048] = "-Djava.class.path=";
     strcat(classPathOptions, clspath);
 
     std::vector<char *> optionStrings;
@@ -55,7 +55,7 @@ int jni_jvm_create(JNIEnv **env, const char *clspath, const char *jvmOptionPath)
 
     JavaVMOption *options = new JavaVMOption[optionStrings.size() + 2];
     options[0].optionString = classPathOptions;
-    options[1].optionString = (char *) "-Djava.library.path=./plugins";
+    options[1].optionString = "-Djava.library.path=./plugins";
     for (unsigned int i = 0; i < optionStrings.size(); i++)
     {
         options[i + 2].optionString = optionStrings[i];

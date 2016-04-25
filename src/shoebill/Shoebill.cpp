@@ -210,7 +210,9 @@ int Shoebill::Uninitialize(JNIEnv *env)
     if (shoebillLauncherClass) env->DeleteGlobalRef(shoebillLauncherClass);
     shoebillLauncherClass = NULL;
     initialized = false;
+#if defined(LINUX)
     codepages.clear(); //Clear Codepages
+#endif
     return 0;
 }
 

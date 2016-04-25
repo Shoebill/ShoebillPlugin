@@ -190,7 +190,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
             amx_StrParam(amx, iterationCell, parameterString);
             amx_GetAddr(amx, iterationCell, &phys_addr);
 
-            jchar wstr[strlen(parameterString)];
+            jchar wstr[sizeof parameterString];
             auto len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), parameterString, -1, wstr,
                                sizeof(wstr) / sizeof(wstr[0]));
 
