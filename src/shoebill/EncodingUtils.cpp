@@ -16,6 +16,25 @@
 
 #include "EncodingUtils.h"
 
+jstring mbs2wcs(JNIEnv *env, unsigned int codepage, const char *src, const int len) {
+    jchar *wtext = new jchar[len];
+    int wcsLen = mbs2wcs(codepage, src, -1, wtext, len);
+
+    return env->NewString(wtext, wcsLen);
+}
+
+char *wcs2mbs(JNIEnv *env, unsigned int codepage, const jstring src, const int destLen) {
+    int srcLen = env->GetStringLength(src);
+    const jchar *stringObject = env->GetStringChars(src, NULL);
+
+    char *dest = new char[destLen];
+
+    wcs2mbs(codepage, stringObject, srcLen, dest, destLen);
+    env->ReleaseStringChars(src, stringObject);
+
+    return dest;
+}
+
 #if defined(WIN32)
 #include <Windows.h>
 

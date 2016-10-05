@@ -17,9 +17,7 @@
 #define __AMX_HELPER_H__
 
 #include <string.h>
-
 #include "plugin.h"
-#include "sampgdk.h"
 
 typedef int AMXAPI(*amx_Exec_t)(AMX *amx, cell *retval, int index);
 

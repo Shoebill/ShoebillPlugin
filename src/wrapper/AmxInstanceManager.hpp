@@ -19,9 +19,7 @@
 #include <unordered_set>
 #include "amx/amx.h"
 #include <map>
-#include "sampgdk.h"
 #include <vector>
-#include <string>
 
 class AmxInstanceManager
 {
@@ -73,15 +71,15 @@ public:
         return registeredFunctions[amx].find(functionName) != registeredFunctions[amx].end();
     }
 
-    bool RegisterFunction(AMX *amx, std::string functionName, std::vector<std::string> classes)
+    bool RegisterFunction(AMX *amx, std::string functionName, std::vector<std::string> types)
     {
         if (RegisteredFunctionExists(amx, functionName))
             return false;
-        registeredFunctions[amx][functionName] = classes;
+        registeredFunctions[amx][functionName] = types;
         return true;
     }
 
-    std::vector<std::string> GetRegisteredParameters(AMX *amx, std::string functionName)
+    std::vector<std::string> GetParameterTypes(AMX *amx, std::string functionName)
     {
         if (!RegisteredFunctionExists(amx, functionName))
             return std::vector<std::string>();
@@ -96,7 +94,7 @@ public:
         return true;
     }
 
-    AMX *GetMainAmx()
+    AMX *GetMainAmx() const
     {
         return mainAmx;
     }

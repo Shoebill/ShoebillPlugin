@@ -9,11 +9,11 @@
 #include <set>
 #include "AmxInstanceManager.hpp"
 #include "AmxHelper.h"
-#include "NativeFunctionManager.h"
 
 #include "EncodingUtils.h"
 #include "JniUtils.h"
 #include <Callbacks.h>
+#include <sampgdk.h>
 
 #if defined(LINUX)
 
@@ -32,7 +32,7 @@ extern std::map<int, std::string> codepages;
 const char CODEPAGE_FILE_PATH[] = "./shoebill/codepages.txt";
 const char JVM_OPTION_FILE_PATH[] = "./shoebill/jvm_options.txt";
 
-const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher-1.3*.jar";
+const char JVM_CLASSPATH_SEARCH_PATH[] = "./shoebill/bootstrap/shoebill-launcher-2.0*.jar";
 const char LAUNCHER_CLASS_NAME[] = "net/gtaun/shoebill/ShoebillLauncher";
 
 const char RESOLVE_DEPENDENCIES_METHOD_NAME[] = "resolveDependencies";
@@ -61,55 +61,55 @@ public:
 
     int ReleaseShoebillObject(JNIEnv *);
 
-    int StartShoebill();
+    int Start();
 
-    int RestartShoebill();
+    int Restart();
 
-    void OnShoebillLoad();
+    void OnShoebillLoad() const;
 
     bool OnPluginLoad();
 
     bool OnPluginUnload();
 
-    void OnProcessTick();
+    void OnProcessTick() const;
 
-    void OnAmxLoad(AMX *amx);
+    void OnAmxLoad(AMX *amx) const;
 
-    void OnAmxUnload(AMX *amx);
+    void OnAmxUnload(AMX *amx) const;
 
-    int CallRegisteredFunction(AMX *, std::string, jobjectArray);
+    int CallRegisteredFunction(AMX *, std::string, jobjectArray) const;
 
-    void setPlayerCodepage(int playerid, int codepage)
+    void setPlayerCodepage(int playerid, unsigned int codepage)
     {
         playerCodepage[playerid] = codepage;
     }
 
-    int getPlayerCodepage(int playerid)
+    unsigned int getPlayerCodepage(int playerid)
     {
-        int codepage = playerCodepage[playerid];
+        unsigned int codepage = playerCodepage[playerid];
         return codepage == 0 ? serverCodepage : codepage;
     }
 
-    void setServerCodepage(int codepage)
+    void setServerCodepage(unsigned int codepage)
     {
         serverCodepage = codepage;
     }
 
-    int getServerCodepage()
+    unsigned int getServerCodepage() const
     {
         return serverCodepage;
     }
 
-    jobject getCallbackHandlerObject()
+    jobject getCallbackHandlerObject() const
     { return callbackHandlerObject; }
 
-    jclass getCallbackHandlerClass()
+    jclass getCallbackHandlerClass() const
     { return callbackHandlerClass; }
 
 private:
     bool initialized;
-    int serverCodepage = 1252;
-    int playerCodepage[MAX_PLAYERS] = {0};
+    unsigned int serverCodepage = 1252;
+    unsigned int playerCodepage[MAX_PLAYERS] = {0};
 
     jclass shoebillLauncherClass = NULL;
     jclass callbackHandlerClass = NULL;

@@ -11,12 +11,14 @@
 #include "Shoebill.h"
 #include <sampplugin/amx/amx.h>
 #include <wrapper/AmxInstanceManager.hpp>
-#include "NativeFunctionManager.h"
+#include <sampgdk.h>
 #include <array>
+#include <algorithm>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
  * Method:    setServerCodepage
@@ -71,7 +73,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
  * Signature: (III[Ljava/lang/Object;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction
-        (JNIEnv *, jclass, jint, jint, jint, jobjectArray);
+        (JNIEnv *, jclass, jint, jint, jint, jobjectArray, jobjectArray);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
@@ -79,7 +81,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
  * Signature: (III[Ljava/lang/Object;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
-        (JNIEnv *, jclass, jint, jint, jint, jobjectArray);
+        (JNIEnv *, jclass, jint, jint, jint, jobjectArray, jobjectArray);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction
@@ -87,7 +89,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
  * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallback
-        (JNIEnv *, jclass, jstring, jstring);
+        (JNIEnv *, jclass, jstring, jobjectArray);
 
 /*
  * Class:     net_gtaun_shoebill_SampNativeFunction

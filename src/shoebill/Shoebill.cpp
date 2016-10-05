@@ -11,26 +11,22 @@ Shoebill &Shoebill::GetInstance()
     return instance;
 }
 
-Shoebill::Shoebill()
-{
-}
+Shoebill::Shoebill() : initialized(false) {}
 
-Shoebill::~Shoebill()
-{
-
-}
+Shoebill::~Shoebill() {}
 
 int Shoebill::Initialize(JNIEnv *env)
 {
     if (initialized)
     {
-        LOG("[SHOEBILL] Shoebill is already initialized.");
+        LOG("[DEBUG SHOEBILL] Shoebill is already initialized.");
         return -2;
     }
     shoebillLauncherClass = env->FindClass(LAUNCHER_CLASS_NAME);
     if (!shoebillLauncherClass)
     {
         sampgdk_logprintf("  > Error: Can't find launcher class [%s].", LAUNCHER_CLASS_NAME);
+        sampgdk_logprintf("  > Please make sure that you use the correct launcher for this plugin.");
         return -1;
     }
 
@@ -41,6 +37,7 @@ int Shoebill::Initialize(JNIEnv *env)
     {
         sampgdk_logprintf("  > Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME,
                           LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN);
+        sampgdk_logprintf("  > Please make sure that you use the correct launcher for this plugin.");
         return -6;
     }
 
@@ -48,13 +45,14 @@ int Shoebill::Initialize(JNIEnv *env)
     if (env->ExceptionCheck())
     {
         jni_jvm_printExceptionStack(env);
-        sampgdk_logprintf("  > Error: Can't load Shoebill JNI library.");
+        sampgdk_logprintf("  > Error: Could not load the native library from the launcher class.");
+        sampgdk_logprintf("  > Please make sure that you use the correct launcher for this plugin.");
         return -7;
     }
     shoebillLauncherClass = (jclass) (env->NewGlobalRef(shoebillLauncherClass));
     jvm->AttachCurrentThread((void **) &env, NULL);
 
-    StartShoebill();
+    Start();
     initialized = true;
     return 0;
 }
@@ -63,7 +61,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
 {
     if (initialized)
     {
-        LOG("[SHOEBILL] Shoebill is already initialized!");
+        LOG("[SHOEBILL DEBUG] Shoebill is already initialized.");
         return -9;
     }
 
@@ -72,8 +70,9 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
                                                                           RESOLVE_DEPENDENCIES_METHOD_SIGN);
     if (!resolveDependenciesMethodID)
     {
-        sampgdk_logprintf("ShoebillPlugin Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME,
+        sampgdk_logprintf("  > Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME,
                           RESOLVE_DEPENDENCIES_METHOD_NAME, RESOLVE_DEPENDENCIES_METHOD_SIGN);
+        sampgdk_logprintf("  > Please make sure that you use the correct launcher for this plugin.");
         return -8;
     }
 
@@ -81,7 +80,9 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
     if (!context)
     {
         jni_jvm_printExceptionStack(env);
-        sampgdk_logprintf("ShoebillPlugin Error: Can't resolve dependencies.");
+        sampgdk_logprintf("  > Error: Shoebill couldn't resolve dependencies.");
+        sampgdk_logprintf(
+                "  > Please make sure that you use the correct launcher and dependency manager for this plugin.");
         return -2;
     }
 
@@ -89,9 +90,10 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
                                                                      CREATE_SHOEBILL_METHOD_SIGN);
     if (!createShoebillMethodID)
     {
-        sampgdk_logprintf(
-                "ShoebillPlugin Error: Can't find launcher method [%s::%s%s], maybe the launcher library is outdated.",
-                LAUNCHER_CLASS_NAME, CREATE_SHOEBILL_METHOD_NAME, CREATE_SHOEBILL_METHOD_SIGN);
+        sampgdk_logprintf("  > Error: Can't find launcher method [%s::%s%s]", LAUNCHER_CLASS_NAME,
+                          CREATE_SHOEBILL_METHOD_NAME,
+                          CREATE_SHOEBILL_METHOD_SIGN);
+        sampgdk_logprintf("  > Please make sure that you use the correct launcher for this plugin.");
         return -3;
     }
 
@@ -108,21 +110,23 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
     }
     jintArray amxHandleArray = env->NewIntArray(size);
     env->SetIntArrayRegion(amxHandleArray, 0, size, array);
-    delete array;
+    delete[] array;
 
     shoebillObject = env->CallStaticObjectMethod(shoebillLauncherClass, createShoebillMethodID, context,
                                                  amxHandleArray);
     if (!shoebillObject)
     {
         jni_jvm_printExceptionStack(env);
-        sampgdk_logprintf("ShoebillPlugin Error: Can't create shoebill object.");
+        sampgdk_logprintf("  > Error: Couldn't create Shoebill object.");
+        sampgdk_logprintf("  > Please make sure that you use the correct launcher for this plugin.");
         return -4;
     }
 
     shoebillClass = env->GetObjectClass(shoebillObject);
     if (!shoebillClass)
     {
-        sampgdk_logprintf("ShoebillPlugin Error: Can't get shoebill class.");
+        sampgdk_logprintf("  > Error: Couldn't get Shoebill class.");
+        sampgdk_logprintf("  > Please make sure that you use the correct launcher for this plugin.");
         return -5;
     }
 
@@ -139,7 +143,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
             if (code && charset[0])
             {
                 if (codepages.find(code) != codepages.end())
-                    sampgdk_logprintf("  > Error: Codepage already in use, %d=%s", code, codepages[code].c_str());
+                    sampgdk_logprintf("  > Error: Codepage is already in use, %d=%s", code, codepages[code].c_str());
                 else
                 {
                     codepages[code] = std::string(charset);
@@ -160,14 +164,16 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
                                                                    "()Lnet/gtaun/shoebill/samp/SampCallbackHandler;");
     if (!getCallbackHandlerMethodID)
     {
-        sampgdk_logprintf("ShoebillPlugin Error: Can't find method getCallbackHandler().");
+        sampgdk_logprintf("  > Error: Couldn't find the main callbackHandler.");
+        sampgdk_logprintf("  > Please make sure that you use the correct API and Runtime for this plugin.");
         return -6;
     }
 
     callbackHandlerObject = env->CallObjectMethod(shoebillObject, getCallbackHandlerMethodID);
     if (callbackHandlerObject == NULL)
     {
-        sampgdk_logprintf("ShoebillPlugin Error: Can't find main EventHandler.");
+        sampgdk_logprintf("  > Error: Couldn't find the main callbackHandler.");
+        sampgdk_logprintf("  > Please make sure that you use the correct API and Runtime for this plugin.");
         return -7;
     }
 
@@ -177,7 +183,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
     callbackHandlerClass = (jclass) (env->NewGlobalRef(env->GetObjectClass(callbackHandlerObject)));
     initialized = true;
     OnShoebillLoad();
-    sampgdk_logprintf("  > Shoebill has been initialized.");
+    sampgdk_logprintf("  > Shoebill has been initialized successfully.");
     return 0;
 }
 
@@ -185,7 +191,7 @@ int Shoebill::ReleaseShoebillObject(JNIEnv *env)
 {
     if (!initialized)
     {
-        LOG("[SHOEBILL] Shoebill is not yet initialized!");
+        LOG("[SHOEBILL DEBUG] Shoebill is not yet initialized!");
         return 0;
     }
 
@@ -216,7 +222,7 @@ int Shoebill::Uninitialize(JNIEnv *env)
     return 0;
 }
 
-void Shoebill::OnShoebillLoad()
+void Shoebill::OnShoebillLoad() const
 {
     if (!callbackHandlerObject) return;
 
@@ -231,7 +237,7 @@ void Shoebill::OnShoebillLoad()
 
 bool Shoebill::OnPluginLoad()
 {
-    sampgdk_logprintf("  > Shoebill 1.3 NativePlugin for SA-MP 0.3.7 by MK124, JoJLlmAn & 123marvin123");
+    sampgdk_logprintf("  > Shoebill 2.0 NativePlugin for SA-MP 0.3.7 by MK124, JoJLlmAn & 123marvin123");
 
     char classpath[2048] = {0};
     if (findAndGenerateClassPath(JVM_CLASSPATH_SEARCH_PATH, classpath) < 0)
@@ -240,15 +246,29 @@ bool Shoebill::OnPluginLoad()
         return false;
     }
     JNIEnv *env;
-    if (jni_jvm_create(&env, classpath, JVM_OPTION_FILE_PATH) < 0)
+    auto createResult = jni_jvm_create(&env, classpath, JVM_OPTION_FILE_PATH);
+    if (createResult < 0)
     {
-        sampgdk_logprintf("  > Error: Can't create Java VM.");
+        sampgdk_logprintf("  > Error: The Java VM could not be created.");
+        switch (createResult) {
+            case -1:
+                sampgdk_logprintf("  > It looks like the JVM has already been initialized.");
+                break;
+            case -3:
+                sampgdk_logprintf("  > Please make sure that you use Java 8 32 Bit (not 64 Bit) to run Shoebill.");
+                break;
+            default:
+                sampgdk_logprintf("  > The reason is unknown (Error code %i).", createResult);
+                break;
+        }
         return false;
     }
-    sampgdk_logprintf("  > Java VM has been created.");
-    jvm->AttachCurrentThread((void **) &env, NULL);
-    int ret = Initialize(env);
-    return ret >= 0;
+    if (createResult == 0) {
+        sampgdk_logprintf("  > The Java VM has been successfully created.");
+        jvm->AttachCurrentThread((void **) &env, NULL);
+        return Initialize(env) >= 0;
+    }
+    return false;
 }
 
 bool Shoebill::OnPluginUnload()
@@ -266,17 +286,17 @@ bool Shoebill::OnPluginUnload()
     Uninitialize(env);
     if (jni_jvm_destroy(env) >= 0)
     {
-        sampgdk_logprintf("  > Java VM has been destroyed.");
+        sampgdk_logprintf("  > The Java VM has been successfully destroyed.");
         return true;
     }
     return false;
 }
 
-int Shoebill::StartShoebill()
+int Shoebill::Start()
 {
     if (initialized)
     {
-        LOG("[SHOEBILL] Shoebill is already started.");
+        LOG("[SHOEBILL DEBUG] Shoebill is already initialized.");
         return 0;
     }
     JNIEnv *env = NULL;
@@ -284,7 +304,7 @@ int Shoebill::StartShoebill()
     return CreateShoebillObject(env);
 }
 
-void Shoebill::OnProcessTick()
+void Shoebill::OnProcessTick() const
 {
     if (!callbackHandlerObject) return;
 
@@ -298,7 +318,7 @@ void Shoebill::OnProcessTick()
     jni_jvm_printExceptionStack(env);
 }
 
-int Shoebill::RestartShoebill()
+int Shoebill::Restart()
 {
     JNIEnv *env;
     jvm->AttachCurrentThread((void **) &env, NULL);
@@ -308,7 +328,7 @@ int Shoebill::RestartShoebill()
     return 1;
 }
 
-int Shoebill::CallRegisteredFunction(AMX *amx, std::string functionName, jobjectArray parameters)
+int Shoebill::CallRegisteredFunction(AMX *amx, std::string functionName, jobjectArray parameters) const
 {
     if (!callbackHandlerObject) return -1;
 
@@ -326,7 +346,7 @@ int Shoebill::CallRegisteredFunction(AMX *amx, std::string functionName, jobject
     return result;
 }
 
-void Shoebill::OnAmxLoad(AMX *amx)
+void Shoebill::OnAmxLoad(AMX *amx) const
 {
     amx_Register(amx, PluginExports, -1);
     AmxInstanceManager::GetInstance().RegisterAmx(amx);
@@ -340,18 +360,9 @@ void Shoebill::OnAmxLoad(AMX *amx)
 
     env->CallVoidMethod(callbackHandlerObject, jmid, amx);
     jni_jvm_printExceptionStack(env);
-
-    int count;
-    auto natives = sampgdk::GetNatives(count);
-    for (int i = 0; i < count; i++)
-    {
-        const AMX_NATIVE_INFO native = *natives;
-        NativeFunctionManager::GetInstance().RegisterFunction(amx, native.name, native.func, i);
-        ++natives;
-    }
 }
 
-void Shoebill::OnAmxUnload(AMX *amx)
+void Shoebill::OnAmxUnload(AMX *amx) const
 {
     AmxInstanceManager::GetInstance().UnregisterAmx(amx);
     if (!callbackHandlerObject) return;

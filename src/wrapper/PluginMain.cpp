@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <sampgdk.h>
 #include "AmxHelper.h"
 #include "Callbacks.h"
 
@@ -35,7 +36,6 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 {
     Shoebill::GetInstance().OnPluginUnload();
     sampgdk::Unload();
-
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
@@ -59,20 +59,20 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
 PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell *params, cell *retval)
 {
     bool foundFunction = false;
-    auto result = InvokeCallback(amx, name, params, foundFunction); //call Java function if there is any to execute
+    auto result = InvokeCallback(amx, name, params, foundFunction);
     if (foundFunction)
     {
-        if (retval) *retval = result; //Set returnvalue
-        if (ShouldCancelCallback(name, result)) return false;
-    }
-    auto hook = CallHookedCallback(amx, name, params); //Execute custom hook
-    if (hook)
-    {
-        auto willCancel = hook[1];
-        if (retval) *retval = hook[0];
-        delete hook;
-        if (willCancel == 1)
+        if (retval) *retval = result;
+        if (ShouldCancelCallback(name, result)) {
             return false;
+        }
+    }
+    bool success = false;
+    auto hook = CallHookedCallback(amx, name, params, success);
+    if (success)
+    {
+        if (retval) *retval = hook[0];
+        if (hook[1]) return false;
     }
     return true;
 }

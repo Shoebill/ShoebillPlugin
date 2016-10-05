@@ -41,8 +41,8 @@ include_directories(shoebill wrapper sampplugin hook)
 
 set(SHOEBILL_SOURCES shoebill/EncodingUtils.cpp shoebill/EncodingUtils.h shoebill/JniUtils.cpp shoebill/JniUtils.h
         shoebill/JniFunctions.h shoebill/JniFunctions.cpp wrapper/AmxHelper.h wrapper/AmxInstanceManager.hpp
-        wrapper/Callbacks.cpp wrapper/Callbacks.h wrapper/exports.def wrapper/NativeFunctionManager.cpp wrapper/NativeFunctionManager.h
-        wrapper/PluginMain.cpp sampgdk.c sampgdk.h shoebill/Shoebill.cpp shoebill/Shoebill.h)
+        wrapper/Callbacks.cpp wrapper/Callbacks.h wrapper/exports.def wrapper/PluginMain.cpp sampgdk.c sampgdk.h
+        shoebill/Shoebill.cpp shoebill/Shoebill.h)
 
 add_subdirectory(sampplugin)
 add_subdirectory(hook)

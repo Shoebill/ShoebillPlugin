@@ -1404,7 +1404,7 @@ int sampgdk_array_grow(struct sampgdk_array *a)
         return sampgdk_array_resize(a, 1);
     }
 
-    return sampgdk_array_resize(a, (int) (a->size * 2));
+    return sampgdk_array_resize(a, a->size * 2);
 }
 
 int sampgdk_array_shrink(struct sampgdk_array *a)

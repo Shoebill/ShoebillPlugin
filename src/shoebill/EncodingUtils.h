@@ -18,4 +18,8 @@
 
 int mbs2wcs(unsigned int codepage, const char *src, int srclen, unsigned short *dst, int dstlen);
 
+jstring mbs2wcs(JNIEnv *env, unsigned int codepage, const char *src, const int len);
+
 int wcs2mbs(unsigned int codepage, const unsigned short *src, int srclen, char *dst, int dstlen);
+
+char *wcs2mbs(JNIEnv *env, unsigned int codepage, const jstring src, const int destLen);

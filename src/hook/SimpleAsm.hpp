@@ -27,17 +27,17 @@ public:
     {
     }
 
-    SimpleAsm(void *address) : _address((unsigned char *) address)
+    explicit SimpleAsm(void *address) : _address((unsigned char *) address)
     {
     }
 
-    inline void init(void *address)
+    void init(void *address)
     {
         _address = (unsigned char *) address;
         _origin.clear();
     }
 
-    inline void jmp(void *address)
+    void jmp(void *address)
     {
         _origin.insert(_origin.end(), _address, _address + 5);
         *(_address++) = 0xE9;
@@ -45,7 +45,7 @@ public:
         _address += 4;
     }
 
-    inline void movEBP(char offset, void *value)
+    void movEBP(char offset, void *value)
     {
         _origin.insert(_origin.end(), _address, _address + 7);
         *(_address++) = 0xC7;
@@ -55,7 +55,7 @@ public:
         _address += 4;
     }
 
-    inline void reset()
+    void reset()
     {
         _address -= _origin.size();
         std::memcpy(_address, &_origin[0], _origin.size());

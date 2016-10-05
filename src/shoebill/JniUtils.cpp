@@ -94,6 +94,12 @@ int jni_jvm_printExceptionStack(JNIEnv *env)
     return 0;
 }
 
+void jni_jvm_throwNullPointerException(JNIEnv *env, const char *paramName, const char *functionName) {
+    char buffer[512];
+    sprintf(buffer, "Parameter '%s' in function '%s' cannot be null.", paramName, functionName);
+    env->ThrowNew(env->FindClass("java/lang/NullPointerException"), buffer);
+}
+
 int jni_jvm_constructObject(JNIEnv *env, jclass jcls, jobject *pjobj)
 {
     if (!jvm) return -1;
@@ -143,61 +149,54 @@ jobject makeObjectFromReturnType(JNIEnv *env, jint returnType, AMX *amx, cell re
         amx_StrParam(amx, retval, result);
         auto cls = env->FindClass("java/lang/String");
         auto methodID = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;)V");
-        //TODO: test
+        //TODO: fix
         return env->NewObject(cls, methodID, result);
     }
     return nullptr;
 }
 
-void pushJavaString(JNIEnv *env, AMX *amx, jobject object, std::vector<cell> &stringCells)
-{
-    auto string = static_cast<jstring>(object);
-    auto content = env->GetStringUTFChars(string, NULL);
-    cell strCell;
-    amx_PushString(amx, &strCell, NULL, content, 0, 0);
-    stringCells.push_back(strCell);
-    env->ReleaseStringUTFChars(string, content);
-}
-
-void pushJavaInteger(JNIEnv *env, AMX *amx, jobject object)
+jobject makeJavaInteger(JNIEnv *env, int value)
 {
     static auto integerClass = env->FindClass("java/lang/Integer");
-    static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
-    auto value = env->CallIntMethod(object, methodId);
-    amx_Push(amx, static_cast<cell>(value));
+    static auto integerMethodID = env->GetMethodID(integerClass, "<init>", "(I)V");
+    auto integer = env->NewObject(integerClass, integerMethodID, value);
+    return integer;
 }
 
-void pushJavaFloat(JNIEnv *env, AMX *amx, jobject object)
+jobject makeJavaFloat(JNIEnv *env, float value)
 {
+    static auto floatClass = env->FindClass("java/lang/Float");
+    static auto floatMethodID = env->GetMethodID(floatClass, "<init>", "(F)V");
+    return env->NewObject(floatClass, floatMethodID, value);
+}
+
+jobjectArray makeJavaObjectArray(JNIEnv *env, int len)
+{
+    static auto objectClass = env->FindClass("java/lang/Object");
+    return env->NewObjectArray(len, objectClass, 0);
+}
+
+jintArray makeJavaIntArray(JNIEnv *env, int len)
+{
+    return env->NewIntArray(len);
+}
+
+jfloatArray makeJavaFloatArray(JNIEnv *env, int len)
+{
+    return env->NewFloatArray(len);
+}
+
+int getIntegerFromObject(JNIEnv *env, jobject object) {
+    static auto integerClass = env->FindClass("java/lang/Integer");
+    static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
+    return env->CallIntMethod(object, methodId);
+}
+
+float getFloatFromObject(JNIEnv *env, jobject object) {
     static auto floatClass = env->FindClass("java/lang/Float");
     static auto methodId = env->GetMethodID(floatClass, "floatValue", "()F");
     auto value = env->CallFloatMethod(object, methodId);
-    amx_Push(amx, amx_ftoc(value));
-}
-
-void pushJavaReferenceFloatInt(JNIEnv *env, AMX *amx, jobject object,
-                               std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> &references,
-                               std::string className)
-{
-    cell amx_addr, *phys_addr;
-    amx_Allot(amx, 1, &amx_addr, &phys_addr);
-    amx_Push(amx, amx_addr);
-    references[std::pair<jobject, std::string>(object, className)] = std::pair<cell *, cell>(
-            phys_addr, amx_addr);
-}
-
-void pushJavaReferenceString(JNIEnv *env, AMX *amx, jobject object,
-                             std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> &references,
-                             std::string className)
-{
-    auto objectClass = env->GetObjectClass(object);
-    auto lengthMethodId = env->GetMethodID(objectClass, "getLength", "()I");
-    auto length = env->CallIntMethod(object, lengthMethodId);
-    cell amx_str, *amx_str_phys;
-    amx_Allot(amx, length, &amx_str, &amx_str_phys);
-    amx_Push(amx, amx_str);
-    references[std::pair<jobject, std::string>(object, className)] = std::pair<cell *, cell>(
-            amx_str_phys, amx_str);
+    return value;
 }
 
 #if defined(WIN32)

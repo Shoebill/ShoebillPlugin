@@ -76,8 +76,7 @@ cell InvokeCallback(AMX *amx, std::string name, cell *params, bool &foundFunctio
             {"OnVehicleSirenStateChange",   n_OnVehicleSirenStateChange}
     };
     auto it = callbackMap.find(name);
-    if (it != callbackMap.end())
-    {
+    if (it != callbackMap.end()) {
         foundFunction = true;
         return it->second(amx, params);
     }
@@ -109,352 +108,285 @@ bool ShouldCancelCallback(std::string callbackName, cell returnValue)
             {"OnVehicleRespray",            0}
     };
     auto it = callbackCancelValues.find(callbackName);
-    if (it != callbackCancelValues.end())
-    {
+    if (it != callbackCancelValues.end()) {
         return it->second == returnValue;
     }
     return false;
 }
 
-std::map<std::string, std::string> shoebillHookedCallbacks;
+std::map<std::string, std::vector<std::string>> hookedCallbacks;
 Shoebill &shoebill = Shoebill::GetInstance();
 
-std::map<std::string, std::string>::iterator getIterator(std::string name)
+bool HookCallback(std::string name, std::vector<std::string> types)
 {
-    return shoebillHookedCallbacks.find(name);
-}
-
-std::map<std::string, std::string>::const_iterator getEnd()
-{
-    return shoebillHookedCallbacks.end();
-}
-
-bool HookCallback(std::string name, std::string types)
-{
-    shoebillHookedCallbacks[name] = types;
+    hookedCallbacks[name] = types;
     return true;
 }
 
 bool UnhookCallback(std::string name)
 {
-    auto it = shoebillHookedCallbacks.find(name);
-    if (it == shoebillHookedCallbacks.end())
+    auto it = hookedCallbacks.find(name);
+    if (it == hookedCallbacks.end())
         return false;
-    shoebillHookedCallbacks.erase(name);
+    hookedCallbacks.erase(name);
     return true;
 }
 
 cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params)
 {
-    int parameterCount = (int) (params[0] / sizeof(cell));
-    char* function = NULL;
-    amx_StrParam(amx, params[1], function);
+    char function[64];
+    amx_GetString(amx, params[1], function, 64);
     std::string functionName = std::string(function);
-    if (!AmxInstanceManager::GetInstance().RegisteredFunctionExists(amx, functionName))
-    {
+    if (!AmxInstanceManager::GetInstance().RegisteredFunctionExists(amx, functionName)) {
         sampgdk_logprintf("[SHOEBILL] Function %s is not registered.", function);
         return -1;
     }
-    auto definedParameters = AmxInstanceManager::GetInstance().GetRegisteredParameters(amx, functionName);
-    signed int shouldHaveParameterCount = definedParameters.size();
-    for (auto string : definedParameters)
-    {
-        if (string.find("[") == 0)
-            shouldHaveParameterCount += 1;
+    auto types = AmxInstanceManager::GetInstance().GetParameterTypes(amx, functionName);
+    signed int shouldBeCount = 0;
+    int parameterCount = (int) (params[0] / sizeof(cell));
+    for (unsigned int i = 0; i < types.size(); i++) {
+        auto type = types[i];
+        if (type.find("[") != std::string::npos) shouldBeCount += 2;
+        else shouldBeCount += 1;
     }
-    if (parameterCount - 1 != shouldHaveParameterCount)
-    {
+    if (parameterCount - 1 != shouldBeCount) {
         sampgdk_logprintf("[SHOEBILL] Calling %s with %i parameters, but was expecting %i parameters.", function,
-                          parameterCount - 1, shouldHaveParameterCount);
+                          parameterCount - 1, shouldBeCount);
         return -1;
     }
+
     JNIEnv *env;
     jvm->AttachCurrentThread((void **) &env, NULL);
 
-    static auto integerClass = env->FindClass("java/lang/Integer");
-    static auto floatClass = env->FindClass("java/lang/Float");
-    static auto boolClass = env->FindClass("java/lang/Boolean");
-    static auto objectClass = env->FindClass("java/lang/Object");
+    auto objectArray = makeJavaObjectArray(env, shouldBeCount);
+    auto globalObjectArray = env->NewGlobalRef(objectArray);
 
-    auto objectArray = env->NewObjectArray(definedParameters.size(), objectClass, NULL);
-    env->NewGlobalRef(objectArray);
-    std::vector<std::pair<cell *, std::string>> referenceValues;
-    std::map<cell *, int> arrayLengths;
-    for (unsigned int i = 0, pawnIndex = 0; i < definedParameters.size(); i++, pawnIndex++)
-    {
-        auto iterationCell = params[pawnIndex + 2];
-        if (definedParameters[i] == "java.lang.String")
-        {
-            char* parameterString = NULL;
-            cell *phys_addr = nullptr;
-            amx_StrParam(amx, iterationCell, parameterString);
-            amx_GetAddr(amx, iterationCell, &phys_addr);
+    std::vector<cell *> referenceValues;
 
-            jchar wstr[sizeof parameterString];
-            auto len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), parameterString, -1, wstr,
-                               sizeof(wstr) / sizeof(wstr[0]));
+    for (unsigned int i = 0, p = 2; i < types.size(); i++) {
+        cell *phys_addr;
+        amx_GetAddr(amx, params[p], &phys_addr);
+        referenceValues.push_back(phys_addr);
 
-            auto string = env->NewString(wstr, len);
-            env->SetObjectArrayElement(objectArray, i, string);
-            referenceValues.push_back(std::pair<cell *, std::string>(phys_addr, definedParameters[i]));
+        if (types[i] == "s") {
+            char parameterString[1024];
+            amx_GetString(amx, params[p], parameterString, 1024);
+            env->SetObjectArrayElement(objectArray, i,
+                                       mbs2wcs(env, shoebill.getServerCodepage(), parameterString, 1024));
+            p += 1;
+        } else if (types[i] == "i") {
+            env->SetObjectArrayElement(objectArray, i, makeJavaInteger(env, *phys_addr));
+            p += 1;
+        } else if (types[i] == "f") {
+            env->SetObjectArrayElement(objectArray, i, makeJavaFloat(env, amx_ctof(*phys_addr)));
+            p += 1;
         }
-        else if (definedParameters[i] == "java.lang.Integer")
-        {
-            static auto methodId = env->GetMethodID(integerClass, "<init>", "(I)V");
-            cell *integerValue;
-            amx_GetAddr(amx, iterationCell, &integerValue);
-            auto integerObject = env->NewObject(integerClass, methodId, *integerValue);
-            env->SetObjectArrayElement(objectArray, i, integerObject);
-            referenceValues.push_back(std::pair<cell *, std::string>(integerValue, definedParameters[i]));
-        }
-        else if (definedParameters[i] == "java.lang.Boolean")
-        {
-            static auto methodId = env->GetMethodID(boolClass, "<init>", "(Z)V");
-            cell *boolValue;
-            amx_GetAddr(amx, iterationCell, &boolValue);
-            auto boolObject = env->NewObject(boolClass, methodId, *boolValue);
-            env->SetObjectArrayElement(objectArray, i, boolObject);
-            referenceValues.push_back(std::pair<cell *, std::string>(boolValue, definedParameters[i]));
-        }
-        else if (definedParameters[i] == "java.lang.Float")
-        {
-            static auto methodId = env->GetMethodID(floatClass, "<init>", "(F)V");
-            cell *floatValue;
-            amx_GetAddr(amx, iterationCell, &floatValue);
-            auto floatObject = env->NewObject(floatClass, methodId, amx_ctof(*floatValue));
-            env->SetObjectArrayElement(objectArray, i, floatObject);
-            referenceValues.push_back(std::pair<cell *, std::string>(floatValue, definedParameters[i]));
-        }
-/*else if (definedParameters[i] == "[Ljava.lang.String;")
-{
-    cell* phys_addr = NULL;
-    amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
-    auto arrayLength = *phys_addr;
-    cell* array = &iterationCell;
-    auto javaArray = env->NewObjectArray(arrayLength, stringClass, NULL);
-    arrayLengths[array] = arrayLength;
-    for (auto a = 0; a < arrayLength; a++)
-    {
-        char parameterString[1024];
-        amx_GetString(amx, *(array + a) + 8, parameterString, sizeof(parameterString));
-        env->SetObjectArrayElement(javaArray, a, env->NewStringUTF(parameterString));
-    }
-    env->SetObjectArrayElement(objectArray, lastArrayIndex, javaArray);
-    referenceValues.push_back(std::pair<cell*, std::string>(array, definedParameters[i]));
-    i += 1; //skip next iteration because of length
-    lastArrayIndex += 1;
-}*/
-        else if (definedParameters[i] == "[Ljava.lang.Boolean;")
-        {
-            cell *phys_addr = nullptr;
-            amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
-            auto arrayLength = *phys_addr;
-            cell *array = nullptr;
-            amx_GetAddr(amx, iterationCell, &array);
-            arrayLengths[array] = arrayLength;
-            auto javaArray = env->NewObjectArray(arrayLength, boolClass, nullptr);
-            static auto methodId = env->GetMethodID(boolClass, "<init>", "(Z)V");
-            for (auto a = 0; a < arrayLength; a++)
+            /*else if (types[i] == "s[]")
             {
-                env->SetObjectArrayElement(javaArray, a, env->NewObject(boolClass, methodId, *(array + a)));
+                cell* length_addr;
+                amx_GetAddr(amx, params[p + 1], &length_addr);
+
+                auto arrayLength = *length_addr;
+                auto javaArray = makeJavaObjectArray(env, arrayLength);
+
+                char parameterString[1024];
+
+                for (auto a = 0; a < arrayLength; a++)
+                {
+                    sampgdk_logprintf("Getting string for #%i of %i", a, arrayLength);
+
+                    amx_GetString(parameterString, (phys_addr + a * 128 + 4), 0, 1024);
+                    sampgdk_logprintf("Got string for #%i: %s", a, parameterString);
+                    env->SetObjectArrayElement(javaArray, a, mbs2wcs(env, shoebill.getServerCodepage(), parameterString, 1024));
+                }
+                env->SetObjectArrayElement(objectArray, i, javaArray);
+                p += 2;
+            }*/
+        else if (types[i] == "i[]") {
+            cell *length_addr;
+            amx_GetAddr(amx, params[p + 1], &length_addr);
+
+            int arrayLength = *length_addr;
+            auto javaArray = makeJavaIntArray(env, arrayLength);
+
+            for (auto a = 0; a < arrayLength; a++) {
+                jint elements[] = {*(phys_addr + a)};
+                env->SetIntArrayRegion(javaArray, a, 1, elements);
             }
             env->SetObjectArrayElement(objectArray, i, javaArray);
-            referenceValues.push_back(std::pair<cell *, std::string>(array, definedParameters[i]));
-            pawnIndex += 1;
-        }
-        else if (definedParameters[i] == "[Ljava.lang.Integer;")
-        {
-            cell *phys_addr = nullptr;
-            amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
-            auto arrayLength = *phys_addr;
-            cell *array = nullptr;
-            amx_GetAddr(amx, iterationCell, &array);
-            arrayLengths[array] = arrayLength;
-            auto javaArray = env->NewObjectArray(arrayLength, integerClass, nullptr);
-            static auto methodId = env->GetMethodID(integerClass, "<init>", "(I)V");
-            for (auto a = 0; a < arrayLength; a++)
-            {
-                env->SetObjectArrayElement(javaArray, a, env->NewObject(integerClass, methodId, *(array + a)));
+            p += 2;
+        } else if (types[i] == "f[]") {
+            cell *length_addr;
+            amx_GetAddr(amx, params[p + 1], &length_addr);
+
+            auto arrayLength = *length_addr;
+            auto javaArray = makeJavaFloatArray(env, arrayLength);
+
+            for (auto a = 0; a < arrayLength; a++) {
+                jfloat elements[] = {amx_ctof(*(phys_addr + a))};
+                env->SetFloatArrayRegion(javaArray, a, 1, elements);
             }
+
             env->SetObjectArrayElement(objectArray, i, javaArray);
-            referenceValues.push_back(std::pair<cell *, std::string>(array, definedParameters[i]));
-            pawnIndex += 1;
-        }
-        else if (definedParameters[i] == "[Ljava.lang.Float;")
-        {
-            cell *phys_addr = nullptr;
-            amx_GetAddr(amx, params[2 + i + 1], &phys_addr);
-            auto arrayLength = *phys_addr;
-            cell *array = nullptr;
-            amx_GetAddr(amx, iterationCell, &array);
-            arrayLengths[array] = arrayLength;
-            auto javaArray = env->NewObjectArray(arrayLength, floatClass, nullptr);
-            static auto methodId = env->GetMethodID(floatClass, "<init>", "(F)V");
-            for (auto a = 0; a < arrayLength; a++)
-            {
-                env->SetObjectArrayElement(javaArray, a, env->NewObject(floatClass, methodId, amx_ctof(*(array + a))));
-            }
-            env->SetObjectArrayElement(objectArray, i, javaArray);
-            referenceValues.push_back(std::pair<cell *, std::string>(array, definedParameters[i]));
-            pawnIndex += 1;
+            p += 2;
         }
     }
     auto result = shoebill.CallRegisteredFunction(amx, std::string(function), objectArray);
-    for (unsigned int i = 0; i < referenceValues.size(); i++)
-    {
-        if (referenceValues[i].second == "java.lang.String")
-        {
+    for (unsigned int i = 0, p = 2; i < referenceValues.size(); i++) {
+        if (types[i] == "s") {
             auto string = static_cast<jstring>(env->GetObjectArrayElement(objectArray, i));
-            auto stringObject = env->GetStringChars(string, NULL);
-            int len = env->GetStringLength(string);
 
-            char str[1024];
-            wcs2mbs((unsigned int) shoebill.getServerCodepage(), stringObject, len, str, sizeof(str));
-            env->ReleaseStringChars(string, stringObject);
-
-            amx_SetString(referenceValues[i].first, str, 0, 0, strlen(str) + 1);
+            char *str = wcs2mbs(env, shoebill.getServerCodepage(), string, 1024);
+            //TODO: check if delete is needed.
+            amx_SetString(referenceValues[i], str, 0, 0, 1024);
+            p += 1;
+        } else if (types[i] == "i") {
+            auto integer = getIntegerFromObject(env, env->GetObjectArrayElement(objectArray, i));
+            *referenceValues[i] = integer;
+            p += 1;
+        } else if (types[i] == "f") {
+            auto value = getFloatFromObject(env, env->GetObjectArrayElement(objectArray, i));
+            *referenceValues[i] = amx_ftoc(value);
+            p += 1;
         }
-        else if (referenceValues[i].second == "java.lang.Integer")
-        {
-            auto integer = env->GetObjectArrayElement(objectArray, i);
-            static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
-            *referenceValues[i].first = env->CallIntMethod(integer, methodId);
-        }
-        else if (referenceValues[i].second == "java.lang.Float")
-        {
-            auto floatObject = env->GetObjectArrayElement(objectArray, i);
-            static auto methodId = env->GetMethodID(floatClass, "floatValue", "()F");
-            auto res = env->CallFloatMethod(floatObject, methodId);
-            *referenceValues[i].first = amx_ftoc(res);
-        }
-        else if (referenceValues[i].second == "java.lang.Boolean")
-        {
-            auto boolObject = env->GetObjectArrayElement(objectArray, i);
-            static auto methodId = env->GetMethodID(boolClass, "booleanValue", "()Z");
-            *referenceValues[i].first = static_cast<int>(env->CallBooleanMethod(boolObject, methodId));
-        }
-/*else if (referenceValues[i].second == "[Ljava.lang.String;")
-{
-    auto stringArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
-    int newArrayLength = env->GetArrayLength(stringArrayObject);
-    if (newArrayLength > params[2 + i + 1])
-        logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", function);
-    cell* pawnArray = referenceValues[i].first;
-    auto arrayLength = arrayLengths[pawnArray];
-    for (int a = 0; a < arrayLength; a++) {
-        amx_Release(amx, *(pawnArray + a));
-        auto stringObject = static_cast<jstring>(env->GetObjectArrayElement(stringArrayObject, a));
-        auto string = env->GetStringUTFChars(stringObject, false);
-        *(pawnArray + a) = amx_NewString(amx, string, strlen(string) + 1);
-        env->ReleaseStringUTFChars(stringObject, string);
-    }
-}*/
-        else if (referenceValues[i].second == "[Ljava.lang.Integer;")
-        {
-            auto intArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
-            int newArrayLength = env->GetArrayLength(intArrayObject);
-            if (newArrayLength > params[2 + i + 1])
-                sampgdk_logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", function);
-            cell *pawnArray = referenceValues[i].first;
-            auto arrayLength = arrayLengths[pawnArray];
-            static auto methodId = env->GetMethodID(integerClass, "intValue", "()I");
-            for (int a = 0; a < arrayLength; a++)
-                *(pawnArray + a) = env->CallIntMethod(env->GetObjectArrayElement(intArrayObject, a), methodId);
-        }
-        else if (referenceValues[i].second == "[Ljava.lang.Boolean;")
-        {
-            auto boolArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
-            int newArrayLength = env->GetArrayLength(boolArrayObject);
-            if (newArrayLength > params[2 + i + 1])
-                sampgdk_logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", function);
-            cell *pawnArray = referenceValues[i].first;
-            auto arrayLength = arrayLengths[pawnArray];
-            static auto methodId = env->GetMethodID(boolClass, "booleanValue", "()Z");
-            for (int a = 0; a < arrayLength; a++)
-                *(pawnArray + a) = env->CallByteMethod(env->GetObjectArrayElement(objectArray, a), methodId);
-        }
-        else if (referenceValues[i].second == "[Ljava.lang.Float;")
-        {
-            auto floatArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
-            int newArrayLength = env->GetArrayLength(floatArrayObject);
-            if (newArrayLength > params[2 + i + 1])
-                sampgdk_logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", function);
-            cell *pawnArray = referenceValues[i].first;
-            auto arrayLength = arrayLengths[pawnArray];
-            static auto methodId = env->GetMethodID(floatClass, "floatValue", "()F");
-            for (int a = 0; a < arrayLength; a++)
+            /*else if (types[i] == "s[]")
             {
-                auto newValue = env->CallFloatMethod(env->GetObjectArrayElement(floatArrayObject, a), methodId);
-                *(pawnArray + a) = amx_ftoc(newValue);
+                auto stringArrayObject = static_cast<jobjectArray>(env->GetObjectArrayElement(objectArray, i));
+                int arrayLength = env->GetArrayLength(stringArrayObject);
+                if (arrayLength > params[p + 1])
+                    sampgdk_logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", function);
+
+                cell* pawnArray = referenceValues[i];
+                for (int a = 0; a < arrayLength; a++) {
+                    auto stringObject = static_cast<jstring>(env->GetObjectArrayElement(stringArrayObject, a));
+                    auto string = wcs2mbs(env, shoebill.getServerCodepage(), stringObject, 1024);
+                    amx_SetString(pawnArray + a, string, 0, 0, 1024);
+                    //TODO: check if it needs a delete.
+                }
+
+                p += 2;
+            }*/
+        else if (types[i] == "i[]") {
+            auto intArrayObject = static_cast<jintArray>(env->GetObjectArrayElement(objectArray, i));
+            int arrayLength = env->GetArrayLength(intArrayObject);
+            if (arrayLength > params[p + 1])
+                sampgdk_logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", function);
+
+            cell *pawnArray = referenceValues[i];
+            jint *elements = env->GetIntArrayElements(intArrayObject, nullptr);
+            for (int a = 0; a < arrayLength; a++)
+                *(pawnArray + a) = elements[a];
+
+            env->ReleaseIntArrayElements(intArrayObject, elements, 0);
+            p += 2;
+        } else if (types[i] == "f[]") {
+            auto floatArrayObject = static_cast<jfloatArray>(env->GetObjectArrayElement(objectArray, i));
+            int arrayLength = env->GetArrayLength(floatArrayObject);
+            if (arrayLength > params[p + 1])
+                sampgdk_logprintf("[SHOEBILL] %s has a bigger array than pawn. New values are ignored.", function);
+
+            cell *pawnArray = referenceValues[i];
+            jfloat *elements = env->GetFloatArrayElements(floatArrayObject, nullptr);
+            for (int a = 0; a < arrayLength; a++) {
+                *(pawnArray + a) = amx_ftoc(elements[a]);
             }
+            env->ReleaseFloatArrayElements(floatArrayObject, elements, 0);
+            p += 2;
         }
     }
-    env->DeleteGlobalRef(objectArray);
+    env->DeleteGlobalRef(globalObjectArray);
     return result;
 }
 
-int *CallHookedCallback(AMX *amx, std::string name, cell *params)
+std::array<int, 2> CallHookedCallback(AMX *amx, std::string name, cell *params, bool &success)
 {
-    auto it = getIterator(name);
-    if (it != getEnd())
-    {
-        JNIEnv *env;
-        jvm->AttachCurrentThread((void **) &env, NULL);
-        if (!env) return 0;
-        std::string types = it->second;
-        unsigned int count = params[0] / sizeof(cell);
-        if (count != types.length())
-        {
-            sampgdk_logprintf("%s did not equal count! Correct: %i | Wrong: %i", name.c_str(), count, types.length());
-            return nullptr;
-        }
-        static auto objectClass = env->FindClass("java/lang/Object");
-        static auto integerClass = env->FindClass("java/lang/Integer");
-        static auto floatClass = env->FindClass("java/lang/Float");
-        static auto integerMethodID = env->GetMethodID(integerClass, "<init>", "(I)V");
-        static auto floatMethodID = env->GetMethodID(floatClass, "<init>", "(F)V");
-        jobjectArray objectArray = (jobjectArray) env->NewObjectArray(count, objectClass, 0);
-        for (std::string::size_type i = 0; i < types.size(); ++i)
-        {
-            char paramType = types[i];
-            if (paramType == 's')
-            {
-                char text[1024];
-                amx_GetString(amx, params[i + 1], text, sizeof(text));
-                jchar wtext[1024];
-                int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wtext,
-                                  sizeof(wtext) / sizeof(wtext[0]));
-                env->SetObjectArrayElement(objectArray, i, env->NewString(wtext, len));
-            }
-            else if (paramType == 'i')
-            {
-                env->SetObjectArrayElement(objectArray, i,
-                                           env->NewObject(integerClass, integerMethodID, params[i + 1]));
-            }
-            else if (paramType == 'f')
-            {
-                float value = amx_ctof(params[i + 1]);
-                env->SetObjectArrayElement(objectArray, i, env->NewObject(floatClass, floatMethodID, value));
-            }
-        }
+    auto it = hookedCallbacks.find(name);
+    auto result = std::array<int, 2>();
+    success = false;
+    if (it == hookedCallbacks.end()) return result;
 
-        jchar wtext[256];
-        int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), name.c_str(), -1, wtext,
-                          sizeof(wtext) / sizeof(wtext[0]));
+    JNIEnv *env;
+    jvm->AttachCurrentThread((void **) &env, NULL);
+    if (!env) return result;
 
-        static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onHookCall",
-                                                 "(Ljava/lang/String;[Ljava/lang/Object;)[I");
-        if (!jmid) return 0;
-        jintArray event = (jintArray) env->CallObjectMethod(shoebill.getCallbackHandlerObject(), jmid,
-                                                            env->NewString(wtext, len),
-                                                            objectArray);
-        jni_jvm_printExceptionStack(env);
-        jint *values = env->GetIntArrayElements(event, NULL);
-        int *returnObject = new int[2]{values[0], values[1]};
-        env->ReleaseIntArrayElements(event, values, 0);
-        return returnObject;
+    std::vector<std::string> types = it->second;
+    unsigned int shouldBeCount = 0;
+    for (unsigned int i = 0; i < types.size(); i++) {
+        auto type = types[i];
+        if (type.find("[") != std::string::npos) shouldBeCount += 2;
+        else shouldBeCount += 1;
     }
-    else return nullptr;
+    unsigned int count = params[0] / sizeof(cell);
+    if (count != shouldBeCount) {
+        sampgdk_logprintf("[SHOEBILL] %s did not equal parameter count! Actual: %i | Expected: %i", name.c_str(), count,
+                          shouldBeCount);
+        return result;
+    }
+
+    auto objectArray = makeJavaObjectArray(env, count);
+
+    for (unsigned int i = 0, p = 1; i < types.size(); ++i) {
+        std::string paramType = types[i];
+        if (params[p] == 0)
+            sampgdk_logprintf("[SHOEBILL] %s doesn't contain a value for parameter %i which should be of type '%s'.",
+                              name.c_str(), i, paramType.c_str());
+
+        if (paramType == "s") {
+            char text[1024];
+            amx_GetString(amx, params[p], text, sizeof(text));
+            env->SetObjectArrayElement(objectArray, i, mbs2wcs(env, shoebill.getServerCodepage(), text, 1024));
+            p += 1;
+        } else if (paramType == "i") {
+            env->SetObjectArrayElement(objectArray, i, makeJavaInteger(env, params[p]));
+            p += 1;
+        } else if (paramType == "f") {
+            float value = amx_ctof(params[p]);
+            env->SetObjectArrayElement(objectArray, i, makeJavaFloat(env, value));
+            p += 1;
+        } else if (paramType.find("[]") != std::string::npos) {
+            cell *address = NULL;
+            amx_GetAddr(amx, params[p], &address);
+            int arrayLength = params[p + 1];
+            auto array = makeJavaObjectArray(env, arrayLength);
+            for (int a = 0; a < arrayLength; a++) {
+                if (paramType == "i[]")
+                    env->SetObjectArrayElement(array, a, makeJavaInteger(env, *(address + a)));
+                else if (paramType == "f[]")
+                    env->SetObjectArrayElement(array, a, makeJavaFloat(env, amx_ctof(*(address + a))));
+                    /*else if(paramType == "s[]")
+                    {
+                        char text[1024];
+                        amx_GetString(amx, *(address + a), text, sizeof(text));
+                        env->SetObjectArrayElement(array, a, mbs2wcs(env, shoebill.getServerCodepage(), text, 1024));
+                    }*/
+                else {
+                    sampgdk_logprintf("[SHOEBILL] Unknown parameter type '%s' for callback %s.", paramType.c_str(),
+                                      name.c_str());
+                    return result;
+                }
+            }
+            env->SetObjectArrayElement(objectArray, i, array);
+            p += 2;
+        } else {
+            sampgdk_logprintf("[SHOEBILL] Unknown parameter type '%s' for callback %s.", paramType.c_str(),
+                              name.c_str());
+            return result;
+        }
+    }
+
+    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onHookCall",
+                                             "(Ljava/lang/String;[Ljava/lang/Object;)[I");
+    if (!jmid) return result;
+    jintArray event = (jintArray) env->CallObjectMethod(shoebill.getCallbackHandlerObject(), jmid,
+                                                        mbs2wcs(env, shoebill.getServerCodepage(), name.c_str(), 64),
+                                                        objectArray);
+    jni_jvm_printExceptionStack(env);
+    jint *values = env->GetIntArrayElements(event, NULL);
+    result[0] = values[0];
+    result[1] = values[1];
+    env->ReleaseIntArrayElements(event, values, 0);
+    success = true;
+    return result;
 }
 
 cell AMX_NATIVE_CALL n_OnGameModeInit(AMX *, cell *)
@@ -606,7 +538,7 @@ cell n_OnPlayerText(AMX *amx, cell *params)
     amx_GetString(amx, params[2], text, sizeof(text));
 
     jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getPlayerCodepage(playerid), text, -1, wtext,
+    int len = mbs2wcs(shoebill.getPlayerCodepage(playerid), text, -1, wtext,
                       sizeof(wtext) / sizeof(wtext[0]));
 
     jstring str = env->NewString(wtext, len);
@@ -630,12 +562,9 @@ cell n_OnPlayerCommandText(AMX *amx, cell *params)
     char cmdtext[1024];
     amx_GetString(amx, params[2], cmdtext, sizeof(cmdtext));
 
-    jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getPlayerCodepage(playerid), cmdtext, -1, wtext,
-                      sizeof(wtext) / sizeof(wtext[0]));
+    jstring cmd = mbs2wcs(env, shoebill.getPlayerCodepage(playerid), cmdtext, 1024);
 
-    jstring str = env->NewString(wtext, len);
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, str);
+    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, cmd);
     jni_jvm_printExceptionStack(env);
 
     return (bool) ret;
@@ -792,7 +721,7 @@ cell n_OnRconCommand(AMX *amx, cell *params)
     amx_GetString(amx, params[1], cmd, sizeof(cmd));
 
     jchar wtext[sizeof cmd];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), cmd, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
+    int len = mbs2wcs(shoebill.getServerCodepage(), cmd, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
 
     jstring str = env->NewString(wtext, len);
     jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, str);
@@ -1066,7 +995,7 @@ cell n_OnRconLoginAttempt(AMX *amx, cell *params)
     jstring iptext = env->NewStringUTF(ip);
 
     jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), password, -1, wtext,
+    int len = mbs2wcs(shoebill.getServerCodepage(), password, -1, wtext,
                       sizeof(wtext) / sizeof(wtext[0]));
     jstring str = env->NewString(wtext, len);
 
@@ -1177,7 +1106,7 @@ cell n_OnDialogResponse(AMX *amx, cell *params)
     int playerid = params[1], dialogid = params[2], response = params[3], listitem = params[4];
 
     jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getPlayerCodepage(playerid), inputtext, -1, wtext,
+    int len = mbs2wcs(shoebill.getPlayerCodepage(playerid), inputtext, -1, wtext,
                       sizeof(wtext) / sizeof(wtext[0]));
 
     jstring str = env->NewString(wtext, len);
@@ -1479,1181 +1408,4 @@ cell n_OnVehicleSirenStateChange(AMX *, cell *params)
     int ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, vehicleid, newstate);
     jni_jvm_printExceptionStack(env);
     return (bool) ret;
-}
-
-int OnAmxVehicleCreated(int vehicleid, int modelid, float x, float y, float z, float angle, int interiorid, int worldid,
-                        int color1, int color2, int respawn_delay, int addsiren)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxVehicleCreated",
-                                             "(IIFFFFIIIIII)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, vehicleid, modelid, x, y, z, angle,
-                                  interiorid, worldid,
-                                  color1, color2, respawn_delay, addsiren);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDestroyVehicle(int vehicleid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDestroyVehicle", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, vehicleid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSampObjectCreated(int objectId, int modelid, float x, float y, float z, float rX, float rY, float rZ,
-                           int worldid, int interiorid, float render_distance)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSampObjectCreated",
-                                             "(IIFFFFFFIIF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, objectId, modelid, x, y, z, rX, rY, rZ,
-                                  worldid,
-                                  interiorid, render_distance);
-    jni_jvm_printExceptionStack(env);
-
-    return ret;
-}
-
-int OnAmxSampObjectDestroyed(int objectId)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSampObjectDestroyed", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, objectId);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxAttachObjectToVehicle(int objectId, int vehicleId, float x, float y, float z, float rX, float rY, float rZ)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxAttachObjectToVehicle",
-                                             "(IIFFFFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, objectId, vehicleId, x, y, z, rX, rY, rZ);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxAttachObjectToPlayer(int objectId, int playerId, float x, float y, float z, float rX, float rY, float rZ)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxAttachObjectToPlayer",
-                                             "(IIFFFFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, objectId, playerId, x, y, z, rX, rY, rZ);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxAttachObjectToObject(int objectId, int other_object_Id, float x, float y, float z, float rX, float rY,
-                              float rZ)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxAttachObjectToObject",
-                                             "(IIFFFFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, objectId, other_object_Id, x, y, z, rX, rY,
-                                  rZ);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxCreatePlayerObject(int playerid, int modelid, float x, float y, float z, float rX, float rY, float rZ,
-                            float drawdistance, int worldid, int interiorid, int returnedValue)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxCreatePlayerObject",
-                                             "(IIFFFFFFIIFI)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, modelid, x, y, z, rX, rY, rZ,
-                                  drawdistance,
-                                  worldid, interiorid, returnedValue);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDestroyPlayerObject(int playerid, int objectid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDestroyPlayerObject", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, objectid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetPlayerAttachedObject(int playerid, int index, int modelid, int bone, float offsetX, float offsetY,
-                                 float offsetZ, float rotX, float rotY, float rotZ, float scaleX, float scaleY,
-                                 float scaleZ, int materialcolor1, int materialcolor2)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetPlayerAttachedObject",
-                                             "(IIIIFFFFFFFFFII)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, index, modelid, bone, offsetX,
-                                  offsetY,
-                                  offsetZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, materialcolor1, materialcolor2);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxRemovePlayerAttachedObject(int playerid, int index)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxRemovePlayerAttachedObject",
-                                             "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, index);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDestroyPickup(int pickupid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDestroyPickup", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, pickupid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxCreatePickup(int model, int type, float posX, float posY, float posZ, int virtualworld, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxCreatePickup", "(IIFFFII)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, model, type, posX, posY, posZ,
-                                  virtualworld, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxAddStaticPickup(int model, int type, float posX, float posY, float posZ, int virtualworld)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxAddStaticPickup", "(IIFFFI)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, model, type, posX, posY, posZ,
-                                  virtualworld);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxCreateLabel(char *text, int color, float posX, float posY, float posZ, float drawDistance, int virtualworld,
-                     int testLOS, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxCreateLabel",
-                                             "(Ljava/lang/String;IFFFFIII)I");
-    if (!jmid) return 0;
-
-    jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
-
-    jstring str = env->NewString(wtext, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, str, color, posX, posY, posZ, drawDistance,
-                                  virtualworld,
-                                  testLOS, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDeleteLabel(int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDeleteLabel", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxAttachLabelToPlayer(int id, int playerid, float offsetX, float offsetY, float offsetZ)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxAttachLabelToPlayer",
-                                             "(IIFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id, playerid, offsetX, offsetY, offsetZ);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxAttachLabelToVehicle(int id, int vehicleid, float offsetX, float offsetY, float offsetZ)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxAttachLabelToVehicle",
-                                             "(IIFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id, vehicleid, offsetX, offsetY, offsetZ);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxUpdateLabel(int id, int color, char *text)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxUpdateLabel",
-                                             "(IILjava/lang/String;)I");
-    if (!jmid) return 0;
-
-    jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
-
-    jstring str = env->NewString(wtext, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id, color, str);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxCreatePlayerLabel(int playerid, char *text, int color, float posX, float posY, float posZ, float drawDistance,
-                           int attachedPlayer, int attachedVehicle, int testLOS, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxCreatePlayerLabel",
-                                             "(ILjava/lang/String;IFFFFIIII)I");
-    if (!jmid) return 0;
-
-    jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
-
-    jstring str = env->NewString(wtext, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, str, color, posX, posY, posZ,
-                                  drawDistance,
-                                  attachedPlayer, attachedVehicle, testLOS, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDeletePlayerLabel(int playerid, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDeletePlayerLabel", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxUpdatePlayerLabel(int playerid, int id, int color, char *text)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxUpdatePlayerLabel",
-                                             "(IIILjava/lang/String;)I");
-    if (!jmid) return 0;
-
-    jchar wtext[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
-
-    jstring str = env->NewString(wtext, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id, color, str);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxCreateMenu(char *title, int columns, float x, float y, float col1Width, float col2Width, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxCreateMenu",
-                                             "(Ljava/lang/String;IFFFFI)I");
-    if (!jmid) return 0;
-
-    jchar wtext[32];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), title, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
-
-    jstring str = env->NewString(wtext, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, str, columns, x, y, col1Width, col2Width,
-                                  id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetMenuColumnHeader(int id, int column, char *text)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetMenuColumnHeader",
-                                             "(IILjava/lang/String;)I");
-    if (!jmid) return 0;
-
-    jchar wtext[32];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wtext, sizeof(wtext) / sizeof(wtext[0]));
-
-    jstring str = env->NewString(wtext, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id, column, str);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDestroyMenu(int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDestroyMenu", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneCreate(float minX, float minY, float maxX, float maxY, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneCreate", "(FFFFI)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, minX, minY, maxX, maxY, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneDestroy(int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneDestroy", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneShowForPlayer(int playerid, int zone, int color)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneShowForPlayer",
-                                             "(III)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, zone, color);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneShowForAll(int zone, int color)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneShowForAll", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, zone, color);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneHideForPlayer(int playerid, int zone)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneHideForPlayer", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, zone);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneHideForAll(int zone)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneHideForAll", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, zone);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneFlashForPlayer(int playerid, int zone, int flashColor)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneFlashForPlayer",
-                                             "(III)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, zone, flashColor);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneFlashForAll(int zone, int flashColor)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneFlashForAll", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, zone, flashColor);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneStopFlashForPlayer(int playerid, int zone)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneStopFlashForPlayer",
-                                             "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, zone);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxGangZoneStopFlashForAll(int zone)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxGangZoneStopFlashForAll",
-                                             "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, zone);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetSkillLevel(int playerid, int skill, int level)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetSkillLevel", "(III)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, skill, level);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetPlayerMapIcon(int playerid, int iconid, float x, float y, float z, int markertype, int color, int style)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetPlayerMapIcon",
-                                             "(IIFFFIII)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, iconid, x, y, z, markertype,
-                                  color, style);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxRemovePlayerMapIcon(int playerid, int iconid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxRemovePlayerMapIcon", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, iconid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxShowPlayerDialog(int playerid, int dialogid, int style, char *caption, char *info, char *button1,
-                          char *button2)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxShowPlayerDialog",
-                                             "(IIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I");
-    if (!jmid) return 0;
-
-    unsigned int serverCodepage = (unsigned int) shoebill.getServerCodepage();
-
-    jchar wCaption[64];
-    int len = mbs2wcs(serverCodepage, caption, -1, wCaption,
-                      sizeof(wCaption) / sizeof(wCaption[0]));
-    jstring jCaption = env->NewString(wCaption, len);
-
-    jchar wInfo[1024];
-    int len2 = mbs2wcs(serverCodepage, info, -1, wInfo, sizeof(wInfo) / sizeof(wInfo[0]));
-    jstring jInfo = env->NewString(wInfo, len2);
-
-    jchar wButton1[32];
-    int len3 = mbs2wcs(serverCodepage, button1, -1, wButton1,
-                       sizeof(wButton1) / sizeof(wButton1[0]));
-    jstring jButton1 = env->NewString(wButton1, len3);
-
-    jchar wButton2[32];
-    int len4 = mbs2wcs(serverCodepage, button2, -1, wButton2,
-                       sizeof(wButton2) / sizeof(wButton2[0]));
-    jstring jButton2 = env->NewString(wButton2, len4);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, dialogid, style, jCaption, jInfo,
-                                  jButton1,
-                                  jButton2);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetPlayerWorldBounds(int playerid, float minX, float minY, float maxX, float maxY)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetPlayerWorldBounds",
-                                             "(IFFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, minX, minY, maxX, maxY);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetPlayerWeather(int playerid, int weatherid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetPlayerWeather", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, weatherid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetPlayerCheckpoint(int playerid, float x, float y, float z, float size)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetPlayerCheckpoint",
-                                             "(IFFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, x, y, z, size);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDisablePlayerCheckpoint(int playerid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDisablePlayerCheckpoint",
-                                             "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxSetPlayerRaceCheckpoint(int playerid, int type, float x, float y, float z, float nextX, float nextY,
-                                 float nextZ, float size)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxSetPlayerRaceCheckpoint",
-                                             "(IIFFFFFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, type, x, y, z, nextX, nextY,
-                                  nextZ, size);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDisablePlayerRaceCheckpoint(int playerid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDisablePlayerRaceCheckpoint",
-                                             "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTogglePlayerSpectating(int playerid, int toggle)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTogglePlayerSpectating",
-                                             "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, toggle);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxPlayerSpectatePlayer(int playerid, int target, int mode)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxPlayerSpectatePlayer", "(III)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, target, mode);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxPlayerSpectateVehicle(int playerid, int target, int mode)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxPlayerSpectateVehicle",
-                                             "(III)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, target, mode);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxEnableStuntBonusForPlayer(int playerid, int toggle)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxEnableStuntBonusForPlayer",
-                                             "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, toggle);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxStartRecording(int playerid, int type, char *recordName)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxStartRecording",
-                                             "(IILjava/lang/String;)I");
-    if (!jmid) return 0;
-
-    jchar wstring[128];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), recordName, -1, wstring,
-                      sizeof(wstring) / sizeof(wstring[0]));
-    jstring str = env->NewString(wstring, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, type, str);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxStopRecording(int playerid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxStopRecording", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxToggleControllabel(int playerid, int toggle)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxToggleControllable", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, toggle);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTextDrawCreate(float x, float y, char *text, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTextDrawCreate",
-                                             "(FFLjava/lang/String;I)I");
-    if (!jmid) return 0;
-
-    jchar wstring[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wstring,
-                      sizeof(wstring) / sizeof(wstring[0]));
-    jstring str = env->NewString(wstring, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, x, y, str, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTextDrawDestroy(int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTextDrawDestroy", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTextDrawSetString(int id, char *text)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTextDrawSetString",
-                                             "(ILjava/lang/String;)I");
-    if (!jmid) return 0;
-
-    jchar wstring[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wstring,
-                      sizeof(wstring) / sizeof(wstring[0]));
-    jstring str = env->NewString(wstring, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id, str);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTextDrawShowForPlayer(int playerid, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTextDrawShowForPlayer", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTextDrawHideForPlayer(int playerid, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTextDrawHideForPlayer", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTextDrawShowForAll(int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTextDrawShowForAll", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxTextDrawHideForAll(int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxTextDrawHideForAll", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxCreatePlayerTextDraw(int playerid, float x, float y, char *text, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxCreatePlayerTextDraw",
-                                             "(IFFLjava/lang/String;I)I");
-    if (!jmid) return 0;
-
-    jchar wstring[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wstring,
-                      sizeof(wstring) / sizeof(wstring[0]));
-    jstring str = env->NewString(wstring, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, x, y, str, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxPlayerTextDrawDestroy(int playerid, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxPlayerTextDrawDestroy", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxPlayerTextDrawSetString(int playerid, int id, char *text)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxPlayerTextDrawSetString",
-                                             "(IILjava/lang/String;)I");
-    if (!jmid) return 0;
-
-    jchar wstring[1024];
-    int len = mbs2wcs((unsigned int) shoebill.getServerCodepage(), text, -1, wstring,
-                      sizeof(wstring) / sizeof(wstring[0]));
-    jstring str = env->NewString(wstring, len);
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id, str);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxPlayerTextDrawShow(int playerid, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxPlayerTextDrawShow", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxPlayerTextDrawHide(int playerid, int id)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxPlayerTextDrawHide", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, playerid, id);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxAddVehicleComponent(int vehicleid, int componentid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxAddVehicleComponent", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, vehicleid, componentid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxLinkVehicleToInterior(int vehicleid, int interiorid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxLinkVehicleToInterior", "(II)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, vehicleid, interiorid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxChangeVehicleColor(int vehicleid, int color1, int color2)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxChangeVehicleColor", "(III)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, vehicleid, color1, color2);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxCreateActor(int actorid, int modelid, float x, float y, float z, float rotation)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxCreateActor", "(IIFFFF)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, actorid, modelid, x, y, z, rotation);
-    jni_jvm_printExceptionStack(env);
-    return ret;
-}
-
-int OnAmxDestroyActor(int actorid)
-{
-    if (!shoebill.getCallbackHandlerObject()) return 0;
-
-    JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
-
-    static jmethodID jmid = env->GetMethodID(shoebill.getCallbackHandlerClass(), "onAmxDestroyActor", "(I)I");
-    if (!jmid) return 0;
-
-    jint ret = env->CallIntMethod(shoebill.getCallbackHandlerObject(), jmid, actorid);
-    jni_jvm_printExceptionStack(env);
-    return ret;
 }

@@ -25,7 +25,7 @@
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerCodepage
         (JNIEnv *, jclass, jint codepage)
 {
-    Shoebill::GetInstance().setServerCodepage(codepage);
+    Shoebill::GetInstance().setServerCodepage((unsigned int) codepage);
 }
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerCodep
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerCodepage
         (JNIEnv *, jclass)
 {
-    return Shoebill::GetInstance().getServerCodepage();
+    return (jint) Shoebill::GetInstance().getServerCodepage();
 }
 
 /*
@@ -47,7 +47,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerCodep
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerCodepage
         (JNIEnv *, jclass, jint playerid, jint codepage)
 {
-    Shoebill::GetInstance().setPlayerCodepage(playerid, codepage);
+    Shoebill::GetInstance().setPlayerCodepage(playerid, (unsigned int) codepage);
 }
 
 /*
@@ -58,7 +58,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerCodep
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerCodepage
         (JNIEnv *, jclass, jint playerid)
 {
-    return Shoebill::GetInstance().getPlayerCodepage(playerid);
+    return (jint) Shoebill::GetInstance().getPlayerCodepage(playerid);
 }
 
 /*
@@ -347,6 +347,7 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjec
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerObjectRot
         (JNIEnv *env, jclass, jint playerid, jint objectid, jobject rotate)
 {
+    assertNotNull(rotate, "rotate", __FUNCTION__);
     static auto cls = env->GetObjectClass(rotate);
     static auto fidX = env->GetFieldID(cls, "x", "F");
     static auto fidY = env->GetFieldID(cls, "y", "F");
@@ -437,23 +438,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectMater
         (JNIEnv *env, jclass, jint objectid, jint materialindex, jint modelid, jstring txdname, jstring texturename,
          jint materialcolor)
 {
-    auto wmsg = env->GetStringChars(txdname, NULL);
-    int len = env->GetStringLength(txdname);
+    assertNotNull(txdname, "txdname", __FUNCTION__);assertNotNull(texturename, "texturename", __FUNCTION__);
 
-    unsigned int codepage = (unsigned int) Shoebill::GetInstance().getServerCodepage();
+    unsigned int codepage = Shoebill::GetInstance().getServerCodepage();
 
-    char _txdname[1024];
-    wcs2mbs(codepage, wmsg, len, _txdname, sizeof(_txdname));
-    env->ReleaseStringChars(txdname, wmsg);
+    char *str_txdname = wcs2mbs(env, codepage, txdname, 1024);
+    char *str_texturename = wcs2mbs(env, codepage, texturename, 1024);
 
-    auto wmsg2 = env->GetStringChars(texturename, NULL);
-    len = env->GetStringLength(texturename);
+    SetObjectMaterial(objectid, materialindex, modelid, str_txdname, str_texturename, materialcolor);
 
-    char _texturename[1024];
-    wcs2mbs(codepage, wmsg2, len, _texturename, sizeof(_texturename));
-    env->ReleaseStringChars(texturename, wmsg2);
-
-    SetObjectMaterial(objectid, materialindex, modelid, _txdname, _texturename, materialcolor);
+    delete[] str_texturename;
+    delete[] str_txdname;
 }
 
 /*
@@ -465,23 +460,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjec
         (JNIEnv *env, jclass, jint playerid, jint objectid, jint materialindex, jint modelid, jstring txdname,
          jstring texturename, jint materialcolor)
 {
-    auto wmsg = env->GetStringChars(txdname, NULL);
-    int len = env->GetStringLength(txdname);
+    assertNotNull(txdname, "txdname", __FUNCTION__);assertNotNull(texturename, "texturename", __FUNCTION__);
 
-    unsigned int codepage = (unsigned int) Shoebill::GetInstance().getServerCodepage();
+    unsigned int codepage = Shoebill::GetInstance().getServerCodepage();
 
-    char _txdname[1024];
-    wcs2mbs(codepage, wmsg, len, _txdname, sizeof(_txdname));
-    env->ReleaseStringChars(txdname, wmsg);
+    char *str_txdname = wcs2mbs(env, codepage, txdname, 1024);
+    char *str_texturename = wcs2mbs(env, codepage, texturename, 1024);
 
-    wmsg = env->GetStringChars(texturename, NULL);
-    len = env->GetStringLength(texturename);
+    SetPlayerObjectMaterial(playerid, objectid, materialindex, modelid, str_txdname, str_texturename, materialcolor);
 
-    char _texturename[1024];
-    wcs2mbs(codepage, wmsg, len, _texturename, sizeof(_texturename));
-    env->ReleaseStringChars(texturename, wmsg);
-
-    SetPlayerObjectMaterial(playerid, objectid, materialindex, modelid, _txdname, _texturename, materialcolor);
+    delete[] str_texturename;
+    delete[] str_txdname;
 }
 
 /*
@@ -493,24 +482,19 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setObjectMater
         (JNIEnv *env, jclass, jint objectid, jstring text, jint materialindex, jint materialsize, jstring fontface,
          jint fontsize, jint bold, jint fontcolor, jint backcolor, jint textalignment)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    int len = env->GetStringLength(text);
+    assertNotNull(text, "text", __FUNCTION__);assertNotNull(fontface, "fontface", __FUNCTION__);
 
-    unsigned int codepage = (unsigned int) Shoebill::GetInstance().getServerCodepage();
+    unsigned int codepage = Shoebill::GetInstance().getServerCodepage();
 
-    char _text[1024];
-    wcs2mbs(codepage, wmsg, len, _text, sizeof(_text));
-    env->ReleaseStringChars(text, wmsg);
+    char *str_text = wcs2mbs(env, codepage, text, 1024);
+    char *str_fontface = wcs2mbs(env, codepage, fontface, 128);
 
-    auto wmsg2 = env->GetStringChars(fontface, NULL);
-    len = env->GetStringLength(fontface);
-
-    char _fontface[1024];
-    wcs2mbs(codepage, wmsg2, len, _fontface, sizeof(_fontface));
-    env->ReleaseStringChars(fontface, wmsg2);
-
-    SetObjectMaterialText(objectid, _text, materialindex, materialsize, _fontface, fontsize, (bool) bold, fontcolor,
+    SetObjectMaterialText(objectid, str_text, materialindex, materialsize, str_fontface, fontsize, (bool) bold,
+                          fontcolor,
                           backcolor, textalignment);
+
+    delete[] str_text;
+    delete[] str_fontface;
 }
 
 /*
@@ -522,24 +506,17 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerObjec
         (JNIEnv *env, jclass, jint playerid, jint objectid, jstring text, jint materialindex, jint materialsize,
          jstring fontface, jint fontsize, jint bold, jint fontcolor, jint backcolor, jint textalignment)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    int len = env->GetStringLength(text);
+    assertNotNull(text, "text", __FUNCTION__);assertNotNull(fontface, "fontface", __FUNCTION__);
 
-    unsigned int codepage = (unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid);
+    unsigned int codepage = Shoebill::GetInstance().getPlayerCodepage(playerid);
+    char *str_text = wcs2mbs(env, codepage, text, 1024);
+    char *str_fontface = wcs2mbs(env, codepage, fontface, 128);
 
-    char _text[1024];
-    wcs2mbs(codepage, wmsg, len, _text, sizeof(_text));
-    env->ReleaseStringChars(text, wmsg);
-
-    auto wmsg2 = env->GetStringChars(fontface, NULL);
-    len = env->GetStringLength(fontface);
-
-    char _fontface[1024];
-    wcs2mbs(codepage, wmsg2, len, _fontface, sizeof(_fontface));
-    env->ReleaseStringChars(fontface, wmsg2);
-
-    SetPlayerObjectMaterialText(playerid, objectid, _text, materialindex, materialsize, _fontface, fontsize,
+    SetPlayerObjectMaterialText(playerid, objectid, str_text, materialindex, materialsize, str_fontface, fontsize,
                                 (bool) bold, fontcolor, backcolor, textalignment);
+
+    delete[] str_text;
+    delete[] str_fontface;
 }
 
 /*
@@ -612,6 +589,8 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerPosFi
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerPos
         (JNIEnv *env, jclass, jint playerid, jobject vector3d)
 {
+    assertNotNull(vector3d, "vector3d", __FUNCTION__);
+
     static auto cls = env->GetObjectClass(vector3d);
     static auto fidX = env->GetFieldID(cls, "x", "F");
     static auto fidY = env->GetFieldID(cls, "y", "F");
@@ -983,14 +962,11 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_resetPlayerMon
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerName
         (JNIEnv *env, jclass, jint playerid, jstring name)
 {
-    auto wmsg = env->GetStringChars(name, NULL);
-    int len = env->GetStringLength(name);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), name, MAX_PLAYER_NAME);
 
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(name, wmsg);
-
-    return SetPlayerName(playerid, str);
+    int ret = SetPlayerName(playerid, str);
+    delete[] str;
+    return ret;
 }
 
 /*
@@ -1082,12 +1058,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerNa
 {
     char name[MAX_PLAYER_NAME];
     GetPlayerName(playerid, name, sizeof(name));
-
-    jchar wstr[MAX_PLAYER_NAME];
-    auto len = mbs2wcs((unsigned int) Shoebill::GetInstance().getServerCodepage(), name, -1, wstr,
-                       sizeof(wstr) / sizeof(wstr[0]));
-
-    return env->NewString(wstr, len);
+    return mbs2wcs(env, Shoebill::GetInstance().getServerCodepage(), name, MAX_PLAYER_NAME);
 }
 
 /*
@@ -1249,14 +1220,10 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playAudioStrea
         (JNIEnv *env, jclass, jint player, jstring url, jfloat posX, jfloat posY, jfloat posZ, jfloat distance,
          jint usepos)
 {
-    auto wurl = env->GetStringChars(url, NULL);
-    int len = env->GetStringLength(url);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wurl, len, str, sizeof(str));
-    env->ReleaseStringChars(url, wurl);
-
+    assertNotNull(url, "url", __FUNCTION__);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(player), url, 1024);
     PlayAudioStreamForPlayer(player, str, posX, posY, posZ, distance, (bool) usepos);
+    delete[] str;
 }
 
 /*
@@ -1278,14 +1245,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_stopAudioStrea
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerShopName
         (JNIEnv *env, jclass, jint playerid, jstring name)
 {
-    auto wmsg = env->GetStringChars(name, NULL);
-    int len = env->GetStringLength(name);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(name, wmsg);
-
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), name, 64);
     SetPlayerShopName(playerid, str);
+    delete[] str;
 }
 
 /*
@@ -1412,14 +1374,10 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_editAttach
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createPlayerTextDraw
         (JNIEnv *env, jclass, jint playerid, jfloat x, jfloat y, jstring text)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    int len = env->GetStringLength(text);
-
-    char _text[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, _text, sizeof(_text));
-    env->ReleaseStringChars(text, wmsg);
-
-    return CreatePlayerTextDraw(playerid, x, y, _text);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), text, 2048);
+    int ret = CreatePlayerTextDraw(playerid, x, y, str);
+    delete[] str;
+    return ret;
 }
 
 /*
@@ -1595,14 +1553,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDraw
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDrawSetString
         (JNIEnv *env, jclass, jint playerid, jint textid, jstring string)
 {
-    auto wmsg = env->GetStringChars(string, NULL);
-    int len = env->GetStringLength(string);
-
-    char _string[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, _string, sizeof(_string));
-    env->ReleaseStringChars(string, wmsg);
-
-    PlayerTextDrawSetString(playerid, textid, _string);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), string, 2048);
+    PlayerTextDrawSetString(playerid, textid, str);
+    delete[] str;
 }
 
 /*
@@ -1646,14 +1599,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerTextDraw
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPlayerChatBubble
         (JNIEnv *env, jclass, jint playerid, jstring text, jint color, jfloat drawdistance, jint expiretime)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    int len = env->GetStringLength(text);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(text, wmsg);
-
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), text, 256);
     SetPlayerChatBubble(playerid, str, color, drawdistance, expiretime);
+    delete[] str;
 }
 
 /*
@@ -2179,11 +2127,11 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_playerSpectate
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_startRecordingPlayerData
         (JNIEnv *env, jclass, jint playerid, jint recordtype, jstring recordname)
 {
-    auto str_recordname = env->GetStringUTFChars(recordname, NULL);
+    char *str_recordname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), recordname, 64);
 
     StartRecordingPlayerData(playerid, recordtype, str_recordname);
 
-    env->ReleaseStringUTFChars(recordname, str_recordname);
+    delete[] str_recordname;
 }
 
 /*
@@ -2234,11 +2182,11 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createExplosio
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarNameAtIndex
         (JNIEnv *env, jclass, jint index)
 {
-    char* varname = NULL;
+    char varname[64];
     int len = 0;
     GetSVarNameAtIndex(index, varname, len);
 
-    return env->NewStringUTF(varname);
+    return mbs2wcs(env, Shoebill::GetInstance().getServerCodepage(), varname, len);
 }
 
 /*
@@ -2249,14 +2197,9 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVa
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendClientMessage
         (JNIEnv *env, jclass, jint playerid, jint color, jstring message)
 {
-    auto wmsg = env->GetStringChars(message, NULL);
-    int len = env->GetStringLength(message);
-
-    char msg[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg));
-    env->ReleaseStringChars(message, wmsg);
-
+    char *msg = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), message, 144);
     SendClientMessage(playerid, color, msg);
+    delete[] msg;
 }
 
 /*
@@ -2267,14 +2210,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendClientMess
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendClientMessageToAll
         (JNIEnv *env, jclass, jint color, jstring message)
 {
-    auto wmsg = env->GetStringChars(message, NULL);
-    int len = env->GetStringLength(message);
-
-    char msg[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, msg, sizeof(msg));
-    env->ReleaseStringChars(message, wmsg);
-
+    char *msg = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), message, 144);
     SendClientMessageToAll(color, msg);
+    delete[] msg;
 }
 
 /*
@@ -2285,14 +2223,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendClientMess
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendPlayerMessageToPlayer
         (JNIEnv *env, jclass, jint playerid, jint senderid, jstring message)
 {
-    auto wmsg = env->GetStringChars(message, NULL);
-    int len = env->GetStringLength(message);
-
-    char msg[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, msg, sizeof(msg));
-    env->ReleaseStringChars(message, wmsg);
-
+    char *msg = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(senderid), message, 144);
     SendPlayerMessageToPlayer(playerid, senderid, msg);
+    delete[] msg;
 }
 
 /*
@@ -2303,14 +2236,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendPlayerMess
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendPlayerMessageToAll
         (JNIEnv *env, jclass, jint senderid, jstring message)
 {
-    auto wmsg = env->GetStringChars(message, NULL);
-    int len = env->GetStringLength(message);
-
-    char msg[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, msg, sizeof(msg));
-    env->ReleaseStringChars(message, wmsg);
-
+    char *msg = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), message, 144);
     SendPlayerMessageToAll(senderid, msg);
+    delete[] msg;
 }
 
 /*
@@ -2343,14 +2271,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendDeathMessa
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_gameTextForAll
         (JNIEnv *env, jclass, jstring string, jint time, jint style)
 {
-    auto wmsg = env->GetStringChars(string, NULL);
-    int len = env->GetStringLength(string);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(string, wmsg);
-
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), string, 256);
     GameTextForAll(str, time, style);
+    delete[] str;
 }
 
 /*
@@ -2361,14 +2284,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_gameTextForAll
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_gameTextForPlayer
         (JNIEnv *env, jclass, jint playerid, jstring string, jint time, jint style)
 {
-    auto wmsg = env->GetStringChars(string, NULL);
-    int len = env->GetStringLength(string);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(string, wmsg);
-
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), string, 256);
     GameTextForPlayer(playerid, str, time, style);
+    delete[] str;
 }
 
 /*
@@ -2412,14 +2330,9 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getMaxPlayers
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setGameModeText
         (JNIEnv *env, jclass, jstring string)
 {
-    auto wmsg = env->GetStringChars(string, NULL);
-    int len = env->GetStringLength(string);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(string, wmsg);
-
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), string, 128);
     SetGameModeText(str);
+    delete[] str;
 }
 
 /*
@@ -2738,13 +2651,13 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_limitPlayerMar
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_connectNPC
         (JNIEnv *env, jclass, jstring name, jstring script)
 {
-    auto str_name = env->GetStringUTFChars(name, NULL);
-    auto str_script = env->GetStringUTFChars(script, NULL);
+    char *str_name = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), name, 24);
+    char *str_script = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), script, 64);
 
     ConnectNPC(str_name, str_script);
 
-    env->ReleaseStringUTFChars(name, str_name);
-    env->ReleaseStringUTFChars(name, str_script);
+    delete[] str_name;
+    delete[] str_script;
 }
 
 /*
@@ -2799,14 +2712,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_ban
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_banEx
         (JNIEnv *env, jclass, jint playerid, jstring reason)
 {
-    auto wmsg = env->GetStringChars(reason, NULL);
-    int len = env->GetStringLength(reason);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(reason, wmsg);
-
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), reason, 1024);
     BanEx(playerid, str);
+    delete[] str;
 }
 
 /*
@@ -2817,14 +2725,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_banEx
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendRconCommand
         (JNIEnv *env, jclass, jstring cmd)
 {
-    auto wmsg = env->GetStringChars(cmd, NULL);
-    int len = env->GetStringLength(cmd);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(cmd, wmsg);
-
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), cmd, 1024);
     SendRconCommand(str);
+    delete[] str;
 }
 
 /*
@@ -2835,34 +2738,28 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sendRconComman
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsString
         (JNIEnv *env, jclass, jstring varname)
 {
-    auto str_varname = env->GetStringUTFChars(varname, NULL);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), varname, 64);
 
-    char var[256];
+    char var[2048];
     GetServerVarAsString(str_varname, var, sizeof(var));
-    env->ReleaseStringUTFChars(varname, str_varname);
 
-    jchar wstr[256];
-    auto len = mbs2wcs((unsigned int) Shoebill::GetInstance().getServerCodepage(), var, -1, wstr,
-                       sizeof(wstr) / sizeof(wstr[0]));
-    return env->NewString(wstr, len);
+    return mbs2wcs(env, Shoebill::GetInstance().getServerCodepage(), var, 2048);
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarFloat
         (JNIEnv *env, jclass, jstring varname, jfloat value)
 {
-    auto str_varname = env->GetStringUTFChars(varname, NULL);
-
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), varname, 64);
     SetSVarFloat(str_varname, value);
-
-    env->ReleaseStringUTFChars(varname, str_varname);
+    delete[] str_varname;
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarInt
         (JNIEnv *env, jclass, jstring varname, jint value)
 {
-    auto str_varname = env->GetStringUTFChars(varname, NULL);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), varname, 64);
     SetSVarInt(str_varname, value);
-    env->ReleaseStringUTFChars(varname, str_varname);
+    delete[] str_varname;
 }
 
 /*
@@ -2873,24 +2770,22 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarIn
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsInt
         (JNIEnv *env, jclass, jstring varname)
 {
-    auto str_varname = env->GetStringUTFChars(varname, NULL);
-
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), varname, 64);
     auto ret = GetServerVarAsInt(str_varname);
-
-    env->ReleaseStringUTFChars(varname, str_varname);
+    delete[] str_varname;
     return ret;
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarString
         (JNIEnv *env, jclass, jstring varname, jstring value)
 {
-    auto str_varname = env->GetStringUTFChars(varname, NULL);
-    auto str_value = env->GetStringUTFChars(value, NULL);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), varname, 64);
+    char *str_value = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), value, 2048);
 
     SetSVarString(str_varname, str_value);
 
-    env->ReleaseStringUTFChars(varname, str_varname);
-    env->ReleaseStringUTFChars(value, str_value);
+    delete[] str_varname;
+    delete[] str_value;
 }
 
 /*
@@ -2901,11 +2796,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setServerVarSt
 JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarAsFloat
         (JNIEnv *env, jclass, jstring varname)
 {
-    auto str_varname = env->GetStringUTFChars(varname, NULL);
-
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), varname, 64);
     auto ret = GetSVarFloat(str_varname);
-
-    env->ReleaseStringUTFChars(varname, str_varname);
+    delete[] str_varname;
     return ret;
 }
 
@@ -2930,9 +2823,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getServerVarTy
         (JNIEnv *env, jclass, jstring varname)
 {
     auto str_varname = env->GetStringUTFChars(varname, NULL);
-
     auto result = GetSVarType(str_varname);
-
     env->ReleaseStringUTFChars(varname, str_varname);
     return result;
 }
@@ -2947,12 +2838,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerNe
 {
     char retstr[2048];
     GetPlayerNetworkStats(playerid, retstr, sizeof(retstr));
-
-    jchar wstr[2048];
-    auto len = mbs2wcs((unsigned int) Shoebill::GetInstance().getServerCodepage(), retstr, -1, wstr,
-                       sizeof(wstr) / sizeof(wstr[0]));
-
-    return env->NewString(wstr, len);
+    return mbs2wcs(env, Shoebill::GetInstance().getServerCodepage(), retstr, 2048);
 }
 
 /*
@@ -2965,12 +2851,7 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNetworkS
 {
     char retstr[2048];
     GetNetworkStats(retstr, sizeof(retstr));
-
-    jchar wstr[2048];
-    auto len = mbs2wcs((unsigned int) Shoebill::GetInstance().getServerCodepage(), retstr, -1, wstr,
-                       sizeof(wstr) / sizeof(wstr[0]));
-
-    return env->NewString(wstr, len);
+    return mbs2wcs(env, Shoebill::GetInstance().getServerCodepage(), retstr, 2048);
 }
 
 /*
@@ -3132,9 +3013,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_unBlockIpAddre
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createMenu
         (JNIEnv *env, jclass, jstring title, jint columns, jfloat x, jfloat y, jfloat col1width, jfloat col2width)
 {
-    auto str_title = env->GetStringUTFChars(title, NULL);
-    auto ret = CreateMenu(str_title, columns, x, y, col1width, col2width);
-    env->ReleaseStringUTFChars(title, str_title);
+    char *menuTitle = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), title, 32);
+    int ret = CreateMenu(menuTitle, columns, x, y, col1width, col2width);
+    delete[] menuTitle;
     return ret;
 }
 
@@ -3157,11 +3038,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_destroyMenu
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addMenuItem
         (JNIEnv *env, jclass, jint menuid, jint column, jstring menutext)
 {
-    auto str_menutext = env->GetStringUTFChars(menutext, NULL);
-
-    AddMenuItem(menuid, column, str_menutext);
-
-    env->ReleaseStringUTFChars(menutext, str_menutext);
+    char *menuText = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), menutext, 32);
+    AddMenuItem(menuid, column, menuText);
+    delete[] menuText;
 }
 
 /*
@@ -3172,9 +3051,9 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_addMenuItem
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setMenuColumnHeader
         (JNIEnv *env, jclass, jint menuid, jint column, jstring columnheader)
 {
-    auto str_columnheader = env->GetStringUTFChars(columnheader, NULL);
-    AddMenuItem(menuid, column, str_columnheader);
-    env->ReleaseStringUTFChars(columnheader, str_columnheader);
+    char *header = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), columnheader, 32);
+    AddMenuItem(menuid, column, header);
+    delete[] header;
 }
 
 /*
@@ -3251,14 +3130,13 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPlayerMenu
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawCreate
         (JNIEnv *env, jclass, jfloat x, jfloat y, jstring text)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    int len = env->GetStringLength(text);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), text, 1024);
 
-    char _string[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, _string, sizeof(_string));
-    env->ReleaseStringChars(text, wmsg);
+    int ret = TextDrawCreate(x, y, str);
 
-    return TextDrawCreate(x, y, _string);
+    delete[] str;
+
+    return ret;
 }
 
 /*
@@ -3456,14 +3334,11 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawHideFo
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_textDrawSetString
         (JNIEnv *env, jclass, jint textid, jstring string)
 {
-    auto wmsg = env->GetStringChars(string, NULL);
-    int len = env->GetStringLength(string);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), string, 1024);
 
-    char _string[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, _string, sizeof(_string));
-    env->ReleaseStringChars(string, wmsg);
+    TextDrawSetString(textid, str);
 
-    TextDrawSetString(textid, _string);
+    delete[] str;
 }
 
 /*
@@ -3618,14 +3493,12 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_create3DTextLa
         (JNIEnv *env, jclass, jstring text, jint color, jfloat x, jfloat y, jfloat z,
          jfloat drawDistance, jint worldid, jboolean testLOS)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    auto len = env->GetStringLength(text);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), text, 1024);
+    int ret = Create3DTextLabel(str, color, x, y, z, drawDistance, worldid, testLOS);
 
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(text, wmsg);
+    delete[] str;
 
-    return Create3DTextLabel(str, color, x, y, z, drawDistance, worldid, testLOS);
+    return ret;
 }
 
 /*
@@ -3669,14 +3542,11 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_attach3DTextLa
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_update3DTextLabelText
         (JNIEnv *env, jclass, jint id, jint color, jstring text)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    auto len = env->GetStringLength(text);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(text, wmsg);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), text, 1024);
 
     Update3DTextLabelText(id, color, str);
+
+    delete[] str;
 }
 
 /*
@@ -3688,15 +3558,14 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_createPlayer3D
         (JNIEnv *env, jclass, jint playerid, jstring text, jint color, jfloat x, jfloat y, jfloat z,
          jfloat drawDistance, jint attachedplayerid, jint attachedvehicleid, jboolean testLOS)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    int len = env->GetStringLength(text);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), text, 1024);
 
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(text, wmsg);
+    int ret = CreatePlayer3DTextLabel(playerid, str, color, x, y, z, drawDistance, attachedplayerid, attachedvehicleid,
+                                      testLOS);
 
-    return CreatePlayer3DTextLabel(playerid, str, color, x, y, z, drawDistance, attachedplayerid, attachedvehicleid,
-                                   testLOS);
+    delete[] str;
+
+    return ret;
 }
 
 /*
@@ -3718,14 +3587,11 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deletePlayer3D
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_updatePlayer3DTextLabelText
         (JNIEnv *env, jclass, jint playerid, jint id, jint color, jstring text)
 {
-    auto wmsg = env->GetStringChars(text, NULL);
-    int len = env->GetStringLength(text);
-
-    char str[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getPlayerCodepage(playerid), wmsg, len, str, sizeof(str));
-    env->ReleaseStringChars(text, wmsg);
+    char *str = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), text, 1024);
 
     UpdatePlayer3DTextLabelText(playerid, id, color, str);
+
+    delete[] str;
 }
 
 /*
@@ -3737,32 +3603,19 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_showPlayerDial
         (JNIEnv *env, jclass, jint playerid, jint dialogid, jint style,
          jstring caption, jstring info, jstring button1, jstring button2)
 {
-    char str_caption[64], str_info[1024], str_button1[32], str_button2[32];
-    int len;
+    unsigned int codepage = Shoebill::GetInstance().getPlayerCodepage(playerid);
 
-    int codepage = Shoebill::GetInstance().getPlayerCodepage(playerid);
+    char *str_caption = wcs2mbs(env, codepage, caption, 64), *str_info = wcs2mbs(env, codepage, info, 1024),
+            *str_button1 = wcs2mbs(env, codepage, button1, 32), *str_button2 = wcs2mbs(env, codepage, button2, 32);
 
-    auto wmsg1 = env->GetStringChars(caption, NULL);
-    len = env->GetStringLength(caption);
-    wcs2mbs(codepage, wmsg1, len, str_caption, sizeof(str_caption));
-    env->ReleaseStringChars(caption, wmsg1);
+    int ret = ShowPlayerDialog(playerid, dialogid, style, str_caption, str_info, str_button1, str_button2);
 
-    auto wmsg2 = env->GetStringChars(info, NULL);
-    len = env->GetStringLength(info);
-    wcs2mbs(codepage, wmsg2, len, str_info, sizeof(str_info));
-    env->ReleaseStringChars(info, wmsg2);
+    delete[] str_caption;
+    delete[] str_info;
+    delete[] str_button1;
+    delete[] str_button2;
 
-    auto wmsg3 = env->GetStringChars(button1, NULL);
-    len = env->GetStringLength(button1);
-    wcs2mbs(codepage, wmsg3, len, str_button1, sizeof(str_button1));
-    env->ReleaseStringChars(button1, wmsg3);
-
-    auto wmsg4 = env->GetStringChars(button2, NULL);
-    len = env->GetStringLength(button2);
-    wcs2mbs(codepage, wmsg4, len, str_button2, sizeof(str_button2));
-    env->ReleaseStringChars(button2, wmsg4);
-
-    return ShowPlayerDialog(playerid, dialogid, style, str_caption, str_info, str_button1, str_button2);
+    return ret;
 }
 
 /*
@@ -4280,7 +4133,7 @@ JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getNative
 
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunction(JNIEnv *env, jclass, jint pAmx,
                                                                                   jint index, jint returnType,
-                                                                                  jobjectArray args)
+                                                                                  jobjectArray args, jobjectArray types)
 {
     AMX *amx = (AMX *) pAmx;
     cell retval;
@@ -4310,7 +4163,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
             auto len = env->GetStringLength(javaString);
 
             char str[1024];
-            wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
+            wcs2mbs(Shoebill::GetInstance().getServerCodepage(), wmsg, len, str, sizeof(str));
             env->ReleaseStringChars(javaString, wmsg);
 
             cell strCel;
@@ -4329,9 +4182,8 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
             auto bjf = env->GetMethodID(objectClass, "floatValue", "()F");
             auto ffloat = env->CallFloatMethod(object, bjf);
             params[i + 1] = amx_ftoc(ffloat);
-        }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceInt" ||
-                 className == "class net.gtaun.shoebill.amx.types.ReferenceFloat")
+        } else if (className == "class net.gtaun.Shoebill::GetInstance().amx.types.ReferenceInt" ||
+                   className == "class net.gtaun.Shoebill::GetInstance().amx.types.ReferenceFloat")
         {
             cell amx_addr, *phys_addr;
 
@@ -4339,8 +4191,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
             params[i + 1] = amx_addr;
             references[std::pair<jobject, std::string>(object, className)] = std::pair<cell *, cell>(
                     phys_addr, amx_addr);
-        }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceString")
+        } else if (className == "class net.gtaun.Shoebill::GetInstance().amx.types.ReferenceString")
         {
             auto lengthMethodId = env->GetMethodID(objectClass, "getLength", "()I");
             auto length = env->CallIntMethod(object, lengthMethodId);
@@ -4359,25 +4210,23 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
         auto className = iterator->first.second;
         auto object = iterator->first.first;
         auto type = env->GetObjectClass(object);
-        if (className == "class net.gtaun.shoebill.amx.types.ReferenceInt")
+        if (className == "class net.gtaun.Shoebill::GetInstance().amx.types.ReferenceInt")
         {
             auto methodId = env->GetMethodID(type, "setValue", "(I)V");
             env->CallVoidMethod(object, methodId, *iterator->second.first);
-        }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceFloat")
+        } else if (className == "class net.gtaun.Shoebill::GetInstance().amx.types.ReferenceFloat")
         {
             auto methodId = env->GetMethodID(type, "setValue", "(F)V");
             float result = amx_ctof(*iterator->second.first);
             env->CallVoidMethod(object, methodId, result);
-        }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceString")
+        } else if (className == "class net.gtaun.Shoebill::GetInstance().amx.types.ReferenceString")
         {
             auto methodId = env->GetMethodID(type, "setValue", "(Ljava/lang/String;)V");
             char *text = NULL;
             amx_StrParam(amx, iterator->second.second, text);
 
             jchar wstr[1024];
-            auto len = mbs2wcs((unsigned int) Shoebill::GetInstance().getServerCodepage(), text, -1, wstr,
+            auto len = mbs2wcs(Shoebill::GetInstance().getServerCodepage(), text, -1, wstr,
                                sizeof(wstr) / sizeof(wstr[0]));
 
             auto newText = env->NewString(wstr, len);
@@ -4393,168 +4242,132 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
 }
 
 JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
-        (JNIEnv *env, jclass, jint pAmx, jint idx, jint returnType, jobjectArray args)
+        (JNIEnv *env, jclass, jint pAmx, jint idx, jint returnType, jobjectArray args, jobjectArray types)
 {
     auto amx = reinterpret_cast<AMX *>(pAmx);
+    auto shoebill = Shoebill::GetInstance();
+
     cell retval;
-    std::vector<cell> stringCells;
+    std::vector<std::pair<cell, char *>> stringCells;
     std::vector<std::pair<cell *, int>> cellArrays;
-    std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> references;
+    std::map<std::pair<int, char *>, std::pair<cell *, cell>> references;
     int arrayLength = env->GetArrayLength(args);
     amx->paramcount = 0;
+
     for (auto i = arrayLength - 1; i >= 0; i--)
     {
-        auto object = env->GetObjectArrayElement(args, i);
-        auto objectClass = env->GetObjectClass(object);
-        auto mid = env->GetMethodID(objectClass, "toString", "()Ljava/lang/String;");
-        if (!mid)
+        char *str_type = wcs2mbs(env, shoebill.getServerCodepage(), (jstring) env->GetObjectArrayElement(types, i), 8);
+        std::string type = std::string(str_type);
+        jobject object = env->GetObjectArrayElement(args, i);
+        if (type == "s")
         {
-            sampgdk_logprintf("[Shoebill] Error trying to get toString() method.");
-            return nullptr;
-        }
-        auto str = static_cast<jstring>(env->CallObjectMethod(objectClass, mid));
-        auto cstr = env->GetStringUTFChars(str, NULL);
-        auto className = std::string(cstr);
-        if (className == "class java.lang.String")
+            cell strCell;
+            char *content = wcs2mbs(env, shoebill.getServerCodepage(), (jstring) object, 1024);
+            amx_PushString(amx, &strCell, NULL, content, 0, 0);
+            stringCells.push_back(std::pair<cell, char *>(strCell, content));
+        } else if (type == "i")
         {
-            pushJavaString(env, amx, object, stringCells);
-        }
-        else if (className == "class java.lang.Integer")
+            int value = getIntegerFromObject(env, object);
+            amx_Push(amx, value);
+        } else if (type == "f")
         {
-            pushJavaInteger(env, amx, object);
-        }
-        else if (className == "class java.lang.Float")
+            float value = getFloatFromObject(env, object);
+            amx_Push(amx, amx_ftoc(value));
+        } else if (type == "ri" || type == "rf")
         {
-            pushJavaFloat(env, amx, object);
-        }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceInt" ||
-                 className == "class net.gtaun.shoebill.amx.types.ReferenceFloat")
+            cell amx_addr, *phys_addr;
+            amx_Allot(amx, 1, &amx_addr, &phys_addr);
+            amx_Push(amx, amx_addr);
+            references[std::pair<int, char *>(i, str_type)] = std::pair<cell *, cell>(phys_addr, amx_addr);
+        } else if (type == "rs")
         {
-            pushJavaReferenceFloatInt(env, amx, object, references, className);
-        }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceString")
-        {
-            pushJavaReferenceString(env, amx, object, references, className);
-        }
-        else if (className.find("class [") != std::string::npos) //Array
-        {
-            cell *array = nullptr;
-            int javaArrayLength = 0;
-            if (className == "class [Ljava.lang.Integer;") //If Integer Array is present
-            {
-                auto integerArray = static_cast<jobjectArray>(object);
-                javaArrayLength = env->GetArrayLength(integerArray);
-                array = new cell[javaArrayLength];
-                static auto integerMethodId = env->GetMethodID(env->FindClass("java/lang/Integer"), "intValue", "()I");
-                for (auto a = 0; a < javaArrayLength; a++)
-                {
-                    array[a] = env->CallIntMethod(env->GetObjectArrayElement(integerArray, a), integerMethodId);
+            auto objectClass = env->GetObjectClass(object);
+            auto lengthMethodId = env->GetMethodID(objectClass, "getLength", "()I");
+            auto length = env->CallIntMethod(object, lengthMethodId);
+            cell amx_str, *amx_str_phys;
+            amx_Allot(amx, length, &amx_str, &amx_str_phys);
+            amx_Push(amx, amx_str);
+            references[std::pair<int, char *>(i, str_type)] = std::pair<cell *, cell>(amx_str_phys, amx_str);
+        } else if (type.find("[]") != std::string::npos) {
+            jobjectArray javaArray = (jobjectArray) object;
+            int javaArrayLength = env->GetArrayLength(javaArray);
+            cell *array = new cell[javaArrayLength];
+            if (type == "i[]") {
+                for (auto a = 0; a < javaArrayLength; a++) {
+                    cell amx_addr, *phys_addr;
+                    amx_Allot(amx, 1, &amx_addr, &phys_addr);
+                    array[a] = amx_addr;
+                    *phys_addr = getIntegerFromObject(env, env->GetObjectArrayElement(javaArray, a));
                 }
-            }
-            else if (className == "class [I") //If Primitive Integer Array is present
-            {
-                auto integerArray = static_cast<jintArray>(object);
-                javaArrayLength = env->GetArrayLength(integerArray);
-                array = new cell[javaArrayLength];
-                auto integerData = env->GetIntArrayElements(integerArray, nullptr);
-                for (auto a = 0; a < javaArrayLength; a++)
-                {
-                    array[a] = integerData[a];
-                }
-                env->ReleaseIntArrayElements(integerArray, integerData, 0);
-            }
-            else if (className == "class [Ljava.lang.Float;") //If Float Array is present
-            {
-                auto floatArray = static_cast<jobjectArray>(object);
-                javaArrayLength = env->GetArrayLength(floatArray);
-                array = new cell[javaArrayLength];
-                static auto floatMethodId = env->GetMethodID(env->FindClass("java/lang/Float"), "floatValue", "()F");
-                for (auto a = 0; a < javaArrayLength; a++)
-                {
-                    auto value = env->CallFloatMethod(env->GetObjectArrayElement(floatArray, a), floatMethodId);
+            } else if (type == "f[]") {
+                for (auto a = 0; a < javaArrayLength; a++) {
+                    auto value = getFloatFromObject(env, env->GetObjectArrayElement(javaArray, a));
                     array[a] = amx_ftoc(value);
                 }
-            }
-            else if (className == "class [F") //If Primitive Float Array is present
-            {
-                auto floatArray = static_cast<jfloatArray>(object);
-                javaArrayLength = env->GetArrayLength(floatArray);
-                array = new cell[javaArrayLength];
-                auto floatData = env->GetFloatArrayElements(floatArray, nullptr);
-                for (auto a = 0; a < javaArrayLength; a++)
-                {
-                    array[a] = amx_ftoc(floatData[a]);
-                }
-                env->ReleaseFloatArrayElements(floatArray, floatData, 0);
-            }
-            else if (className == "class [Ljava.lang.String;") //If String Array is present
-            {
-                auto stringArray = static_cast<jobjectArray>(object);
-                javaArrayLength = env->GetArrayLength(stringArray);
-                array = new cell[javaArrayLength];
-                for (auto a = 0; a < javaArrayLength; a++)
-                {
-                    auto jstr = static_cast<jstring>(env->GetObjectArrayElement(stringArray, a));
-                    auto wmsg = env->GetStringChars(jstr, nullptr);
-                    auto len = env->GetStringLength(jstr);
-
-                    char text[1024];
-                    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, text, sizeof(text));
-                    env->ReleaseStringChars(jstr, wmsg);
-
+            } else if (type == "s[]") {
+                for (auto a = 0; a < javaArrayLength; a++) {
+                    char *text = wcs2mbs(env, shoebill.getServerCodepage(),
+                                         (jstring) env->GetObjectArrayElement(javaArray, a), 1024);
                     auto amxString = amx_NewString(amx, text);
                     array[a] = amxString;
-                    stringCells.push_back(amxString);
+                    stringCells.push_back(std::pair<cell, char *>(amxString, text));
                 }
             }
+            references[std::pair<int, char *>(i, str_type)] = std::pair<cell *, cell>(array, javaArrayLength);
             cellArrays.push_back(std::pair<cell *, int>(array, javaArrayLength));
             cell tmpAddress;
-            amx_Push(amx, javaArrayLength); //Push array length to the stack
-            amx_PushArray(amx, &tmpAddress, NULL, array, javaArrayLength); //Push array to the stack (reverse order)
+            amx_Push(amx, javaArrayLength);
+            amx_PushArray(amx, &tmpAddress, NULL, array, javaArrayLength);
         }
-        env->ReleaseStringUTFChars(str, cstr);
     }
     amx_Exec(amx, &retval, idx);
-    auto iterator = references.begin();
-    while (iterator != references.end())
-    {
-        auto className = iterator->first.second;
-        auto object = iterator->first.first;
-        auto type = env->GetObjectClass(object);
-        if (className == "class net.gtaun.shoebill.amx.types.ReferenceInt")
-        {
-            auto methodId = env->GetMethodID(type, "setValue", "(I)V");
-            env->CallVoidMethod(object, methodId, *iterator->second.first);
-        }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceFloat")
-        {
-            auto methodId = env->GetMethodID(type, "setValue", "(F)V");
-            float result = amx_ctof(*iterator->second.first);
+    for (auto iterator : references) {
+        auto str_type = iterator.first.second;
+        auto type = std::string(str_type);
+        auto object = env->GetObjectArrayElement(args, iterator.first.first);
+        auto objectClass = env->GetObjectClass(object);
+        if (type == "ri") {
+            auto methodId = env->GetMethodID(objectClass, "setValue", "(I)V");
+            env->CallVoidMethod(object, methodId, *iterator.second.first);
+        } else if (type == "rf") {
+            auto methodId = env->GetMethodID(objectClass, "setValue", "(F)V");
+            float result = amx_ctof(*iterator.second.first);
             env->CallVoidMethod(object, methodId, result);
+        } else if (type == "rs") {
+            auto methodId = env->GetMethodID(objectClass, "setValue", "(Ljava/lang/String;)V");
+            char text[1024];
+            amx_GetString(amx, iterator.second.second, text, 1024);
+            env->CallVoidMethod(object, methodId, mbs2wcs(env, shoebill.getServerCodepage(), text, 1024));
+        } else if (type == "i[]") {
+            auto javaArrayLength = iterator.second.second; //iterator.second.second will return the array length for array refs.
+            jobjectArray javaIntegerArray = (jobjectArray) env->GetObjectArrayElement(args, iterator.first.first);
+            for (int i = 0; i < javaArrayLength; i++) {
+                env->SetObjectArrayElement(javaIntegerArray, i, makeJavaInteger(env, *iterator.second.first));
+            }
+        } else if (type == "f[]") {
+            auto javaArrayLength = iterator.second.second;
+            jobjectArray javaFloatArray = (jobjectArray) env->GetObjectArrayElement(args, iterator.first.first);
+            for (int i = 0; i < javaArrayLength; i++) {
+                float value = amx_ctof(*(iterator.second.first + i));
+                sampgdk_logprintf("Val: %f", value);
+                env->SetObjectArrayElement(javaFloatArray, i, makeJavaFloat(env, value));
+            }
         }
-        else if (className == "class net.gtaun.shoebill.amx.types.ReferenceString")
-        {
-            auto methodId = env->GetMethodID(type, "setValue", "(Ljava/lang/String;)V");
-            char *text = nullptr;
-            amx_StrParam(amx, iterator->second.second, text);
-            auto newText = env->NewStringUTF(text);
-            env->CallVoidMethod(object, methodId, newText);
-        }
-        amx_Release(amx, iterator->second.second);
-        ++iterator;
+        delete[] str_type;
+        amx_Release(amx, iterator.second.second);
     }
-    for (auto it : stringCells) amx_Release(amx, it);
+    for (auto it : stringCells) {
+        amx_Release(amx, it.first);
+        delete[] it.second;
+    }
     for (auto it : cellArrays) delete[] it.first;
-    stringCells.clear();
-    references.clear();
-    cellArrays.clear();
     return makeObjectFromReturnType(env, returnType, amx, retval);
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_restartShoebill
         (JNIEnv *, jclass)
 {
-    Shoebill::GetInstance().RestartShoebill();
+    Shoebill::GetInstance().Restart();
 }
 
 /*
@@ -4563,13 +4376,26 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_restartShoebil
 * Signature: (Ljava/lang/String;Ljava/lang/String)
 */
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_hookCallback
-        (JNIEnv *env, jclass, jstring name, jstring types)
+        (JNIEnv *env, jclass, jstring name, jobjectArray types)
 {
-    auto callbackName = env->GetStringUTFChars(name, nullptr);
-    auto callbackTypes = env->GetStringUTFChars(types, nullptr);
-    auto success = HookCallback(std::string(callbackName), std::string(callbackTypes));
+    static std::vector<std::string> validClasses = {"s", "i", "f", "f[]", "i[]"};
+
+    char *callbackName = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), name, 64);
+    std::vector<std::string> classTypes;
+    int arrayLength = env->GetArrayLength(types);
+    for (int i = 0; i < arrayLength; i++) {
+        auto string = (jstring) env->GetObjectArrayElement(types, i);
+        auto type = env->GetStringUTFChars(string, NULL);
+        if (std::find(validClasses.begin(), validClasses.end(), type) == validClasses.end()) {
+            sampgdk_logprintf("[SHOEBILL] %s is not a valid type for hooking a callback (%s).", type, callbackName);
+            env->ReleaseStringUTFChars(string, type);
+            return (jboolean) false;
+        }
+        classTypes.push_back(std::string(type));
+        env->ReleaseStringUTFChars(string, type);
+    }
+    auto success = HookCallback(std::string(callbackName), classTypes);
     env->ReleaseStringUTFChars(name, callbackName);
-    env->ReleaseStringUTFChars(types, callbackTypes);
     return (jboolean) success;
 }
 
@@ -4861,23 +4687,29 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
                                                                                        jint amxHandle, jstring name,
                                                                                        jobjectArray classes)
 {
+    static std::vector<std::string> validClasses = {"s", "i", "f", "f[]", "i[]"};
+
     AMX *amx = (AMX *) amxHandle;
-    auto functionName = env->GetStringUTFChars(name, NULL);
+    char *functionName = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), name, 64);
     auto functionString = std::string(functionName);
-    env->ReleaseStringUTFChars(name, functionName);
+    delete[] functionName;
     if (AmxInstanceManager::GetInstance().RegisteredFunctionExists(amx, functionString))
         return (jboolean) false;
     const int arrayLength = env->GetArrayLength(classes);
     std::vector<std::string> classNames;
     for (int i = 0; i < arrayLength; i++)
     {
-        auto object = env->GetObjectArrayElement(classes, i);
-        auto objectClass = env->GetObjectClass(object);
-        auto mid = env->GetMethodID(objectClass, "getName", "()Ljava/lang/String;");
-        auto str = static_cast<jstring>(env->CallObjectMethod(object, mid));
-        auto className = env->GetStringUTFChars(str, NULL);
-        classNames.push_back(std::string(className));
-        env->ReleaseStringUTFChars(str, className);
+        auto string = (jstring) env->GetObjectArrayElement(classes, i);
+        const char *str_className = env->GetStringUTFChars((jstring) string, NULL);
+        auto className = std::string(str_className);
+        if (std::find(validClasses.begin(), validClasses.end(), className) == validClasses.end()) {
+            sampgdk_logprintf("[SHOEBILL] %s is not a valid class type for registering a function (%s).", str_className,
+                              functionString.c_str());
+            env->ReleaseStringUTFChars(string, str_className);
+            return (jboolean) false;
+        }
+        classNames.push_back(className);
+        env->ReleaseStringUTFChars(string, str_className);
     }
     AmxInstanceManager::GetInstance().RegisterFunction(amx, functionString, classNames);
     return (jboolean) true;
@@ -4886,17 +4718,17 @@ JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_registerFu
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPVarInt(JNIEnv *env, jclass, jint playerid,
                                                                              jstring name, jint value)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    SetPVarInt(playerid, varName, value);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), name, 64);
+    SetPVarInt(playerid, str_varname, value);
+    delete[] str_varname;
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarInt(JNIEnv *env, jclass, jint playerid,
                                                                              jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    auto result = GetPVarInt(playerid, varName);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), name, 64);
+    auto result = GetPVarInt(playerid, str_varname);
+    delete[] str_varname;
     return result;
 }
 
@@ -4904,50 +4736,51 @@ JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPVarString(
                                                                                 jint playerid, jstring name,
                                                                                 jstring value)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    auto varValue = env->GetStringUTFChars(value, NULL);
-    SetPVarString(playerid, varName, varValue);
-    env->ReleaseStringUTFChars(name, varName);
-    env->ReleaseStringUTFChars(value, varValue);
+    unsigned int codepage = Shoebill::GetInstance().getPlayerCodepage(playerid);
+    char *str_varname = wcs2mbs(env, codepage, name, 64);
+    char *str_value = wcs2mbs(env, codepage, value, 1024);
+    SetPVarString(playerid, str_varname, str_value);
+    delete[] str_varname;
+    delete[] str_value;
 }
 
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarString(JNIEnv *env, jclass,
                                                                                    jint playerid,
                                                                                    jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
+    unsigned int codepage = Shoebill::GetInstance().getPlayerCodepage(playerid);
+    char *str_varname = wcs2mbs(env, codepage, name, 64);
     char value[1024];
-    GetPVarString(playerid, varName, &value[0], sizeof(value));
-    env->ReleaseStringUTFChars(name, varName);
-    auto jniString = env->NewStringUTF(value);
-    return jniString;
+    GetPVarString(playerid, str_varname, value, 1024);
+    delete[](str_varname);
+    return mbs2wcs(env, codepage, value, 1024);
 }
 
 JNIEXPORT void JNICALL Java_net_gtaun_shoebill_SampNativeFunction_setPVarFloat(JNIEnv *env, jclass,
                                                                                jint playerid, jstring name,
                                                                                jfloat value)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    SetPVarFloat(playerid, varName, value);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), name, 64);
+    SetPVarFloat(playerid, str_varname, value);
+    delete[] str_varname;
 }
 
 JNIEXPORT jfloat JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarFloat(JNIEnv *env, jclass,
                                                                                  jint playerid,
                                                                                  jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    auto result = GetPVarFloat(playerid, varName);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), name, 64);
+    auto result = GetPVarFloat(playerid, str_varname);
+    delete[] str_varname;
     return result;
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_deletePVar(JNIEnv *env, jclass, jint playerid,
                                                                              jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    auto result = DeletePVar(playerid, varName);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), name, 64);
+    auto result = DeletePVar(playerid, str_varname);
+    delete[] str_varname;
     return result;
 }
 
@@ -4962,67 +4795,61 @@ JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarName
                                                                                         jint index)
 {
     char varName[1024];
-    GetPVarNameAtIndex(playerid, index, &varName[0], sizeof(varName));
-    return env->NewStringUTF(varName);
+    GetPVarNameAtIndex(playerid, index, varName, 1024);
+    return mbs2wcs(env, Shoebill::GetInstance().getPlayerCodepage(playerid), varName, 1024);
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getPVarType(JNIEnv *env, jclass,
                                                                               jint playerid, jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    auto result = GetPVarType(playerid, varName);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), name, 64);
+    auto result = GetPVarType(playerid, str_varname);
+    delete[] str_varname;
     return result;
 }
 
 JNIEXPORT jint JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsInt(JNIEnv *env, jclass,
                                                                                      jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    auto result = GetServerVarAsInt(varName);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), name, 64);
+    auto result = GetServerVarAsInt(str_varname);
+    delete[] str_varname;
     return result;
 }
 
 JNIEXPORT jboolean JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsBool(JNIEnv *env, jclass,
                                                                                           jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
-    auto result = GetServerVarAsBool(varName);
-    env->ReleaseStringUTFChars(name, varName);
+    char *str_varname = wcs2mbs(env, Shoebill::GetInstance().getServerCodepage(), name, 64);
+    auto result = GetServerVarAsBool(str_varname);
+    delete[] str_varname;
     return (jboolean) result;
 }
 
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_getConsoleVarAsString(JNIEnv *env, jclass,
                                                                                            jstring name)
 {
-    auto varName = env->GetStringUTFChars(name, NULL);
+    unsigned int codepage = Shoebill::GetInstance().getServerCodepage();
+    char *str_name = wcs2mbs(env, codepage, name, 64);
     char result[1024];
-    GetServerVarAsString(varName, &result[0], sizeof(result));
-    env->ReleaseStringUTFChars(name, varName);
-    return env->NewStringUTF(result);
+    GetServerVarAsString(str_name, result, 1024);
+    delete[] str_name;
+    return mbs2wcs(env, codepage, result, 1024);
 }
 
 JNIEXPORT jstring JNICALL Java_net_gtaun_shoebill_SampNativeFunction_sha256Hash(JNIEnv *env, jclass, jstring jPassword,
                                                                                 jstring jSalt)
 {
-    auto wmsg = env->GetStringChars(jPassword, NULL);
-    int len = env->GetStringLength(jPassword);
-
-    auto wmsgSalt = env->GetStringChars(jSalt, NULL);
-    int saltLen = env->GetStringLength(jSalt);
-
-    char password[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsg, len, password, sizeof(password));
-    env->ReleaseStringChars(jPassword, wmsg);
-
-    char salt[1024];
-    wcs2mbs((unsigned int) Shoebill::GetInstance().getServerCodepage(), wmsgSalt, saltLen, salt, sizeof(salt));
-    env->ReleaseStringChars(jSalt, wmsgSalt);
+    unsigned int codepage = Shoebill::GetInstance().getServerCodepage();
+    char *str_password = wcs2mbs(env, codepage, jPassword, 1024);
+    char *str_salt = wcs2mbs(env, codepage, jSalt, 1024);
 
     char hash[1024];
     int hash_len = 0;
-    SHA256_PassHash(password, salt, hash, hash_len);
+    SHA256_PassHash(str_password, str_salt, hash, hash_len);
 
-    return env->NewStringUTF(hash);
+    delete[] str_password;
+    delete[] str_salt;
+
+    return mbs2wcs(env, codepage, hash, 1024);
 }

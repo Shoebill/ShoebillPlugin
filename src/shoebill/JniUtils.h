@@ -22,11 +22,16 @@
 #include <vector>
 #include "AmxHelper.h"
 
+#define assertNotNull(obj, param_name, function_name); \
+    if(!obj) { jni_jvm_throwNullPointerException(env,param_name,function_name); return; }
+
 extern JavaVM *jvm;
 
 int jni_jvm_create(JNIEnv **env, const char *clspath, const char *jvmOptionPath);
 
 int jni_jvm_printExceptionStack(JNIEnv *env);
+
+void jni_jvm_throwNullPointerException(JNIEnv *env, const char *paramName, const char *functionName);
 
 int jni_jvm_constructObject(JNIEnv *env, jclass jcls, jobject *pjobj);
 
@@ -34,19 +39,19 @@ int jni_jvm_destroy(JNIEnv *env);
 
 int findAndGenerateClassPath(const char *searchPath, char *classPath);
 
-void pushJavaString(JNIEnv *env, AMX *amx, jobject object, std::vector<cell> &stringCells);
+jobject makeJavaInteger(JNIEnv *env, int value);
 
-void pushJavaInteger(JNIEnv *env, AMX *amx, jobject object);
+jobject makeJavaFloat(JNIEnv *env, float value);
 
-void pushJavaFloat(JNIEnv *env, AMX *amx, jobject object);
+jobjectArray makeJavaObjectArray(JNIEnv *env, int len);
 
-void pushJavaReferenceFloatInt(JNIEnv *env, AMX *amx, jobject object,
-                               std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> &references,
-                               std::string className);
+jintArray makeJavaIntArray(JNIEnv *env, int len);
 
-void pushJavaReferenceString(JNIEnv *env, AMX *amx, jobject object,
-                             std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> &references,
-                             std::string className);
+jfloatArray makeJavaFloatArray(JNIEnv *env, int len);
+
+int getIntegerFromObject(JNIEnv *env, jobject integer);
+
+float getFloatFromObject(JNIEnv *env, jobject object);
 
 jobject makeObjectFromReturnType(JNIEnv *env, jint returnType, AMX *amx, cell retval);
 
