@@ -28,4 +28,4 @@ The shoebill plugin currently supports version 0.3.7 of SAMP
 (You need to make sure that cmake will use a 32-bit jdk, which it won't in my case. I always build my project on a 32-bit ubuntu machine)
 Clone the project into a directory and then execute the build.sh script.
 After the build has successfully finished, you will find a Shoebill.so file in the src directory. Rename it to just "Shoebill" (without .so)
-and then you should be able to use it with the samp-server-
+and then you should be able to use it with the samp-server.

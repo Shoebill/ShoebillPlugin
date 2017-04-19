@@ -27,7 +27,7 @@ cell AMX_NATIVE_CALL CallShoebillFunction(AMX *amx, cell *params);
 const static AMX_NATIVE_INFO PluginExports[]
         {
                 {"CallShoebillFunction", CallShoebillFunction},
-                {NULL, NULL}
+                {nullptr, nullptr}
         };
 
 // SA:MP Callbacks

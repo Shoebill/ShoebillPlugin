@@ -28,22 +28,19 @@ public:
     {
     }
 
-    void init(void *target, void *address, void *exParam = nullptr)
+    void init(void *target, void *address)
     {
         _simpleAsm.reset(new SimpleAsm());
         _simpleAsm->init(target);
         _address = address;
-        _exParam = exParam;
 
-        removePageProtect(target, exParam ? 12 : 5); //exParam ? 5+7 : 5
+        removePageProtect(target, 5); //exParam ? 5+7 : 5
     }
 
     void hook()
     {
         if (_isHooked) return;
 
-        if (_exParam != nullptr)
-            _simpleAsm->movEBP(-4, _exParam);
         _simpleAsm->jmp(_address);
 
         _isHooked = true;
@@ -61,7 +58,6 @@ private:
 
     std::unique_ptr<SimpleAsm> _simpleAsm;
     void *_address;
-    void *_exParam;
 
     bool _isHooked;
 

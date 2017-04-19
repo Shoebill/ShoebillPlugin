@@ -18,12 +18,12 @@
 #define __JNIUTILS_H__
 
 #include <sampplugin/amx/amx.h>
-#include <map>
-#include <vector>
-#include "AmxHelper.h"
 
 #define assertNotNull(obj, param_name, function_name); \
     if(!obj) { jni_jvm_throwNullPointerException(env,param_name,function_name); return; }
+
+#define assertNotNullReturn(obj, param_name, function_name, return_type); \
+    if(!obj) { jni_jvm_throwNullPointerException(env,param_name,function_name); return return_type; }
 
 extern JavaVM *jvm;
 

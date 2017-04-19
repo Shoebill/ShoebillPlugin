@@ -31,14 +31,14 @@ extern void *pAMXFunctions;
 
 inline AMX_NATIVE amx_FindNative(AMX *amx, const char *func)
 {
-    if (!amx) return NULL;
+    if (!amx) return nullptr;
 
     int index;
     amx_FindNative(amx, func, &index);
-    if (index == 0x7FFFFFFF) return NULL;
+    if (index == 0x7FFFFFFF) return nullptr;
 
-    AMX_HEADER *hdr = (AMX_HEADER *) amx->base;
-    AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
+	auto hdr = (AMX_HEADER *) amx->base;
+	auto funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
 
     return (AMX_NATIVE) funcstub->address;
 }
@@ -80,8 +80,8 @@ inline bool amx_SetNativeAddress(AMX *amx, const char *func, void *addr)
     amx_FindNative(amx, func, &index);
     if (index == 0x7FFFFFFF) return false;
 
-    AMX_HEADER *hdr = (AMX_HEADER *) amx->base;
-    AMX_FUNCSTUB *funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
+	auto hdr = (AMX_HEADER *) amx->base;
+	auto funcstub = (AMX_FUNCSTUB *) ((char *) (hdr) + hdr->natives + hdr->defsize * index);
     funcstub->address = (ucell) addr;
     return true;
 }

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 #include <sampgdk.h>
-#include "AmxHelper.h"
 #include "Callbacks.h"
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
@@ -56,23 +55,27 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
     Shoebill::GetInstance().OnProcessTick();
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell *params, cell *retval)
+PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall2(AMX *amx, const char *name, cell *params, cell *retval, bool* stop)
 {
-    bool foundFunction = false;
+	auto foundFunction = false;
     auto result = InvokeCallback(amx, name, params, foundFunction);
     if (foundFunction)
     {
         if (retval) *retval = result;
         if (ShouldCancelCallback(name, result)) {
+            *stop = true;
             return false;
         }
     }
-    bool success = false;
+	auto success = false;
     auto hook = CallHookedCallback(amx, name, params, success);
     if (success)
     {
         if (retval) *retval = hook[0];
-        if (hook[1]) return false;
+        if (hook[1]) {
+            *stop = true;
+            return false;
+        }
     }
     return true;
 }

@@ -10,7 +10,6 @@
 #include "AmxInstanceManager.hpp"
 #include "AmxHelper.h"
 
-#include "EncodingUtils.h"
 #include "JniUtils.h"
 #include <Callbacks.h>
 #include <sampgdk.h>
@@ -86,7 +85,7 @@ public:
 
     unsigned int getPlayerCodepage(int playerid)
     {
-        unsigned int codepage = playerCodepage[playerid];
+	    auto codepage = playerCodepage[playerid];
         return codepage == 0 ? serverCodepage : codepage;
     }
 
@@ -111,12 +110,12 @@ private:
     unsigned int serverCodepage = 1252;
     unsigned int playerCodepage[MAX_PLAYERS] = {0};
 
-    jclass shoebillLauncherClass = NULL;
-    jclass callbackHandlerClass = NULL;
-    jobject callbackHandlerObject = NULL;
+    jclass shoebillLauncherClass = nullptr;
+    jclass callbackHandlerClass = nullptr;
+    jobject callbackHandlerObject = nullptr;
 
-    jclass shoebillClass = NULL;
-    jobject shoebillObject = NULL;
+    jclass shoebillClass = nullptr;
+    jobject shoebillObject = nullptr;
 };
 
 

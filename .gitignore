@@ -1,8 +1,10 @@
 build
 *.a
 *.log
-Makefile
 CMakeFiles
 cmake_install.cmake
 CMakeCache.txt
 .idea
+bin/
+linuxBuild/
+cmake-build-debug/

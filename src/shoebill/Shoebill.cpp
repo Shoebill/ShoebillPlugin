@@ -3,6 +3,7 @@
 //
 
 #include "Shoebill.h"
+#include "SimpleInlineHook.hpp"
 
 
 Shoebill &Shoebill::GetInstance()
@@ -30,7 +31,7 @@ int Shoebill::Initialize(JNIEnv *env)
         return -1;
     }
 
-    static jmethodID loadNativeLibraryMethodID = env->GetStaticMethodID(shoebillLauncherClass,
+    static auto loadNativeLibraryMethodID = env->GetStaticMethodID(shoebillLauncherClass,
                                                                         LOAD_NATIVE_LIBRARY_METHOD_NAME,
                                                                         LOAD_NATIVE_LIBRARY_METHOD_SIGN);
     if (!loadNativeLibraryMethodID)
@@ -50,7 +51,7 @@ int Shoebill::Initialize(JNIEnv *env)
         return -7;
     }
     shoebillLauncherClass = (jclass) (env->NewGlobalRef(shoebillLauncherClass));
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    jvm->AttachCurrentThread((void **) &env, nullptr);
 
     Start();
     initialized = true;
@@ -65,7 +66,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
         return -9;
     }
 
-    static jmethodID resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass,
+    static auto resolveDependenciesMethodID = env->GetStaticMethodID(shoebillLauncherClass,
                                                                           RESOLVE_DEPENDENCIES_METHOD_NAME,
                                                                           RESOLVE_DEPENDENCIES_METHOD_SIGN);
     if (!resolveDependenciesMethodID)
@@ -76,7 +77,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
         return -8;
     }
 
-    jobject context = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
+	auto context = env->CallStaticObjectMethod(shoebillLauncherClass, resolveDependenciesMethodID);
     if (!context)
     {
         jni_jvm_printExceptionStack(env);
@@ -86,7 +87,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
         return -2;
     }
 
-    static jmethodID createShoebillMethodID = env->GetStaticMethodID(shoebillLauncherClass, CREATE_SHOEBILL_METHOD_NAME,
+    static auto createShoebillMethodID = env->GetStaticMethodID(shoebillLauncherClass, CREATE_SHOEBILL_METHOD_NAME,
                                                                      CREATE_SHOEBILL_METHOD_SIGN);
     if (!createShoebillMethodID)
     {
@@ -97,18 +98,17 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
         return -3;
     }
 
-    std::unordered_set<AMX *> amxInstances = AmxInstanceManager::GetInstance().GetInstances();
+	auto amxInstances = AmxInstanceManager::GetInstance().GetInstances();
     jsize size = amxInstances.size();
-    jint *array = new jint[size];
+	auto array = new jint[size];
     {
-        int i = 0;
-        for (std::unordered_set<AMX *>::iterator it = amxInstances.begin();
-             it != amxInstances.end() && i < size; it++, i++)
+	    auto i = 0;
+        for (auto it = amxInstances.begin(); it != amxInstances.end() && i < size; ++it, i++)
         {
-            array[i] = (jint) (*it);
+            array[i] = reinterpret_cast<jint>(*it);
         }
     }
-    jintArray amxHandleArray = env->NewIntArray(size);
+	auto amxHandleArray = env->NewIntArray(size);
     env->SetIntArrayRegion(amxHandleArray, 0, size, array);
     delete[] array;
 
@@ -160,7 +160,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
     }
 #endif
 
-    static jmethodID getCallbackHandlerMethodID = env->GetMethodID(shoebillClass, "getCallbackHandler",
+    static auto getCallbackHandlerMethodID = env->GetMethodID(shoebillClass, "getCallbackHandler",
                                                                    "()Lnet/gtaun/shoebill/samp/SampCallbackHandler;");
     if (!getCallbackHandlerMethodID)
     {
@@ -170,7 +170,7 @@ int Shoebill::CreateShoebillObject(JNIEnv *env)
     }
 
     callbackHandlerObject = env->CallObjectMethod(shoebillObject, getCallbackHandlerMethodID);
-    if (callbackHandlerObject == NULL)
+    if (callbackHandlerObject == nullptr)
     {
         sampgdk_logprintf("  > Error: Couldn't find the main callbackHandler.");
         sampgdk_logprintf("  > Please make sure that you use the correct API and Runtime for this plugin.");
@@ -196,16 +196,16 @@ int Shoebill::ReleaseShoebillObject(JNIEnv *env)
     }
 
     if (shoebillObject) env->DeleteGlobalRef(shoebillObject);
-    shoebillObject = NULL;
+    shoebillObject = nullptr;
 
     if (shoebillClass) env->DeleteGlobalRef(shoebillClass);
-    shoebillClass = NULL;
+    shoebillClass = nullptr;
 
     if (callbackHandlerObject) env->DeleteGlobalRef(callbackHandlerObject);
-    callbackHandlerObject = NULL;
+    callbackHandlerObject = nullptr;
 
     if (callbackHandlerClass) env->DeleteGlobalRef(callbackHandlerClass);
-    callbackHandlerClass = NULL;
+    callbackHandlerClass = nullptr;
 
     return 1;
 }
@@ -214,7 +214,7 @@ int Shoebill::Uninitialize(JNIEnv *env)
 {
     ReleaseShoebillObject(env);
     if (shoebillLauncherClass) env->DeleteGlobalRef(shoebillLauncherClass);
-    shoebillLauncherClass = NULL;
+    shoebillLauncherClass = nullptr;
     initialized = false;
 #if defined(LINUX)
     codepages.clear(); //Clear Codepages
@@ -227,9 +227,9 @@ void Shoebill::OnShoebillLoad() const
     if (!callbackHandlerObject) return;
 
     JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    jvm->AttachCurrentThread((void **) &env, nullptr);
 
-    static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onShoebillLoad", "()V");
+    static auto jmid = env->GetMethodID(callbackHandlerClass, "onShoebillLoad", "()V");
     if (!jmid) return;
     env->CallVoidMethod(callbackHandlerObject, jmid);
     jni_jvm_printExceptionStack(env);
@@ -265,7 +265,7 @@ bool Shoebill::OnPluginLoad()
     }
     if (createResult == 0) {
         sampgdk_logprintf("  > The Java VM has been successfully created.");
-        jvm->AttachCurrentThread((void **) &env, NULL);
+        jvm->AttachCurrentThread((void **) &env, nullptr);
         return Initialize(env) >= 0;
     }
     return false;
@@ -276,9 +276,9 @@ bool Shoebill::OnPluginUnload()
     if (!callbackHandlerObject) return false;
 
     JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    jvm->AttachCurrentThread((void **) &env, nullptr);
 
-    static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onShoebillUnload", "()V");
+    static auto jmid = env->GetMethodID(callbackHandlerClass, "onShoebillUnload", "()V");
     if (!jmid) return false;
 
     env->CallVoidMethod(callbackHandlerObject, jmid);
@@ -299,8 +299,8 @@ int Shoebill::Start()
         LOG("[SHOEBILL DEBUG] Shoebill is already initialized.");
         return 0;
     }
-    JNIEnv *env = NULL;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    JNIEnv *env = nullptr;
+    jvm->AttachCurrentThread((void **) &env, nullptr);
     return CreateShoebillObject(env);
 }
 
@@ -308,10 +308,10 @@ void Shoebill::OnProcessTick() const
 {
     if (!callbackHandlerObject) return;
 
-    JNIEnv *env = NULL;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    JNIEnv *env = nullptr;
+    jvm->AttachCurrentThread((void **) &env, nullptr);
 
-    static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onProcessTick", "()V");
+    static auto jmid = env->GetMethodID(callbackHandlerClass, "onProcessTick", "()V");
     if (!jmid) return;
 
     env->CallVoidMethod(callbackHandlerObject, jmid);
@@ -321,7 +321,7 @@ void Shoebill::OnProcessTick() const
 int Shoebill::Restart()
 {
     JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    jvm->AttachCurrentThread((void **) &env, nullptr);
     if (!env) return 0;
     Uninitialize(env);
     Initialize(env);
@@ -332,10 +332,10 @@ int Shoebill::CallRegisteredFunction(AMX *amx, std::string functionName, jobject
 {
     if (!callbackHandlerObject) return -1;
 
-    JNIEnv *env = NULL;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    JNIEnv *env = nullptr;
+    jvm->AttachCurrentThread((void **) &env, nullptr);
 
-    static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onRegisteredFunctionCall",
+    static auto jmid = env->GetMethodID(callbackHandlerClass, "onRegisteredFunctionCall",
                                              "(ILjava/lang/String;[Ljava/lang/Object;)I");
     if (!jmid) return -1;
 
@@ -353,9 +353,9 @@ void Shoebill::OnAmxLoad(AMX *amx) const
     if (!callbackHandlerObject) return;
 
     JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    jvm->AttachCurrentThread((void **) &env, nullptr);
 
-    static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxLoad", "(I)V");
+    static auto jmid = env->GetMethodID(callbackHandlerClass, "onAmxLoad", "(I)V");
     if (!jmid) return;
 
     env->CallVoidMethod(callbackHandlerObject, jmid, amx);
@@ -368,9 +368,9 @@ void Shoebill::OnAmxUnload(AMX *amx) const
     if (!callbackHandlerObject) return;
 
     JNIEnv *env;
-    jvm->AttachCurrentThread((void **) &env, NULL);
+    jvm->AttachCurrentThread((void **) &env, nullptr);
 
-    static jmethodID jmid = env->GetMethodID(callbackHandlerClass, "onAmxUnload", "(I)V");
+    static auto jmid = env->GetMethodID(callbackHandlerClass, "onAmxUnload", "(I)V");
     if (!jmid) return;
 
     env->CallVoidMethod(callbackHandlerObject, jmid, amx);

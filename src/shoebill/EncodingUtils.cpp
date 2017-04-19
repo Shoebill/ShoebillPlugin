@@ -17,17 +17,17 @@
 #include "EncodingUtils.h"
 
 jstring mbs2wcs(JNIEnv *env, unsigned int codepage, const char *src, const int len) {
-    jchar *wtext = new jchar[len];
-    int wcsLen = mbs2wcs(codepage, src, -1, wtext, len);
+	auto wtext = new jchar[len];
+	auto wcsLen = mbs2wcs(codepage, src, -1, wtext, len);
 
     return env->NewString(wtext, wcsLen);
 }
 
 char *wcs2mbs(JNIEnv *env, unsigned int codepage, const jstring src, const int destLen) {
     int srcLen = env->GetStringLength(src);
-    const jchar *stringObject = env->GetStringChars(src, NULL);
+	auto stringObject = env->GetStringChars(src, nullptr);
 
-    char *dest = new char[destLen];
+	auto dest = new char[destLen];
 
     wcs2mbs(codepage, stringObject, srcLen, dest, destLen);
     env->ReleaseStringChars(src, stringObject);
@@ -42,7 +42,7 @@ int mbs2wcs(unsigned int codepage, const char* src, int srclen, unsigned short* 
 {
     if (srclen < 0) srclen = strlen(src);
 
-    int ret = MultiByteToWideChar(codepage, MB_COMPOSITE, src, srclen, (LPWSTR)dst, dstlen - 1);
+	auto ret = MultiByteToWideChar(codepage, MB_COMPOSITE, src, srclen, (LPWSTR)dst, dstlen - 1);
     dst[ret] = 0;
     return ret;
 }
@@ -51,13 +51,13 @@ int wcs2mbs(unsigned int codepage, const unsigned short* src, int srclen, char* 
 {
     if (srclen < 0) srclen = wcslen((LPCWSTR)src);
 
-    BOOL usedDefaultChar = FALSE;
-    int ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, (LPCWSTR)src, srclen, dst, dstlen - 1, "?", &usedDefaultChar);
+	auto usedDefaultChar = FALSE;
+	auto ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, (LPCWSTR)src, srclen, dst, dstlen - 1, "?", &usedDefaultChar);
 
     if (usedDefaultChar && (codepage == 950 || codepage == 932))	// BIG5(TW) or SHIFT-JIS(JP)
     {
-        wchar_t* convsrc = new wchar_t[srclen + 1];
-        int rett = LCMapStringW(0x804, LCMAP_TRADITIONAL_CHINESE, (LPCWSTR)src, srclen, convsrc, srclen + 1);
+	    auto convsrc = new wchar_t[srclen + 1];
+	    auto rett = LCMapStringW(0x804, LCMAP_TRADITIONAL_CHINESE, (LPCWSTR)src, srclen, convsrc, srclen + 1);
 
         ret = WideCharToMultiByte(codepage, WC_COMPOSITECHECK, convsrc, rett, dst, dstlen - 1, "?", &usedDefaultChar);
         delete[] convsrc;

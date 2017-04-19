@@ -109,7 +109,7 @@ public:
     std::unordered_set<AMX *> GetInstances()
     {
         std::unordered_set<AMX *> copyOfInstances;
-        for (std::unordered_set<AMX *>::iterator it = amxInstances.begin(); it != amxInstances.end(); ++it)
+        for (auto it = amxInstances.begin(); it != amxInstances.end(); ++it)
         {
             copyOfInstances.insert(*it);
         }
@@ -118,7 +118,7 @@ public:
 
 private:
     std::unordered_set<AMX *> amxInstances;
-    AMX *mainAmx;
+    AMX *mainAmx = nullptr;
     std::map<AMX *, std::map<std::string, std::vector<std::string>>> registeredFunctions;
 
     AmxInstanceManager(const AmxInstanceManager &) = delete;

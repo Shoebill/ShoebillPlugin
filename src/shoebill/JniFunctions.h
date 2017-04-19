@@ -5,15 +5,6 @@
 #define _Included_net_gtaun_shoebill_SampNativeFunction
 
 #include <jni.h>
-#include <JniUtils.h>
-#include <string.h>
-#include <vector>
-#include "Shoebill.h"
-#include <sampplugin/amx/amx.h>
-#include <wrapper/AmxInstanceManager.hpp>
-#include <sampgdk.h>
-#include <array>
-#include <algorithm>
 
 #ifdef __cplusplus
 extern "C" {
