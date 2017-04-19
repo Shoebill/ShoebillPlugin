@@ -1,0 +1,1 @@
+void pluginInit(void **ppData);
