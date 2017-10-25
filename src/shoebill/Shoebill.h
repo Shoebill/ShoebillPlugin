@@ -65,19 +65,19 @@ public:
 
     int RestartShoebill();
 
-    void OnShoebillLoad();
+    void OnShoebillLoad() const;
 
     bool OnPluginLoad();
 
     bool OnPluginUnload();
 
-    void OnProcessTick();
+    void OnProcessTick() const;
 
-    void OnAmxLoad(AMX *amx);
+    void OnAmxLoad(AMX *amx) const;
 
-    void OnAmxUnload(AMX *amx);
+    void OnAmxUnload(AMX *amx) const;
 
-    int CallRegisteredFunction(AMX *, std::string, jobjectArray);
+    int CallRegisteredFunction(AMX *, std::string, jobjectArray) const;
 
     void setPlayerCodepage(int playerid, int codepage)
     {
@@ -95,15 +95,15 @@ public:
         serverCodepage = codepage;
     }
 
-    int getServerCodepage()
+    int getServerCodepage() const
     {
         return serverCodepage;
     }
 
-    jobject getCallbackHandlerObject()
+    jobject getCallbackHandlerObject() const
     { return callbackHandlerObject; }
 
-    jclass getCallbackHandlerClass()
+    jclass getCallbackHandlerClass() const
     { return callbackHandlerClass; }
 
 private:

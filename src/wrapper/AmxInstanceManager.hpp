@@ -96,7 +96,7 @@ public:
         return true;
     }
 
-    AMX *GetMainAmx()
+    AMX *GetMainAmx() const
     {
         return mainAmx;
     }

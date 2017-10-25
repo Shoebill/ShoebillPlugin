@@ -56,14 +56,17 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
     Shoebill::GetInstance().OnProcessTick();
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell *params, cell *retval)
+PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall2(AMX *amx, const char *name, cell *params, cell *retval, bool* stop)
 {
     bool foundFunction = false;
     auto result = InvokeCallback(amx, name, params, foundFunction); //call Java function if there is any to execute
     if (foundFunction)
     {
         if (retval) *retval = result; //Set returnvalue
-        if (ShouldCancelCallback(name, result)) return false;
+		if (ShouldCancelCallback(name, result)) {
+			*stop = true;
+			return false;
+		}
     }
     auto hook = CallHookedCallback(amx, name, params); //Execute custom hook
     if (hook)
@@ -71,8 +74,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPublicCall(AMX *amx, const char *name, cell *pa
         auto willCancel = hook[1];
         if (retval) *retval = hook[0];
         delete hook;
-        if (willCancel == 1)
-            return false;
+		if (willCancel == 1) {
+			*stop = true;
+			return false;
+		}
     }
     return true;
 }

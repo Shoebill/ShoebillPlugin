@@ -11,8 +11,9 @@ Shoebill &Shoebill::GetInstance()
     return instance;
 }
 
-Shoebill::Shoebill()
+Shoebill::Shoebill(): initialized(false)
 {
+	
 }
 
 Shoebill::~Shoebill()
@@ -34,17 +35,17 @@ int Shoebill::Initialize(JNIEnv *env)
         return -1;
     }
 
-    static jmethodID loadNativeLibraryMethodID = env->GetStaticMethodID(shoebillLauncherClass,
+    static jmethodID load_native_library_method_id = env->GetStaticMethodID(shoebillLauncherClass,
                                                                         LOAD_NATIVE_LIBRARY_METHOD_NAME,
                                                                         LOAD_NATIVE_LIBRARY_METHOD_SIGN);
-    if (!loadNativeLibraryMethodID)
+    if (!load_native_library_method_id)
     {
         sampgdk_logprintf("  > Error: Can't find launcher method [%s::%s%s].", LAUNCHER_CLASS_NAME,
                           LOAD_NATIVE_LIBRARY_METHOD_NAME, LOAD_NATIVE_LIBRARY_METHOD_SIGN);
         return -6;
     }
 
-    env->CallStaticVoidMethod(shoebillLauncherClass, loadNativeLibraryMethodID);
+    env->CallStaticVoidMethod(shoebillLauncherClass, load_native_library_method_id);
     if (env->ExceptionCheck())
     {
         jni_jvm_printExceptionStack(env);
@@ -216,7 +217,7 @@ int Shoebill::Uninitialize(JNIEnv *env)
     return 0;
 }
 
-void Shoebill::OnShoebillLoad()
+void Shoebill::OnShoebillLoad() const
 {
     if (!callbackHandlerObject) return;
 
@@ -284,7 +285,7 @@ int Shoebill::StartShoebill()
     return CreateShoebillObject(env);
 }
 
-void Shoebill::OnProcessTick()
+void Shoebill::OnProcessTick() const
 {
     if (!callbackHandlerObject) return;
 
@@ -308,7 +309,7 @@ int Shoebill::RestartShoebill()
     return 1;
 }
 
-int Shoebill::CallRegisteredFunction(AMX *amx, std::string functionName, jobjectArray parameters)
+int Shoebill::CallRegisteredFunction(AMX *amx, std::string functionName, jobjectArray parameters) const
 {
     if (!callbackHandlerObject) return -1;
 
@@ -326,7 +327,7 @@ int Shoebill::CallRegisteredFunction(AMX *amx, std::string functionName, jobject
     return result;
 }
 
-void Shoebill::OnAmxLoad(AMX *amx)
+void Shoebill::OnAmxLoad(AMX *amx) const
 {
     amx_Register(amx, PluginExports, -1);
     AmxInstanceManager::GetInstance().RegisterAmx(amx);
@@ -340,18 +341,9 @@ void Shoebill::OnAmxLoad(AMX *amx)
 
     env->CallVoidMethod(callbackHandlerObject, jmid, amx);
     jni_jvm_printExceptionStack(env);
-
-    int count;
-    auto natives = sampgdk::GetNatives(count);
-    for (int i = 0; i < count; i++)
-    {
-        const AMX_NATIVE_INFO native = *natives;
-        NativeFunctionManager::GetInstance().RegisterFunction(amx, native.name, native.func, i);
-        ++natives;
-    }
 }
 
-void Shoebill::OnAmxUnload(AMX *amx)
+void Shoebill::OnAmxUnload(AMX *amx) const
 {
     AmxInstanceManager::GetInstance().UnregisterAmx(amx);
     if (!callbackHandlerObject) return;
