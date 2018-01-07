@@ -4290,6 +4290,8 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
     std::vector<cell> stringCells;
     std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> references;
     params[0] = (cell) (arrayLength * sizeof(cell));
+    auto paramcount = amx->paramcount;
+    amx->paramcount = 0;
     for (auto i = 0; i < arrayLength; i++)
     {
         auto object = env->GetObjectArrayElement(args, i);
@@ -4298,6 +4300,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
         if (!mid)
         {
             sampgdk_logprintf("[Shoebill] Error while getting toString() method.");
+            amx->paramcount = paramcount;
             return nullptr;
         }
         auto classNameString = static_cast<jstring>(env->CallObjectMethod(objectClass, mid));
@@ -4389,6 +4392,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callFunctio
     for (auto str : stringCells) amx_Release(amx, str);
     stringCells.clear();
     references.clear();
+    amx->paramcount = paramcount;
     return makeObjectFromReturnType(env, returnType, amx, retval);
 }
 
@@ -4401,6 +4405,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
     std::vector<std::pair<cell *, int>> cellArrays;
     std::map<std::pair<jobject, std::string>, std::pair<cell *, cell>> references;
     int arrayLength = env->GetArrayLength(args);
+    auto paramcount = amx->paramcount;
     amx->paramcount = 0;
     for (auto i = arrayLength - 1; i >= 0; i--)
     {
@@ -4410,6 +4415,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
         if (!mid)
         {
             sampgdk_logprintf("[Shoebill] Error trying to get toString() method.");
+            amx->paramcount = paramcount;
             return nullptr;
         }
         auto str = static_cast<jstring>(env->CallObjectMethod(objectClass, mid));
@@ -4548,6 +4554,7 @@ JNIEXPORT jobject JNICALL Java_net_gtaun_shoebill_SampNativeFunction_callPublic
     stringCells.clear();
     references.clear();
     cellArrays.clear();
+    amx->paramcount = paramcount;
     return makeObjectFromReturnType(env, returnType, amx, retval);
 }
 
